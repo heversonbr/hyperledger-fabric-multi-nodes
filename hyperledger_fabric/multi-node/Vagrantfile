@@ -1,0 +1,147 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+require 'vagrant-openstack-provider'
+
+# INFO: This example deploys a k8s cluster on 3 nodes using Openstack. 
+#os.networks = 'd085327f-2cea-4e14-8784-764ee72b92f4'  # id network hbr_net_test2  (hyper)
+#os.networks = '2a7f5866-ded3-45ea-b263-5826a997de2a'  # id network hbr_net_test1  (k8s)
+#os.networks = '0ed56125-8083-4fd8-9c46-4e4e29ce50f6'  # id network hbr_net_test3  (gluster)  
+
+#types for hyperledger:   MSP(CA) , peer , endorser-peer , ordering-node
+
+cluster = [
+    {
+        :name => "peer-0",
+        :username => "ubuntu",
+        :type => "peer",
+        :box => "hbr_ubuntu1604_img",
+        :flavor => "j1.small",
+        :netid => "d085327f-2cea-4e14-8784-764ee72b92f4",
+        :netadd => "192.168.1.10",
+        :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
+        
+    }#,
+    #{
+    #    :name => "endorser-peer-0",
+    #    :username => "ubuntu",
+    #    :type => "endorser",
+    #    :box => "hbr_ubuntu1604_img",
+    #    :flavor => "j1.small",
+    #    :netid =>  "d085327f-2cea-4e14-8784-764ee72b92f4",
+    #    :netadd => "192.168.1.11",
+    #    :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
+    #},
+    #{
+    #    :name => "ordering-0",
+    #    :username => "ubuntu",
+    #    :type => "orderer",
+    #    :box => "hbr_ubuntu1604_img",
+    #    :flavor => "j1.small",
+    #    :netid =>  "d085327f-2cea-4e14-8784-764ee72b92f4",
+    #    :netadd => "192.168.1.12",
+    #    :privkeyfile => "~/.ssh/conopenstack_cloudlab_bcom.keyfig"
+    #},
+    #{
+    #    :name => "msp-0",
+    #    :username => "ubuntu",
+    #    :type => "msp",
+    #    :box => "hbr_ubuntu1604_img",
+    #    :flavor => "j1.small",
+    #    :netid =>  "d085327f-2cea-4e14-8784-764ee72b92f4",
+    #    :netadd => "192.168.1.13",
+    #    :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
+    #}
+]
+
+# data structs for creating the config file in ~/.ssh
+ssh_config = []
+ssh_entry = { :hostname => "", :username => "" , :ipadd => "", :keyfile => "" }
+
+# initialization scripts
+$configAll = <<-SCRIPT
+    echo "Setting ~/.ssh/config file"
+    mv /home/ubuntu/hyperledger_ws/config_template /home/ubuntu/.ssh/config
+    mv /home/ubuntu/hyperledger_ws/install/openstack_cloudlab_bcom.key /home/ubuntu/.ssh/openstack_cloudlab_bcom.key
+    chown ubuntu:ubuntu /home/ubuntu/.ssh/config /home/ubuntu/.ssh/openstack_cloudlab_bcom.key
+    echo "call 1"
+    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/install_docker.sh'
+    #echo "call 2"
+    #sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/fabric_prereqs.sh  $HYPERLEDGER_HOME'
+    echo "end"
+
+SCRIPT
+
+$installDocker = <<-SCRIPT
+    echo "Installing Docker at node `hostname`"
+    
+
+SCRIPT
+
+
+#vagrant config
+Vagrant.configure("2") do |config|
+
+    config.ssh.username = "ubuntu"
+    config.ssh.private_key_path = '/home/rheverson/.ssh/openstack_cloudlab_bcom.key'
+
+    config.vm.provider :openstack do |os|
+        os.openstack_auth_url = 'http://10.50.0.103:5000/v2.0'
+        os.username = 'rheverson'
+        os.password = '1234'
+        os.tenant_name = 'hbr_test'
+        os.security_groups = ['default']
+        os.availability_zone = 'nova'
+        os.region = 'regionOne'  
+        os.keypair_name = 'openstack_cloudlab_bcom'
+        
+    end
+    
+
+    cluster.each do |opts|
+        config.vm.define opts[:name] do |node| 
+            node.vm.provider :openstack do |os, override|
+                os.server_name = opts[:name]
+                os.image = opts[:box]
+                os.flavor = opts[:flavor]
+                os.networks = [{ id: opts[:netid], address: opts[:netadd] }]
+                os.floating_ip_pool = 'ext_net'
+                
+                override.vm.synced_folder '.', '/vagrant', disabled: true  # this share is created by default. Specify the synchronization method between the host and the remote VM. Default value is "rsync". If your OpenStack image does not include rsync, you must set to "none".
+                override.vm.synced_folder './shared', '/home/ubuntu/hyperledger_ws/', type: 'rsync'  #   rsync and none as types present some bugs.
+                os.user_data = """#!/bin/bash
+                    set -x
+                    echo '127.0.0.1 #{opts[:name]}' | tee -a /etc/hosts
+                    echo 'nameserver 8.8.8.8'       | tee -a /etc/resolv.conf
+                   
+                    # path variable to the workspace at which Hyperledger will be installed. 
+                    export HYPERLEDGER_HOME=\"/home/ubuntu/hyperledger_ws\"
+                    echo -e \"export HYPERLEDGER_HOME=\"/home/ubuntu/hyperledger_ws\"\" | tee -a /home/ubuntu/.bashrc
+                    echo \"HLF1: $HYPERLEDGER_HOME\"
+                """
+            end
+
+            node.vm.provision "shell", inline: $configAll
+
+            #if opts[:type] == "master"
+            #    node.vm.provision "shell", inline: $configureMaster
+            #end
+            #if opts[:type] == "node"
+            #    node.vm.provision "shell", inline: $configureNode
+            #end
+        end
+
+        # Genenrate config file for ssh
+        new_ssh_entry = Hash.new()
+        new_ssh_entry[:hostname] = opts[:name]
+        new_ssh_entry[:username] = opts[:username]
+        new_ssh_entry[:ipadd] = opts[:netadd]
+        new_ssh_entry[:keyfile] = opts[:privkeyfile]
+        ssh_config.push << new_ssh_entry
+        
+    end
+    # Create ssh config file locally to be shared with VMs
+    File.open("./shared/config_template", "w+") do |f|
+        ssh_config.each { |element| f.puts("Host " + element[:hostname].to_s, "     User " + element[:username].to_s, "     Hostname " + element[:ipadd].to_s, "     IdentityFile " + element[:keyfile].to_s) }
+    
+    end
+end 

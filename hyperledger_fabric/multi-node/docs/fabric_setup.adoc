@@ -1,0 +1,233 @@
+= Hyperledger Setup
+:page-navtitle: Falcon and the Blockchains
+:page-root: ../../../
+:page-category: Blockchain
+
+== Main steps from default documentation
+
+- Prereqs
+- fabric-tools (download bootstrap.sh)
+- bootstrap.sh : downloads images, binaries and samples.
+
+=== BYFN (creates a single node network)
+
+Configuration and scripts at:  /fabric-samples/first-network.
+
+    $ cd fabric-samples/first-network
+
+Following the doc.
+
+====  What does it do ?
+
+Provides a fully annotated script — byfn.sh — that leverages these Docker images
+to quickly bootstrap a Hyperledger Fabric network that by default is comprised of:
+
+  - four peers representing two different organizations
+  - an orderer node.
+
+Also launches a container to run a scripted execution that will join peers to a
+channel, deploy a chaincode and drive execution of transactions against the
+deployed chaincode.
+
+
+==== Generate Network Artifacts
+
+    ./byfn.sh generate
+
+Generates all of the certificates and keys for our various network entities,
+the genesis block used to bootstrap the ordering service, and a collection of
+configuration transactions required to configure a Channel.
+
+It executes mainly the 3 follwing steps (functions in byfn.sh):
+
+ $ generateCerts()
+ $ replacePrivateKey()
+ $ generateChannelArtifacts()
+
+The `configtxgen tool is used to create four artifacts: orderer bootstrap
+block, fabric channel configuration transaction, and two anchor peer transactions
+, one for each Peer Org.
+
+
+NOTE: cryptogen is an utility for generating Hyperledger Fabric key material.
+It is provided as a means of preconfiguring a network for testing purposes.
+It would normally not be used in the operation of a production network.
+
+At byfn.sh it runs the functions: generateCerts,  replacePrivateKey, and  generateChannelArtifacts.
+
+====== function generateCerts():
+
+[source, bash]
+----
+if [ -d "crypto-config" ]; then
+  rm -Rf crypto-config
+fi
+set -x
+cryptogen generate --config=./crypto-config.yaml
+----
+
+
+  $ cryptogen generate --config=./crypto-config.yaml
+
+NOTE: Please check the file crypto-config.yaml.
+
+The configtxgen tool is used to create four artifacts: orderer **bootstrap
+block**, fabric **channel configuration transaction**, and two **anchor
+peer transactions** - one for each Peer Org.
+The orderer block is the genesis block for the ordering service, and the
+channel transaction file is broadcast to the orderer at channel creation
+time.  The anchor peer transactions, as the name might suggest, specify each
+Org's anchor peer on this channel.
+Configtxgen consumes a file - ``configtx.yaml`` - that contains the definitions
+for the sample network. There are three members - one Orderer Org (``OrdererOrg``)
+and two Peer Orgs (``Org1`` & ``Org2``) each managing and maintaining two peer nodes.
+This file also specifies a consortium - ``SampleConsortium`` - consisting of our
+two Peer Orgs.  Pay specific attention to the "Profiles" section at the top of
+this file.  You will notice that we have two unique headers. One for the orderer genesis
+block - ``TwoOrgsOrdererGenesis`` - and one for our channel - ``TwoOrgsChannel``.
+These headers are important, as we will pass them in as arguments when we create
+our artifacts.  This file also contains two additional specifications that are worth
+noting.  Firstly, we specify the anchor peers for each Peer Org
+(``peer0.org1.example.com`` & ``peer0.org2.example.com``).  Secondly, we point to
+the location of the MSP directory for each member, in turn allowing us to store the
+root certificates for each Org in the orderer genesis block.  This is a critical
+concept. Now any network entity communicating with the ordering service can have
+its digital signature verified.
+This function will generate the crypto material and our four configuration
+artifacts, and subsequently output these files into the ``channel-artifacts``
+folder.
+If you receive the following warning, it can be safely ignored:
+
+  [bccsp] GetDefault -> WARN 001 Before using BCCSP, please call InitFactories(). Falling back totBCCSP.
+
+You can ignore the logs regarding intermediate certs, we are not using them in
+this crypto implementation.
+
+Generate orderer genesis block, channel configuration transaction and
+anchor peer update transactions
+
+
+====== function replacePrivateKey():
+
+replaces the template's contents with the actual values of the private key file
+names for the two CA
+[source, bash]
+----
+
+# Copy the template to the file that will be modified to add the private key
+cp docker-compose-e2e-template.yaml docker-compose-e2e.yaml
+
+# The next steps will replace the template's contents with the
+# actual values of the private key file names for the two CAs.
+CURRENT_DIR=$PWD
+cd crypto-config/peerOrganizations/org1.example.com/ca/
+PRIV_KEY=$(ls *_sk)
+cd "$CURRENT_DIR"
+sed $OPTS "s/CA1_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose-e2e.yaml
+cd crypto-config/peerOrganizations/org2.example.com/ca/
+PRIV_KEY=$(ls *_sk)
+cd "$CURRENT_DIR"
+sed $OPTS "s/CA2_PRIVATE_KEY/${PRIV_KEY}/g" docker-compose-e2e.yaml
+----
+
+
+====== function generateChannelArtifacts():
+
+1) Generating Orderer Genesis block
+
+CONSENSUS_TYPE" == "solo"
+
+  $ configtxgen -profile TwoOrgsOrdererGenesis -channelID byfn-sys-channel -outputBlock ./channel-artifacts/genesis.block
+
+
+2) Generating channel configuration transaction 'channel.tx'
+
+  $   configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID $CHANNEL_NAME
+
+3)  Generating anchor peer update for Org1MSP
+
+  $ configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org1MSPanchors.tx -channelID $CHANNEL_NAME -asOrg Org1MSP
+
+
+4) Generating anchor peer update for Org2MSP
+
+  $  configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org2MSPanchors.tx -channelID $CHANNEL_NAME -asOrg Org2MSP
+
+
+
+[source,bash]
+----
+$ ./byfn.sh generate
+Generating certs and genesis block for channel 'mychannel' with CLI timeout of '10' seconds and CLI delay of '3' seconds
+Continue? [Y/n] y
+proceeding ...
+/home/ubuntu/hyperledger_ws/fabric-samples/first-network/../bin/cryptogen
+
+##########################################################
+##### Generate certificates using cryptogen tool #########
+##########################################################
++ cryptogen generate --config=./crypto-config.yaml
+org1.example.com
+org2.example.com
++ res=0
++ set +x
+
+/home/ubuntu/hyperledger_ws/fabric-samples/first-network/../bin/configtxgen
+##########################################################
+#########  Generating Orderer Genesis block ##############
+##########################################################
+CONSENSUS_TYPE=solo
++ '[' solo == solo ']'
++ configtxgen -profile TwoOrgsOrdererGenesis -channelID byfn-sys-channel -outputBlock ./channel-artifacts/genesis.block
+2019-05-22 15:37:05.989 UTC [common.tools.configtxgen] main -> INFO 001 Loading configuration
+2019-05-22 15:37:06.094 UTC [common.tools.configtxgen.localconfig] completeInitialization -> INFO 002 orderer type: solo
+2019-05-22 15:37:06.094 UTC [common.tools.configtxgen.localconfig] Load -> INFO 003 Loaded configuration: /home/ubuntu/hyperledger_ws/fabric-samples/first-network/configtx.yaml
+2019-05-22 15:37:06.195 UTC [common.tools.configtxgen.localconfig] completeInitialization -> INFO 004 orderer type: solo
+2019-05-22 15:37:06.195 UTC [common.tools.configtxgen.localconfig] LoadTopLevel -> INFO 005 Loaded configuration: /home/ubuntu/hyperledger_ws/fabric-samples/first-network/configtx.yaml
+2019-05-22 15:37:06.200 UTC [common.tools.configtxgen] doOutputBlock -> INFO 006 Generating genesis block
+2019-05-22 15:37:06.201 UTC [common.tools.configtxgen] doOutputBlock -> INFO 007 Writing genesis block
++ res=0
++ set +x
+
+#################################################################
+### Generating channel configuration transaction 'channel.tx' ###
+#################################################################
++ configtxgen -profile TwoOrgsChannel -outputCreateChannelTx ./channel-artifacts/channel.tx -channelID mychannel
+2019-05-22 15:37:06.246 UTC [common.tools.configtxgen] main -> INFO 001 Loading configuration
+2019-05-22 15:37:06.344 UTC [common.tools.configtxgen.localconfig] Load -> INFO 002 Loaded configuration: /home/ubuntu/hyperledger_ws/fabric-samples/first-network/configtx.yaml
+2019-05-22 15:37:06.439 UTC [common.tools.configtxgen.localconfig] completeInitialization -> INFO 003 orderer type: solo
+2019-05-22 15:37:06.439 UTC [common.tools.configtxgen.localconfig] LoadTopLevel -> INFO 004 Loaded configuration: /home/ubuntu/hyperledger_ws/fabric-samples/first-network/configtx.yaml
+2019-05-22 15:37:06.439 UTC [common.tools.configtxgen] doOutputChannelCreateTx -> INFO 005 Generating new channel configtx
+2019-05-22 15:37:06.445 UTC [common.tools.configtxgen] doOutputChannelCreateTx -> INFO 006 Writing new channel tx
++ res=0
++ set +x
+
+#################################################################
+#######    Generating anchor peer update for Org1MSP   ##########
+#################################################################
++ configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org1MSPanchors.tx -channelID mychannel -asOrg Org1MSP
+2019-05-22 15:37:06.486 UTC [common.tools.configtxgen] main -> INFO 001 Loading configuration
+2019-05-22 15:37:06.585 UTC [common.tools.configtxgen.localconfig] Load -> INFO 002 Loaded configuration: /home/ubuntu/hyperledger_ws/fabric-samples/first-network/configtx.yaml
+2019-05-22 15:37:06.684 UTC [common.tools.configtxgen.localconfig] completeInitialization -> INFO 003 orderer type: solo
+2019-05-22 15:37:06.684 UTC [common.tools.configtxgen.localconfig] LoadTopLevel -> INFO 004 Loaded configuration: /home/ubuntu/hyperledger_ws/fabric-samples/first-network/configtx.yaml
+2019-05-22 15:37:06.684 UTC [common.tools.configtxgen] doOutputAnchorPeersUpdate -> INFO 005 Generating anchor peer update
+2019-05-22 15:37:06.685 UTC [common.tools.configtxgen] doOutputAnchorPeersUpdate -> INFO 006 Writing anchor peer update
++ res=0
++ set +x
+
+#################################################################
+#######    Generating anchor peer update for Org2MSP   ##########
+#################################################################
++ configtxgen -profile TwoOrgsChannel -outputAnchorPeersUpdate ./channel-artifacts/Org2MSPanchors.tx -channelID mychannel -asOrg Org2MSP
+2019-05-22 15:37:06.727 UTC [common.tools.configtxgen] main -> INFO 001 Loading configuration
+2019-05-22 15:37:06.836 UTC [common.tools.configtxgen.localconfig] Load -> INFO 002 Loaded configuration: /home/ubuntu/hyperledger_ws/fabric-samples/first-network/configtx.yaml
+2019-05-22 15:37:06.943 UTC [common.tools.configtxgen.localconfig] completeInitialization -> INFO 003 orderer type: solo
+2019-05-22 15:37:06.943 UTC [common.tools.configtxgen.localconfig] LoadTopLevel -> INFO 004 Loaded configuration: /home/ubuntu/hyperledger_ws/fabric-samples/first-network/configtx.yaml
+2019-05-22 15:37:06.943 UTC [common.tools.configtxgen] doOutputAnchorPeersUpdate -> INFO 005 Generating anchor peer update
+2019-05-22 15:37:06.944 UTC [common.tools.configtxgen] doOutputAnchorPeersUpdate -> INFO 006 Writing anchor peer update
++ res=0
++ set +x
+
+----
+
+==== Bring the network up
