@@ -1,4 +1,4 @@
-Host peer-0
+Host hyperledger-admin
      User ubuntu
      Hostname 192.168.1.10
      IdentityFile ~/.ssh/openstack_cloudlab_bcom.key

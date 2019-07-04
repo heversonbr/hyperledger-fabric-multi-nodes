@@ -11,24 +11,34 @@ require 'vagrant-openstack-provider'
 
 cluster = [
     {
-        :name => "peer-0",
+        :name => "hyperledger-admin",
         :username => "ubuntu",
-        :type => "peer",
+        :type => "msp",
         :box => "hbr_ubuntu1604_img",
-        :flavor => "j1.small",
+        :flavor => "j1.medium",
         :netid => "d085327f-2cea-4e14-8784-764ee72b92f4",
         :netadd => "192.168.1.10",
         :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
         
     }#,
     #{
-    #    :name => "endorser-peer-0",
+    #    :name => "org1-msp-1",
+    #    :username => "ubuntu",
+    #    :type => "msp",
+    #    :box => "hbr_ubuntu1604_img",
+    #    :flavor => "j1.small",
+    #    :netid =>  "d085327f-2cea-4e14-8784-764ee72b92f4",
+    #    :netadd => "192.168.1.11",
+    #    :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
+    #}
+    #{
+    #    :name => "org2-msp-2",
     #    :username => "ubuntu",
     #    :type => "endorser",
     #    :box => "hbr_ubuntu1604_img",
     #    :flavor => "j1.small",
     #    :netid =>  "d085327f-2cea-4e14-8784-764ee72b92f4",
-    #    :netadd => "192.168.1.11",
+    #    :netadd => "192.168.1.12",
     #    :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
     #},
     #{
@@ -38,9 +48,9 @@ cluster = [
     #    :box => "hbr_ubuntu1604_img",
     #    :flavor => "j1.small",
     #    :netid =>  "d085327f-2cea-4e14-8784-764ee72b92f4",
-    #    :netadd => "192.168.1.12",
-    #    :privkeyfile => "~/.ssh/conopenstack_cloudlab_bcom.keyfig"
-    #},
+    #    :netadd => "192.168.1.13",
+    #    :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
+    #}
     #{
     #    :name => "msp-0",
     #    :username => "ubuntu",
@@ -58,24 +68,46 @@ ssh_config = []
 ssh_entry = { :hostname => "", :username => "" , :ipadd => "", :keyfile => "" }
 
 # initialization scripts
-$configAll = <<-SCRIPT
+$setSSHconfig = <<-SCRIPT
+    echo "-------------------------------------------"
+    echo "allNodes script started"
+    # setup ~/.ssh/config file at all the nodes to allow connection among them. 
+    # (after deployment only the floating IP of the first vm is required to connect)
     echo "Setting ~/.ssh/config file"
     mv /home/ubuntu/hyperledger_ws/config_template /home/ubuntu/.ssh/config
     mv /home/ubuntu/hyperledger_ws/install/openstack_cloudlab_bcom.key /home/ubuntu/.ssh/openstack_cloudlab_bcom.key
     chown ubuntu:ubuntu /home/ubuntu/.ssh/config /home/ubuntu/.ssh/openstack_cloudlab_bcom.key
-    echo "call 1"
-    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/install_docker.sh'
-    #echo "call 2"
-    #sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/fabric_prereqs.sh  $HYPERLEDGER_HOME'
-    echo "end"
-
+    echo "-------------------------------------------"
 SCRIPT
 
 $installDocker = <<-SCRIPT
+    echo "-------------------------------------------"
     echo "Installing Docker at node `hostname`"
-    
-
+    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/install_01_docker.sh'
+    echo "-------------------------------------------"
 SCRIPT
+
+$installprereqs = <<-SCRIPT
+    echo "-------------------------------------------"
+    echo "Installing FABRIC prereqs at node `hostname`"
+    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/install_02_prereqs.sh'
+    echo "-------------------------------------------"
+SCRIPT
+
+$checkprereqs = <<-SCRIPT
+    echo "-------------------------------------------"
+    echo "Checking FABRIC prereqs at node `hostname`"
+    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/check_prereqs.sh'
+    echo "-------------------------------------------"
+SCRIPT
+
+$bootstrapBinaries = <<-SCRIPT
+    echo "-------------------------------------------"
+    echo "Bootstraping Fabric binaries at node `hostname`"
+    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/install_03_bootstrap.sh'
+    echo "-------------------------------------------"
+SCRIPT
+
 
 
 #vagrant config
@@ -108,21 +140,19 @@ Vagrant.configure("2") do |config|
                 
                 override.vm.synced_folder '.', '/vagrant', disabled: true  # this share is created by default. Specify the synchronization method between the host and the remote VM. Default value is "rsync". If your OpenStack image does not include rsync, you must set to "none".
                 override.vm.synced_folder './shared', '/home/ubuntu/hyperledger_ws/', type: 'rsync'  #   rsync and none as types present some bugs.
+                # note that: the os.user_data script will run before the inline script below
                 os.user_data = """#!/bin/bash
-                    set -x
                     echo '127.0.0.1 #{opts[:name]}' | tee -a /etc/hosts
                     echo 'nameserver 8.8.8.8'       | tee -a /etc/resolv.conf
-                   
-                    # path variable to the workspace at which Hyperledger will be installed. 
-                    export HYPERLEDGER_HOME=\"/home/ubuntu/hyperledger_ws\"
-                    echo -e \"export HYPERLEDGER_HOME=\"/home/ubuntu/hyperledger_ws\"\" | tee -a /home/ubuntu/.bashrc
-                    echo \"HLF1: $HYPERLEDGER_HOME\"
                 """
             end
 
-            node.vm.provision "shell", inline: $configAll
+            node.vm.provision "shell", inline: $setSSHconfig
+            node.vm.provision "shell", inline: $installprereqs
+            node.vm.provision "shell", inline: $checkprereqs
+            node.vm.provision "shell", inline: $bootstrapBinaries
 
-            #if opts[:type] == "master"
+            #if opts[:type] == "msp"
             #    node.vm.provision "shell", inline: $configureMaster
             #end
             #if opts[:type] == "node"
