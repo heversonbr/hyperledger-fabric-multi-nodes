@@ -15,8 +15,10 @@ CA_BINARY_FILE=hyperledger-fabric-ca-${ARCH}-${CA_VERSION}.tar.gz
 
 FABRIC_GIT_REPO=https://github.com/hyperledger/fabric-samples.git
 
-# source all environment variables
-. /home/ubuntu/hyperledger_ws/install/fabric.env.sh
+URL_FABRIC="https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/${ARCH}-${FABRIC_VERSION}/${BINARY_FILE}"
+URL_FABRIC_CA="https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric-ca/hyperledger-fabric-ca/${ARCH}-${CA_VERSION}/${CA_BINARY_FILE}"
+
+
 echo "----------------------------------------------" 
 echo "installing for user: $FABRIC_USER"
 echo "fabric_home: $HYPERLEDGER_HOME"
@@ -26,69 +28,67 @@ echo $PATH
 echo "----------------------------------------------" 
 
 getSamples() {
+    echo "----------------------------------------------------------------------------"
+    pwd
+    echo "USER: $USER whoami: `whoami` id -un: `id -un` FABRIC_USER: $FABRIC_USER  HOME: $HOME  LOGNAME: $LOGNAME" 
+    cd $HYPERLEDGER_HOME
+    pwd
+    test -f "/bin/bash" && echo "This system has a bash shell"
 
-  echo "----------------------------------------------------------------------------"
-  pwd
-  echo $FABRIC_USER
-  echo "----------------------------------------------------------------------------"
-  cd $HYPERLEDGER_HOME
-
-  # clone (if needed) hyperledger/fabric-samples and checkout corresponding
-  # version to the binaries and docker images to be downloaded
-  if [ -d first-network ]; then
-    # if we are in the fabric-samples repo, checkout corresponding version
-    echo "===> Checking out v${FABRIC_VERSION} of hyperledger/fabric-samples"
-    git checkout v${FABRIC_VERSION}
-  elif [ -d fabric-samples ]; then
-    # if fabric-samples repo already cloned and in current directory,
-    # cd fabric-samples and checkout corresponding version
-    echo "===> Checking out v${FABRIC_VERSION} of hyperledger/fabric-samples"
-    cd fabric-samples
-    git checkout v${FABRIC_VERSION}
-  else
-    echo "===> Cloning hyperledger/fabric-samples repo and checkout v${FABRIC_VERSION}"
-    git clone -b master $FABRIC_GIT_REPO
-    cd fabric-samples 
-    git checkout v${FABRIC_VERSION}
-  fi
+    # clone (if needed) hyperledger/fabric-samples and checkout corresponding
+    # version to the binaries and docker images to be downloaded
+    if [ -d $HYPERLEDGER_HOME/fabric-samples ]; then
+        # if $HYPERLEDGER_HOME/fabric-samples already exists, go into it and checkout corresponding version
+        cd $HYPERLEDGER_HOME/fabric-samples
+        echo "===> Checking out v${FABRIC_VERSION} of hyperledger/fabric-samples"
+        git checkout v${FABRIC_VERSION}
+    else
+        echo "===> Cloning hyperledger/fabric-samples repo and checkout v${FABRIC_VERSION}"
+        cd $HYPERLEDGER_HOME
+        #git clone -b master $FABRIC_GIT_REPO $HYPERLEDGER_HOME/fabric-samples
+        if [ $HOME = "/root" ]; then
+            echo "igual"
+            export HOME="/home/$FABRIC_USER"
+            git clone -q -b master $FABRIC_GIT_REPO $HYPERLEDGER_HOME/fabric-samples
+            cd  $HYPERLEDGER_HOME/fabric-samples 
+            git checkout v${FABRIC_VERSION}
+            export HOME="/root"
+        else
+            echo "different"
+            git clone -q -b master $FABRIC_GIT_REPO $HYPERLEDGER_HOME/fabric-samples
+            cd  $HYPERLEDGER_HOME/fabric-samples 
+            git checkout v${FABRIC_VERSION}
+        fi
+    fi
+    echo "----------------------------------------------------------------------------"
 }
 
-
 getBinaries(){
+    # echo "USER: $USER whoami: `whoami` id -un: `id -un` FABRIC_USER: $FABRIC_USER  HOME: $HOME  LOGNAME: $LOGNAME" 
+    echo "----------------------------------------------------------------------------"
+    echo "===> Downloading version ${FABRIC_VERSION} platform specific fabric binaries"
+    echo "===> Downloading fabric from: " ${URL_FABRIC}
 
+    echo "----------------------------------------------------------------------------"
+    curl ${URL_FABRIC} | tar xz || rc1=$?
+    echo $rc1
+    if [ ! -z "$rc" ]; then
+      echo "==> Error: There was an error downloading $BINARY_FILE"
+    else
+      echo "==> Done"
+    fi
 
-  URL_FABRIC="https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/${ARCH}-${FABRIC_VERSION}/${BINARY_FILE}"
-  URL_FABRIC_CA="https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric-ca/hyperledger-fabric-ca/${ARCH}-${CA_VERSION}/${CA_BINARY_FILE}"
+    echo "----------------------------------------------------------------------------"
+    echo "===> Downloading version ${CA_VERSION} platform specific fabric-ca-client binary"
+    echo "===> Downloading fabric-ca from: " ${URL_FABRIC_CA}
 
-  echo "----------------------------------------------------------------------------"
-  echo "===> Downloading version ${FABRIC_VERSION} platform specific fabric binaries"
-  echo "===> Downloading fabric from: " ${URL_FABRIC}
-  pwd
-  whoami
-  echo $USER 
-  echo $FABRIC_USER
-
-  echo "----------------------------------------------------------------------------"
-  curl -sS ${URL_FABRIC} | tar xz || rc1=$?
-  echo $rc1
-  if [ ! -z "$rc" ]; then
-    echo "==> Error: There was an error downloading $BINARY_FILE"
-  else
-    echo "==> Done"
-  fi
-
-  echo "----------------------------------------------------------------------------"
-  echo "===> Downloading version ${CA_VERSION} platform specific fabric-ca-client binary"
-  echo "===> Downloading fabric-ca from: " ${URL_FABRIC_CA}
-  
-  curl -sS ${URL_FABRIC_CA} | tar xz || rc1=$?
-  echo $rc1
-  if [ ! -z "$rc" ]; then
-    echo "==> Error: There was an error downloading $CA_BINARY_FILE"
-  else
-    echo "==> Done"
-  fi
-  
+    curl ${URL_FABRIC_CA} | tar xz || rc1=$?
+    echo $rc1
+    if [ ! -z "$rc" ]; then
+      echo "==> Error: There was an error downloading $CA_BINARY_FILE"
+    else
+      echo "==> Done"
+    fi
 }
 
 
@@ -113,7 +113,7 @@ getAllImages() {
     docker pull hyperledger/fabric-ca:$CA_VERSION
     docker tag hyperledger/fabric-ca:$CA_VERSION hyperledger/fabric-ca
     echo "===> List hyperledger docker images"
-	docker images | grep hyperledger*
+	  docker images | grep hyperledger*
 }
 
 
@@ -122,7 +122,8 @@ echo "----------------------------------------------"
 echo "bootstrap : Installing Hyperledger Fabric binaries"
 getBinaries
 echo "----------------------------------------------" 
-#echo "bootstrap : Installing Hyperledger Fabric docker images"
+echo "bootstrap : Installing Hyperledger Fabric docker images"
+#getAllImages
 #echo "----------------------------------------------" 
 echo "bootstrap : Installing hyperledger/fabric-samples repo"
 getSamples

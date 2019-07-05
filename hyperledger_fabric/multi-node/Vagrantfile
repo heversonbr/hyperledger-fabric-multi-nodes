@@ -20,7 +20,7 @@ cluster = [
         :netadd => "192.168.1.10",
         :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
         
-    }#,
+    },
     #{
     #    :name => "org1-msp-1",
     #    :username => "ubuntu",
@@ -41,16 +41,16 @@ cluster = [
     #    :netadd => "192.168.1.12",
     #    :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
     #},
-    #{
-    #    :name => "ordering-0",
-    #    :username => "ubuntu",
-    #    :type => "orderer",
-    #    :box => "hbr_ubuntu1604_img",
-    #    :flavor => "j1.small",
-    #    :netid =>  "d085327f-2cea-4e14-8784-764ee72b92f4",
-    #    :netadd => "192.168.1.13",
-    #    :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
-    #}
+    {
+        :name => "ordering-0",
+        :username => "ubuntu",
+        :type => "orderer",
+        :box => "hbr_ubuntu1604_img",
+        :flavor => "j1.small",
+        :netid =>  "d085327f-2cea-4e14-8784-764ee72b92f4",
+        :netadd => "192.168.1.13",
+        :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
+    }
     #{
     #    :name => "msp-0",
     #    :username => "ubuntu",
@@ -108,6 +108,12 @@ $bootstrapBinaries = <<-SCRIPT
     echo "-------------------------------------------"
 SCRIPT
 
+$installMPS = <<-SCRIPT
+    echo "-------------------------------------------"
+    echo "Installing CA (client/server) at node `hostname`"
+    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/install_04_ca_server.sh'
+    echo "-------------------------------------------"
+SCRIPT
 
 
 #vagrant config
@@ -152,9 +158,11 @@ Vagrant.configure("2") do |config|
             node.vm.provision "shell", inline: $checkprereqs
             node.vm.provision "shell", inline: $bootstrapBinaries
 
-            #if opts[:type] == "msp"
-            #    node.vm.provision "shell", inline: $configureMaster
-            #end
+            if opts[:type] == "msp"
+                node.vm.provision "shell", inline: $installMPS
+            end
+
+
             #if opts[:type] == "node"
             #    node.vm.provision "shell", inline: $configureNode
             #end

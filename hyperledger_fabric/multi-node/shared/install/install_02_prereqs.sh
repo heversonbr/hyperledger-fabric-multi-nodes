@@ -52,8 +52,6 @@ echo "----------------------------------------------"
 echo "Checking ubuntu version..."
 # try to source lsb-release, if fails get the distrib version using lsb_release command.
 UBUNTU_VERSION=`lsb_release -cs`
-echo "distribution is**$UBUNTU_VERSION**"
-echo "distribution is $(lsb_release -cs)"
 
 if [ -z "${UBUNTU_VERSION}" ]; then
     echo "Error: Could not source /etc/lsb-release. Exit";
@@ -61,13 +59,13 @@ if [ -z "${UBUNTU_VERSION}" ]; then
 fi
 echo $UBUNTU_VERSION
 # check version is supported
-#if [ $(lsb_release -cs) == "xenial" ]
-#then
-#    echo "Installing prereqs for Ubuntu $UBUNTU_VERSION"
-#else
-#    echo "Wrong Ubuntu version! This install works ONLY for xenial"
-#    exit 1
-#fi
+if [ $(lsb_release -cs) = "xenial" ]
+then
+    echo "Installing prereqs for Ubuntu $UBUNTU_VERSION"
+else
+    echo "Wrong Ubuntu version! This install works ONLY for xenial"
+    exit 1
+fi
 
 echo "----------------------------------------------" 
 # Updating package lists
@@ -93,6 +91,8 @@ wget -q  https://dl.google.com/go/go1.12.2.linux-amd64.tar.gz || res=$?
 if [ ! -z "$res" ]; then
     echo "==> ERROR: There was an error downloading Golang"
     exit 1;
+else 
+    echo "==> Download finished. uncompressing."
 fi
 
 # extract it into /usr/local, creating a Go tree in /usr/local/go 
