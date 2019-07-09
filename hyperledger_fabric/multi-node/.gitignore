@@ -1,2 +1,7 @@
 .vagrant
 .git
+docs/
+shared/config_template
+shared/HLF2
+vsc_hyperledger_multinode.code-workspace
+shared/install/bkp*.*
