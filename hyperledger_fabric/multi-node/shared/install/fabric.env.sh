@@ -12,5 +12,16 @@ export FABRIC_VERSION=1.4.0
 export CA_VERSION=1.4.0             
 export THIRDPARTY_IMAGE_VERSION=0.4.15  
 
+export FABRIC_CONFIG_FILES=$HYPERLEDGER_HOME/config_files 
+
+export FABRIC_CA_SERVER_HOME=$HYPERLEDGER_HOME/ca-server
+export FABRIC_CA_CLIENT_HOME=$HYPERLEDGER_HOME/ca-client
+
+
+export FABRIC_CA_SERVER_CONFIG=fabric-ca-server-config.yaml
+export FABRIC_CA_CLIENT_CONFIG=fabric-ca-client-config.yaml
+
+export FABRIC_CA_SERVER_LOG=$FABRIC_CA_SERVER_HOME/ca-server.log
+
 
 

@@ -27,15 +27,19 @@ end box
 
 ' NOTE : for the moment the interactions may sound local , because it follows the script, adaptations are required.
 
+admin -> ca_server: Start ca-server [start_ca_server.sh]
+
+group Start CA Server [server.sh start]
+    ca_server <-- config_files : **__cp:__** fabric_ca_server_config.yaml to ./ca-server
+    ca_server <-- ca_server : **__run:__** fabric-ca-server start 2> $FABRIC_CA_SERVER_LOG &
+end 
+
 admin -> ca_server: Sets up initail identities [./ca/multi-org-ca/run-all.sh]
 
 
 activate ca_server
 
-group Start CA Server [server.sh start]
-    ca_server <-- config_files : **cp:__** fabric_ca_server_config.yaml to ./server
-    ca_server <-- ca_server : **__run:__** fabric-ca-server start fabric_ca_server_config.yaml
-end 
+
 
 group Enroll admin identity for CA server [server.sh enroll]
     ca_server <-- config_files : **__cp:__** fabric_ca_client_config.yaml to ./client/caserver/admin

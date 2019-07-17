@@ -1,6 +1,6 @@
 
 #############################################################################
-#   CA Server Client YAML file for the CA Server Admin
+#   Orderer Admin Client YAML file 
 #   Changes to the CSR
 #############################################################################
 
@@ -9,23 +9,13 @@
 #############################################################################
 
 # URL of the Fabric-ca-server (default: http://localhost:7054)
-# url: http://localhost:7054
-url: http://192.168.1.10:7054
+url: http://localhost:7054
 
 # Membership Service Provider (MSP) directory
-# This is useful when the client is used to enroll a peer or orderer, so
-# that the enrollment artifacts are stored in the format expected by MSP.
 mspdir: msp
 
 #############################################################################
-#    TLS section for secure socket connection
-#
-#  certfiles - PEM-encoded list of trusted root certificate files
-#  client:
-#    certfile - PEM-encoded certificate file for when client authentication
-#    is enabled on server
-#    keyfile - PEM-encoded key file for when client authentication
-#    is enabled on server
+#    TLS Disabled by default
 #############################################################################
 tls:
   # TLS section for secure socket connection
@@ -38,14 +28,14 @@ tls:
 #
 #############################################################################
 csr:
-  cn: admin
+  cn: orderer-admin
   serialnumber:
   names:
     - C: US
       ST: "New York"
-      L:  "Location"
-      O:  Acme
-      OU: "Security"
+      L:  "Newark"
+      O:  acme
+      OU: 
   hosts:
     - acme.com
     - localhost
@@ -61,7 +51,7 @@ id:
   # Default org is acme - make sure the org is set up in CA server :-)
   affiliation: acme
   # Set to max of 2
-  maxenrollments: 2
+  maxenrollments: -1
   # Adds a custom attribute
   attributes:
   #  - name: myAttribute:ecert
