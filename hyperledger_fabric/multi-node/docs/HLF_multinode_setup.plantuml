@@ -1,23 +1,24 @@
 @startuml
 title HLF multi node setup
 
-
-
 box "Administrator domain" #LightBlue
     actor admin
 	participant ca_client
     participant ca_server
     collections config_files
     collections env_variables 
-    
-    database ca_server_db
+    'database ca_server_db
 
 end box
 
 box "Organization 1 domain: ACME " #LightBlue
 	participant acme_administrator
     participant ca_client
+end box
 
+box "Organization 1 domain: budget " #LightBlue
+	participant acme_administrator
+    participant ca_client
 end box
 
 box "Organization 2 domain: Orderer " #LightBlue
