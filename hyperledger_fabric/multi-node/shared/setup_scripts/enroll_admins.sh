@@ -53,15 +53,33 @@ echo "fabric-ca-client enroll -u http://$ORG_NAME-$SERVER_ADMIN_USER:$SERVER_ADM
 fabric-ca-client enroll -u http://$ORG_NAME-$SERVER_ADMIN_USER:$SERVER_ADMIN_PASS@$CA_SERVER_HOST:7054
 
 ### setupMSP ### 
-ls -al $FABRIC_CA_CLIENT_HOME/msp/admincerts
-echo "Creating $FABRIC_CA_CLIENT_HOME/msp/admincerts"
-
-mkdir -p $FABRIC_CA_CLIENT_HOME/msp/admincerts
-ls -al $FABRIC_CA_CLIENT_HOME/msp/admincerts
-
+if [ ! -d  $FABRIC_CA_CLIENT_HOME/msp/admincerts ]; then 
+    echo "Creating $FABRIC_CA_CLIENT_HOME/msp/admincerts"
+    mkdir -p $FABRIC_CA_CLIENT_HOME/msp/admincerts
+else
+    echo "$FABRIC_CA_CLIENT_HOME/msp/admincerts already exists!!!"
+fi
 echo "====> $FABRIC_CA_CLIENT_HOME/msp/admincerts"
 
-
-echo "cp $FABRIC_CA_CLIENT_HOME/../../caserver/admin/msp/signcerts/*  $FABRIC_CA_CLIENT_HOME/msp/admincerts"
+echo "copying $FABRIC_CA_CLIENT_HOME/../../caserver/admin/msp/signcerts/*  to $FABRIC_CA_CLIENT_HOME/msp/admincerts"
 cp $FABRIC_CA_CLIENT_HOME/../../caserver/admin/msp/signcerts/*  $FABRIC_CA_CLIENT_HOME/msp/admincerts
 ls -al $FABRIC_CA_CLIENT_HOME/msp/admincerts
+
+
+### Setup MSP for Orgs ###
+# Path to the CA certificate
+ROOT_CA_CERTIFICATE=$FABRIC_CA_SERVER_HOME/ca-cert.pem
+# Parent folder for the MSP folder
+DESTINATION_CLIENT_HOME="$FABRIC_CA_CLIENT_HOME/.."
+
+# Create the MSP subfolders
+mkdir -p $DESTINATION_CLIENT_HOME/msp/admincerts 
+mkdir -p $DESTINATION_CLIENT_HOME/msp/cacerts 
+mkdir -p $DESTINATION_CLIENT_HOME/msp/keystore
+
+# Copy the admin certs - ORG admin is the admin for the specified Org
+cp $FABRIC_CA_CLIENT_HOME/msp/signcerts/* $DESTINATION_CLIENT_HOME/msp/admincerts 
+
+echo "Created MSP at: $DESTINATION_CLIENT_HOME"
+echo "--------------------------------------------------------------"
+echo "Done MSP setup for org: $ORG_NAME"
