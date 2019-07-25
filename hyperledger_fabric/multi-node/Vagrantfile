@@ -133,7 +133,6 @@ Vagrant.configure("2") do |config|
         os.keypair_name = 'openstack_cloudlab_bcom'
         
     end
-    
 
     cluster.each do |opts|
         config.vm.define opts[:name] do |node| 
@@ -152,17 +151,18 @@ Vagrant.configure("2") do |config|
                     echo 'nameserver 8.8.8.8'       | tee -a /etc/resolv.conf
                 """
             end
-
+            
+            # for all:
             node.vm.provision "shell", inline: $setSSHconfig
             node.vm.provision "shell", inline: $installprereqs
             node.vm.provision "shell", inline: $checkprereqs
             node.vm.provision "shell", inline: $bootstrapBinaries
-
+            
+            # for msp only
             if opts[:type] == "msp"
                 node.vm.provision "shell", inline: $installMPS
             end
-
-
+            
             #if opts[:type] == "node"
             #    node.vm.provision "shell", inline: $configureNode
             #end
