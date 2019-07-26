@@ -8,9 +8,9 @@
 usage(){
     echo "------------------------------------------------------------------------"
     echo "USAGE: ./register_admin.sh <type> <name> <pass> <affiliation> <organization>"
-    echo "   EX: ./register_admin.sh client acme-admin    pw  acme  acme "
-    echo "   EX: ./register_admin.sh client acme-admin    pw  acme  acme "
-    echo "   EX: ./register_admin.sh client orderer-admin pw  orderer  orderer "
+    echo "   ex: ./register_admin.sh client acme-admin    pw  acme  acme "
+    echo "   ex: ./register_admin.sh client acme-admin    pw  acme  acme "
+    echo "   ex: ./register_admin.sh client orderer-admin pw  orderer  orderer "
     echo "------------------------------------------------------------------------"
     exit
 }
