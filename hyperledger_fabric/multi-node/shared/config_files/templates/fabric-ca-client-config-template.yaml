@@ -46,8 +46,7 @@ csr:
       O:  _ORG-NAME_
       OU: _ORG-UNIT_
   hosts:
-    - _HOST-DOMAIN_
-
+    - _HOSTNAME-CA-CLIENT_
 
 #############################################################################
 #  Registration section used to register a new identity with fabric-ca server

@@ -78,7 +78,7 @@ csr:
       O:  _ORG-NAME_
       OU: _ORG-UNIT_
    hosts:
-    - _HOST-DOMAIN_
+    - _HOSTNAME-CA-SERVER_
     ca:
       expiry: 131400h
 
