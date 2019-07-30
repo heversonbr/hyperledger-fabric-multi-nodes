@@ -22,4 +22,6 @@ fabric-ca-server start 2> $FABRIC_CA_SERVER_LOG &
 
 sleep 3
 echo "Server Started ... Logs available at $FABRIC_CA_SERVER_LOG"
+echo "---------------------------- $FABRIC_CA_SERVER_LOG"-----------------------------------"
 cat $FABRIC_CA_SERVER_LOG
+echo "--------------------------------------------------------------------------------------"
