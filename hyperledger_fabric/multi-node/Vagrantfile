@@ -11,7 +11,7 @@ require 'vagrant-openstack-provider'
 
 cluster = [
     {
-        :name => "hyperledger-admin",
+        :name => "hl-admin",
         :username => "ubuntu",
         :type => "msp",
         :box => "hbr_ubuntu1604_img",
@@ -40,17 +40,17 @@ cluster = [
         :netid =>  "d085327f-2cea-4e14-8784-764ee72b92f4",
         :netadd => "192.168.1.12",
         :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
-    },
-    {
-        :name => "ordering-0",
-        :username => "ubuntu",
-        :type => "orderer",
-        :box => "hbr_ubuntu1604_img",
-        :flavor => "j1.small",
-        :netid =>  "d085327f-2cea-4e14-8784-764ee72b92f4",
-        :netadd => "192.168.1.13",
-        :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
-    }
+     },
+     {
+         :name => "ordering-0",
+         :username => "ubuntu",
+         :type => "orderer",
+         :box => "hbr_ubuntu1604_img",
+         :flavor => "j1.small",
+         :netid =>  "d085327f-2cea-4e14-8784-764ee72b92f4",
+         :netadd => "192.168.1.13",
+         :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
+    }#,
     #{
     #    :name => "msp-0",
     #    :username => "ubuntu",
@@ -74,7 +74,7 @@ $setSSHconfig = <<-SCRIPT
     # setup ~/.ssh/config file at all the nodes to allow connection among them. 
     # (after deployment only the floating IP of the first vm is required to connect)
     echo "Setting ~/.ssh/config file"
-    mv /home/ubuntu/hyperledger_ws/config_template /home/ubuntu/.ssh/config
+    mv /home/ubuntu/hyperledger_ws/config_files/ssh_config_template /home/ubuntu/.ssh/config
     mv /home/ubuntu/hyperledger_ws/install/openstack_cloudlab_bcom.key /home/ubuntu/.ssh/openstack_cloudlab_bcom.key
     chown ubuntu:ubuntu /home/ubuntu/.ssh/config /home/ubuntu/.ssh/openstack_cloudlab_bcom.key
     echo "-------------------------------------------"
@@ -108,12 +108,21 @@ $bootstrapBinaries = <<-SCRIPT
     echo "-------------------------------------------"
 SCRIPT
 
-$installMPS = <<-SCRIPT
+$installMSP = <<-SCRIPT
     echo "-------------------------------------------"
     echo "Installing CA (client/server) at node `hostname`"
     sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/install_04_ca_server.sh'
     echo "-------------------------------------------"
 SCRIPT
+
+$prepareOrderer = <<-SCRIPT
+    echo "-------------------------------------------"
+    echo "Preparing Orderer node at node `hostname`"
+    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/setup_scripts/prepare_orderer.sh'
+    echo "-------------------------------------------"
+SCRIPT
+
+
 
 
 #vagrant config
@@ -160,15 +169,19 @@ Vagrant.configure("2") do |config|
             
             # for msp only
             if opts[:type] == "msp"
-                node.vm.provision "shell", inline: $installMPS
+                node.vm.provision "shell", inline: $installMSP
             end
-            
-            #if opts[:type] == "node"
-            #    node.vm.provision "shell", inline: $configureNode
-            #end
+
+            if opts[:type] == "orderer"
+                node.vm.provision "shell", inline: $prepareOrderer
+            end
         end
 
-        # Genenrate config file for ssh
+        # Genenrate a shh config file with the information from each host
+        # the idea is to have all hostnames entries in the ~/.ssh/config
+        # and share the config with all the hosts
+        # this will allow to remove all the floating IPs allocated to each host by the openstack plugin (default behavior)
+	# allowing to consume less IPs while the machines are UP and RUNNING 
         new_ssh_entry = Hash.new()
         new_ssh_entry[:hostname] = opts[:name]
         new_ssh_entry[:username] = opts[:username]
@@ -177,8 +190,8 @@ Vagrant.configure("2") do |config|
         ssh_config.push << new_ssh_entry
         
     end
-    # Create ssh config file locally to be shared with VMs
-    File.open("./shared/config_template", "w+") do |f|
+    # Create a ssh config template file in the vagrant host machine to be shared with VMs with the collected information above
+    File.open("./shared/config_files/ssh_config_template", "w+") do |f|
         ssh_config.each { |element| f.puts("Host " + element[:hostname].to_s, "     User " + element[:username].to_s, "     Hostname " + element[:ipadd].to_s, "     IdentityFile " + element[:keyfile].to_s) }
     
     end

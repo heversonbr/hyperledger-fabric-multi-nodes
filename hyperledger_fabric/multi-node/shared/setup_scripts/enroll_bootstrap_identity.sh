@@ -26,6 +26,8 @@ echo "Enrolling ca-client with: $FABRIC_CA_CLIENT_HOME/$FABRIC_CA_CLIENT_CONFIG"
 
 #  fabric-ca-client enroll -u http://admin:pw@localhost:7054
 fabric-ca-client enroll -u http://$SERVER_ADMIN_USER:$SERVER_ADMIN_PASS@$CA_SERVER_HOST:7054
+fabric-ca-client identity list
+
 
 # The enroll command stores an enrollment certificate (ECert), 
 # corresponding private key and CA certificate chain PEM files 

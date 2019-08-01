@@ -8,9 +8,9 @@
 usage(){
     echo "------------------------------------------------------------------------"
     echo "USAGE: ./register_admin.sh <type> <name> <pass> <affiliation> <organization>"
-    echo "   ex: ./register_admin.sh client acme-admin    pw  acme  acme "
-    echo "   ex: ./register_admin.sh client acme-admin    pw  acme  acme "
-    echo "   ex: ./register_admin.sh client orderer-admin pw  orderer  orderer "
+    echo "   ex: ./register_admin.sh client acme-admin    pw  acme    acme "
+    echo "   ex: ./register_admin.sh client budget-admin  pw  budget  budget "
+    echo "   ex: ./register_admin.sh client orderer-admin pw  orderer orderer "
     echo "------------------------------------------------------------------------"
     exit
 }
@@ -49,4 +49,3 @@ echo "Registering: $NAME"
 fabric-ca-client register --id.type $TYPE --id.name $NAME --id.secret $PASS --id.affiliation $AFFILIATION --id.attrs $ATTRIBUTES
 
 echo "NOTE:  inform the user <$NAME> and password <$PASS> to the admin of the organization <$ORG> (this information is also required to enroll organization's clients)"
-

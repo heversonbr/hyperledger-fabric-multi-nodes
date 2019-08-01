@@ -2,7 +2,6 @@
 cd ~/ca/multi-org-ca
 ./clean.sh all
 ./run-all.sh
-
 ##Server Started ... Logs available at /home/vagrant/ca/multi-org-ca/server/server.log
 . setclient.sh caserver admin
 fabric-ca-client enroll -u http://admin:pw@localhost:7054
@@ -17,8 +16,6 @@ fabric-ca-client identity list
 . ./setclient.sh acme jdoe
 fabric-ca-client enroll -u http://jdoe:pw@192.168.1.10:7054
 ./add-admincerts.sh acme jdoe
-
-
 ## nouveau terminal `~/orderer/multi-org-ca/` orderer
 cd ../../orderer/multi-org-ca/
 ./clean.sh
@@ -33,8 +30,6 @@ sudo mkdir /var/ledgers						## Etudier alternative launch.sh
 sudo chown vagrant:vagrant /var/ledgers/	## du orderer
 cd ../../orderer/multi-org-ca/				##
 orderer 									## ./launch.sh
-
-
 ## nouveau terminal `~/peer/multi-org-ca` peer1
 cd ../../peer/multi-org-ca/
 ./clean.sh

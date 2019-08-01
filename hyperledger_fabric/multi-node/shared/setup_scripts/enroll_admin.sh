@@ -9,6 +9,11 @@
 #     fabric-ca-client enroll -u http://acme-admin:pw@localhost:7054
 #     setupMSP
 
+# The enroll command stores an enrollment certificate (ECert), 
+# corresponding private key and CA certificate chain PEM files 
+# in the subdirectories of the Fabric CA client’s msp directory. 
+# You will see messages indicating where the PEM files are stored.s
+
 
 usage(){
     echo "-------------------------------------------------------------"
@@ -52,6 +57,8 @@ echo "Enrolling: $ORG_NAME-admin"
 echo "fabric-ca-client enroll -u http://$ORG_NAME-$SERVER_ADMIN_USER:$SERVER_ADMIN_PASS@$CA_SERVER_HOST:7054"
 fabric-ca-client enroll -u http://$ORG_NAME-$SERVER_ADMIN_USER:$SERVER_ADMIN_PASS@$CA_SERVER_HOST:7054
 
+
+
 ### setupMSP ### 
 if [ ! -d  $FABRIC_CA_CLIENT_HOME/msp/admincerts ]; then 
     echo "Creating $FABRIC_CA_CLIENT_HOME/msp/admincerts"
@@ -82,4 +89,5 @@ cp $FABRIC_CA_CLIENT_HOME/msp/signcerts/* $DESTINATION_CLIENT_HOME/msp/admincert
 
 echo "Created MSP at: $DESTINATION_CLIENT_HOME"
 echo "--------------------------------------------------------------"
+fabric-ca-client identity list
 echo "Done MSP setup for org: $ORG_NAME"

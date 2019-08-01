@@ -6,7 +6,7 @@ export FABRIC_USER=ubuntu
 export HYPERLEDGER_HOME=/home/$FABRIC_USER/hyperledger_ws
 export GOROOT=/usr/local/go
 export GOPATH=$HYPERLEDGER_HOME/go
-export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
+export PATH=$PATH:$GOROOT/bin:$GOPATH/bin:$HYPERLEDGER_HOME/bin
 
 export FABRIC_VERSION=1.4.0              
 export CA_VERSION=1.4.0             
@@ -22,6 +22,13 @@ export FABRIC_CA_SERVER_CONFIG=fabric-ca-server-config.yaml
 export FABRIC_CA_CLIENT_CONFIG=fabric-ca-client-config.yaml
 
 export FABRIC_CA_SERVER_LOG=$FABRIC_CA_SERVER_HOME/ca-server.log
+
+
+# ORDERER 
+# next 3 variables come from generate-genesis.sh
+# export ORDERER_GENERAL_LOGLEVEL=debug
+export FABRIC_LOGGING_SPEC=INFO
+export FABRIC_CFG_PATH=$HYPERLEDGER_HOME/orderer
 
 
 

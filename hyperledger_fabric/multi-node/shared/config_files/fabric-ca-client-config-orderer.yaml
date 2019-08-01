@@ -9,7 +9,8 @@
 #############################################################################
 
 # URL of the Fabric-ca-server (default: http://localhost:7054)
-url: http://localhost:7054
+# url: http://localhost:7054
+url: http://192.168.1.10:7054
 
 # Membership Service Provider (MSP) directory
 mspdir: msp
