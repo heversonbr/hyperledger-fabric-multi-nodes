@@ -1,0 +1,99 @@
+@startuml
+title HLF multi node setup
+
+
+
+box "Administrator domain" #LightBlue
+    actor admin
+	participant "CA client" as ca_client_adm
+    participant "CA server" as ca_server 
+    collections config_files
+end box
+
+box "Organization 1 domain: ACME " #LightGrey
+	actor acme_administrator
+    participant "CA client" as ca_client_acme
+
+end box
+
+box "Organization 1 domain: Budget " #LightGreen
+	actor budget_administrator
+    participant "CA client" as ca_client_budget
+
+end box
+
+box "Organization 2 domain: Orderer " #LightSalmon
+	actor orderer_administrator
+    participant "CA client" as ca_client_orderer
+end box
+
+
+' NOTE : for the moment the interactions may sound local , because it follows the script, adaptations are required.
+
+== Sets up initail identities ==
+'-------------------------------------------------
+admin -> ca_server: Start ca-server [**start_ca_server.sh**]
+activate ca_server
+group Start CA Server 
+    ca_server <-- config_files : **__cp:__** $FABRIC_CONFIG_FILES/fabric_ca_server_config.yaml to $HYPERLEDGER_HOME/ca-server
+    ca_server <-- ca_server : **__run:__** fabric-ca-server start 2> $FABRIC_CA_SERVER_LOG &
+end 
+admin <-- ca_server : server started : ca-server listening at $CA_SERVER_HOST:7054 
+deactivate ca_server
+'-------------------------------------------------
+admin -> ca_client_adm : Enroll ca-client for admin at server [**enroll_bootstrap_identity.sh**]
+activate ca_client_adm
+group Enroll admin identity for CA server 
+    ca_client_adm <-- config_files : **__cp:__** $FABRIC_CONFIG_FILES/fabric_ca_client_config.yaml to $HYPERLEDGER_HOME/ca-client/caserver/admin
+    ca_client_adm --> ca_server : **__run:__**   fabric-ca-client enroll -u http://$SERVER_ADMIN_USER:$SERVER_ADMIN_PASS@$CA_SERVER_HOST:7054
+end
+admin <-- ca_client_adm : enroll admin: done
+deactivate ca_client_adm
+'-------------------------------------------------
+admin -> ca_client_adm: Register organization's admin (new users) on Fabric ca-server [**register_admins.sh**]
+activate ca_client_adm
+group register Org admins
+
+    'set CA admin server. Ex: source setclient.sh caserver admin
+    ca_client_adm --> ca_client_adm : **__export:__** FABRIC_CA_CLIENT_HOME=$HYPERLEDGER_HOME/ca-client/caserver/admin
+
+    loop for each Organization admin //org-name-admin//
+        ca_client_adm --> ca_client_adm  : **__export:__** ATTRIBUTES='"hf.Registrar.Roles=peer,user,client","hf.AffiliationMgr=true","hf.Revoker=true"'
+        ca_client_adm -> ca_server : **__run:__** fabric-ca-client register ""--id.type"" client ""--id.name"" //org-name-admin// ""--id.secret"" //org-admin-password// ""--id.affiliation"" //org-name// ""--id.attrs"" $ATTRIBUTES
+        'cmd example for acme org:  fabric-ca-client register --id.type client --id.name acme-admin --id.secret password --id.affiliation acme --id.attrs $ATTRIBUTES
+    end
+    group for **orderer-admin** 
+        ca_client_adm --> ca_client_adm : **__export:__** ATTRIBUTES='"hf.Registrar.Roles=orderer"'
+        ca_client_adm -> ca_server : **__run:__** fabric-ca-client register ""--id.type"" client ""--id.name"" **orderer-admin** ""-id.secret"" //orderer-admin-password// ""--id.affiliation"" orderer ""--id.attrs"" $ATTRIBUTES
+    end
+    ' note that: these users and passwords registered here must be informed to the organizations admins (users) to be used to enroll their clients. 
+end
+admin <-- ca_client_adm : register: done
+deactivate ca_client_adm
+'-------------------------------------------------
+admin -> ca_client_adm : Enroll organization's identity on Fabric ca-server [enroll_admins.sh]
+activate ca_client_adm
+
+group enroll Org admins
+    loop enroll aech Organization //org-name//  [e.g., acme, budget, orderer]
+        'set CA admin server. Ex: source setclient.sh org-name admin
+        ca_client_adm --> ca_client_adm : **__export:__** FABRIC_CA_CLIENT_HOME=$HYPERLEDGER_HOME/ca-client/org-name/admin
+
+        ca_client_adm <-- config_files : **__cp:__** $FABRIC_CONFIG_FILES/fabric-ca-client-config-$ORG_NAME.yaml  $HYPERLEDGER_HOME/ca-client/$ORG_NAME/admin/fabric-ca-client-config.yaml 
+        ca_client_adm -> ca_server : **__run:__**  fabric-ca-client enroll -u http://$ORG_NAME-$SERVER_ADMIN_USER:$SERVER_ADMIN_PASS@$CA_SERVER_HOST:7054
+    end
+        loop Setup MSP for aech Organization //org-name//  [e.g., acme, budget, orderer]
+        ca_client_adm --> ca_client_adm : **__export:__** FABRIC_CA_CLIENT_HOME=$HYPERLEDGER_HOME/ca-client/org-name/admin
+        ca_client_adm -> ca_client_adm : **__create:__** $FABRIC_CA_CLIENT_HOME/msp/admincerts
+        ca_client_adm <-- ca_server : **__cp:__** $FABRIC_CA_CLIENT_HOME/../../caserver/admin/msp/signcerts/*  $FABRIC_CA_CLIENT_HOME/msp/admincerts
+
+    end
+end
+admin <-- ca_client_adm : enroll: done
+deactivate ca_client_adm
+'-------------------------------------------------
+
+
+
+
+@enduml

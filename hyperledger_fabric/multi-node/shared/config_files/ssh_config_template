@@ -1,4 +1,4 @@
-Host hl-admin
+Host ca-admin
      User ubuntu
      Hostname 192.168.1.10
      IdentityFile ~/.ssh/openstack_cloudlab_bcom.key
@@ -9,4 +9,8 @@ Host org1-msp-1
 Host org2-msp-2
      User ubuntu
      Hostname 192.168.1.12
+     IdentityFile ~/.ssh/openstack_cloudlab_bcom.key
+Host ordering-0
+     User ubuntu
+     Hostname 192.168.1.13
      IdentityFile ~/.ssh/openstack_cloudlab_bcom.key

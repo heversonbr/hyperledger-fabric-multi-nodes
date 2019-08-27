@@ -1,6 +1,7 @@
 .vagrant
 .git
-docs/
-shared/config_template
+docs/falcon_model
+docs/HLF2
+shared/config_files/ssh_config_template
 vsc_hyperledger_multinode.code-workspace
 shared/install/bkp*.*

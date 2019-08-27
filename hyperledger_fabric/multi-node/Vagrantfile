@@ -11,7 +11,7 @@ require 'vagrant-openstack-provider'
 
 cluster = [
     {
-        :name => "hl-admin",
+        :name => "ca-admin",
         :username => "ubuntu",
         :type => "msp",
         :box => "hbr_ubuntu1604_img",
@@ -39,17 +39,17 @@ cluster = [
         :netid =>  "d085327f-2cea-4e14-8784-764ee72b92f4",
         :netadd => "192.168.1.12",
         :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
-     }#,
-      #{
-      #    :name => "ordering-0",
-      #    :username => "ubuntu",
-      #    :type => "orderer",
-      #    :box => "hbr_ubuntu1604_img",
-      #    :flavor => "j1.small",
-      #    :netid =>  "d085327f-2cea-4e14-8784-764ee72b92f4",
-      #    :netadd => "192.168.1.13",
-      #    :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
-      # }#,
+     },
+      {
+        :name => "ordering-0",
+        :username => "ubuntu",
+        :type => "orderer",
+        :box => "hbr_ubuntu1604_img",
+        :flavor => "j1.small",
+        :netid =>  "d085327f-2cea-4e14-8784-764ee72b92f4",
+        :netadd => "192.168.1.13",
+        :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
+       }#,
     #{
     #    :name => "msp-0",
     #    :username => "ubuntu",
