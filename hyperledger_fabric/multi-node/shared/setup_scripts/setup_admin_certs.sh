@@ -38,10 +38,11 @@ else
 fi
 echo "====> $FABRIC_CA_CLIENT_HOME/msp/admincerts"
 
-echo "copying $FABRIC_CA_CLIENT_HOME/caserver/admin/msp/signcerts/*  to $FABRIC_CA_CLIENT_HOME/msp/admincerts"
+echo "copying $ADMIN_CERTS_DIR/*  to $FABRIC_CA_CLIENT_HOME/msp/admincerts"
 if [ ! -d $ADMIN_CERTS_DIR ]; then
     echo "directory $ADMIN_CERTS_DIR does not exist locally"
     echo "getting admin certs using scp"
+    echo "scp $ADMIN_CERTS_HOST:$ADMIN_CERTS_DIR/* $FABRIC_CA_CLIENT_HOME/msp/admincerts"
     scp $ADMIN_CERTS_HOST:$ADMIN_CERTS_DIR/* $FABRIC_CA_CLIENT_HOME/msp/admincerts
     ls -al $FABRIC_CA_CLIENT_HOME/msp/admincerts
 else
@@ -69,6 +70,7 @@ mkdir -p $DESTINATION_CLIENT_HOME/msp/keystore
 if [ ! -f $ROOT_CA_CERTIFICATE ] ; then 
     echo "root certificate does NOT exist at $ROOT_CA_CERTIFICATE"
     # Copy the Root CA Cert
+    echo "scp $ADMIN_CERTS_HOST:$ROOT_CA_CERTIFICATE $DESTINATION_CLIENT_HOME/msp/cacerts"
     scp $ADMIN_CERTS_HOST:$ROOT_CA_CERTIFICATE $DESTINATION_CLIENT_HOME/msp/cacerts
 
     # Copy the admin certs - ORG admin is the admin for the specified Org
