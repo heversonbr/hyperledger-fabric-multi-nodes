@@ -7,7 +7,7 @@
 
 usage(){
     echo "------------------------------------------------------------------------"
-    echo "USAGE: ./register_admin.sh <type> <name> <pass> <affiliation> <organization>"
+    echo "USAGE: ./register_admin.sh <type> <name> <pass> <organization> <affiliation> "
     echo "   ex: ./register_admin.sh client acme-admin    pw  acme    acme "
     echo "   ex: ./register_admin.sh client budget-admin  pw  budget  budget "
     echo "   ex: ./register_admin.sh client orderer-admin pw  orderer orderer "
@@ -22,8 +22,9 @@ fi
 TYPE=$1
 NAME=$2
 PASS=$3
-AFFILIATION=$4
-ORG=$5
+ORG=$4
+AFFILIATION=$5
+
 
 #ATTRIBUTES="\"hf.Registrar.Roles=peer,user,client\",\"hf.AffiliationMgr=true","hf.Revoker=true\""
 #ATTRIBUTES_ORDERER="\"hf.Registrar.Roles=orderer\""

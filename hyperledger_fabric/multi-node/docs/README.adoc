@@ -1,0 +1,437 @@
+= How to use the scripts.
+
+== Configuration overview
+
+The vagrant file is set up to use the vagrant openstack plugin (https://github.com/ggiamarchi/vagrant-openstack-provider).
+The goal of the vagrant file is automatically configure hyperledger hosts with
+ a given configuration
+:TODO: add a picture explaining to be clear about the config.
+
+In order to add a new host to the vagrant configuration use the data structure
+called "cluster" in the Vagrantfile and add a new structure such as:
+
+[source, ruby]
+----
+{
+    :name => "ca-admin",
+    :username => "ubuntu",
+    :type => "msp",
+    :box => "hbr_ubuntu1604_img",
+    :flavor => "j1.medium",
+    :netid => "d085327f-2cea-4e14-8784-764ee72b92f4",
+    :netadd => "192.168.1.10",
+    :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
+}
+----
+
+== Main files and directories
+
+- Vagrantfile:
+
+- install: contains the scripts that are automatically run during the *vagrant up*
+execution and create the base configuration for hosts.
+
+- setup_scripts: contains the scripts used to set up the hyperledger environment,
+after the base configuration at the hosts.
+
+- config_files: contains the configuration templates used to create our hyperledger
+infra-structure.
+
+== Using the scripts
+
+=== Putting all the nodes up
+
+The very first action is to put all the nodes up with the base configuration by
+running the *vagrant up* command.
+
+[source, bash]
+----
+$ vagrant up
+----
+
+Check the status
+
+[source, bash]
+----
+$ vagrant status
+Current machine states:
+
+ca-admin                  active (openstack)
+org1-msp-1                active (openstack)
+org2-msp-2                active (openstack)
+----
+
+Vagrant creates all the hosts defined at the Vagrantfile. Besides the creation
+of virtual machines vagrant executes a series of scripts stored in the directory
+*install*. At the end of the process, Vagrant will create a directory called
+ ~/hyperledger_ws at each host which is the *HYPERLEDGER_HOME* directory and
+ the directory has the following structure:
+
+[source, bash]
+----
+$ pwd
+/home/ubuntu/hyperledger_ws
+
+$ ls
+bin
+config
+config_files
+fabric-samples
+go
+install
+setup_scripts
+----
+
+=== Setting up nodes configuration
+
+In our environment we want to emulate a realistic scenario. Therefore, different
+hosts were created and each host has a distinguish role.
+
+==== Setting Certification authority
+
+The first step is to set up the certification authority infrastructure.
+
+Nodes of type *msp* are the hosts in charge of the cerfification authority (CA).
+ Among them, there is a host named *ca-admin* which is the CA administrator.
+ The others are named according to the organization they belong to. For instance,
+ the host *org1-msp-1* is the host *msp-1* from organization *org1*.
+
+===== CA adminstration host (ca-admin)
+
+
+.1. log (ssh) into CA administrator host called *ca-admin*
+
+
+[source, bash]
+----
+$ vagrant ssh ca-admin
+
+$ cd setup_scripts/
+----
+
+
+.2. Start the CA server.
+
+run *$HYPERLEDGER_HOME/setup_scripts/start_ca_server.sh* to start the CA server.
+
+
+[source, bash]
+----
+
+$ ./start_ca_server.sh
+
+checking /home/ubuntu/hyperledger_ws/ca-server/fabric-ca-server-config.yaml
+Server YAML not found in /home/ubuntu/hyperledger_ws/ca-server/
+Copying /home/ubuntu/hyperledger_ws/config_files/fabric-ca-server-config.yaml to /home/ubuntu/hyperledger_ws/ca-server
+Starting server with: /home/ubuntu/hyperledger_ws/ca-server/fabric-ca-server-config.yaml
+Server Started ... Logs available at /home/ubuntu/hyperledger_ws/ca-server/ca-server.log
+---------------------------- /home/ubuntu/hyperledger_ws/ca-server/ca-server.log -----------------------------------
+2019/08/26 14:46:22 [INFO] Configuration file location: /home/ubuntu/hyperledger_ws/ca-server/fabric-ca-server-config.yaml
+2019/08/26 14:46:22 [INFO] Starting server in home directory: /home/ubuntu/hyperledger_ws/ca-server
+2019/08/26 14:46:22 [WARNING] Unknown provider type: ; metrics disabled
+2019/08/26 14:46:22 [INFO] Server Version: 1.4.3
+2019/08/26 14:46:22 [INFO] Server Levels: &{Identity:2 Affiliation:1 Certificate:1 Credential:1 RAInfo:1 Nonce:1}
+2019/08/26 14:46:22 [WARNING] &{69 The specified CA certificate file /home/ubuntu/hyperledger_ws/ca-server/ca-cert.pem does not exist}
+2019/08/26 14:46:22 [INFO] generating key: &{A:ecdsa S:256}
+2019/08/26 14:46:22 [INFO] encoded CSR
+2019/08/26 14:46:22 [INFO] signed certificate with serial number 218894824680373116736324349693129485989627306464
+2019/08/26 14:46:22 [INFO] The CA key and certificate were generated for CA acme-ca
+2019/08/26 14:46:22 [INFO] The key was stored by BCCSP provider 'SW'
+2019/08/26 14:46:22 [INFO] The certificate is at: /home/ubuntu/hyperledger_ws/ca-server/ca-cert.pem
+2019/08/26 14:46:22 [INFO] Initialized sqlite3 database at /home/ubuntu/hyperledger_ws/ca-server/fabric-ca-server.db
+2019/08/26 14:46:22 [INFO] The issuer key was successfully stored. The public key is at: /home/ubuntu/hyperledger_ws/ca-server/IssuerPublicKey, secret key is at: /home/ubuntu/hyperledger_ws/ca-server/msp/keystore/IssuerSecretKey
+2019/08/26 14:46:22 [INFO] Idemix issuer revocation public and secret keys were generated for CA 'acme-ca'
+2019/08/26 14:46:22 [INFO] The revocation key was successfully stored. The public key is at: /home/ubuntu/hyperledger_ws/ca-server/IssuerRevocationPublicKey, private key is at: /home/ubuntu/hyperledger_ws/ca-server/msp/keystore/IssuerRevocationPrivateKey
+2019/08/26 14:46:22 [INFO] Home directory for default CA: /home/ubuntu/hyperledger_ws/ca-server
+2019/08/26 14:46:22 [INFO] Operation Server Listening on [::]:45991
+2019/08/26 14:46:22 [INFO] Listening on http://192.168.1.10:7054
+----
+
+
+.3. Enroll the bootstrap identity of our CA server (the admin client)
+
+[source, bash]
+----
+$ ./enroll_bootstrap_identity.sh
+
+my FABRIC_CA_CLIENT_HOME=/home/ubuntu/hyperledger_ws/ca-client/caserver/admin
+Client YAML not found in /home/ubuntu/hyperledger_ws/ca-client/caserver/admin/
+Copying the /home/ubuntu/hyperledger_ws/config_files/fabric-ca-client-config.yaml to /home/ubuntu/hyperledger_ws/ca-client/caserver/admin
+Enrolling ca-client with: /home/ubuntu/hyperledger_ws/ca-client/caserver/admin/fabric-ca-client-config.yaml
+2019/08/26 14:48:01 [INFO] generating key: &{A:ecdsa S:256}
+2019/08/26 14:48:01 [INFO] encoded CSR
+2019/08/26 14:48:01 [INFO] Stored client certificate at /home/ubuntu/hyperledger_ws/ca-client/caserver/admin/msp/signcerts/cert.pem
+2019/08/26 14:48:01 [INFO] Stored root CA certificate at /home/ubuntu/hyperledger_ws/ca-client/caserver/admin/msp/cacerts/192-168-1-10-7054.pem
+2019/08/26 14:48:01 [INFO] Stored Issuer public key at /home/ubuntu/hyperledger_ws/ca-client/caserver/admin/msp/IssuerPublicKey
+2019/08/26 14:48:01 [INFO] Stored Issuer revocation public key at /home/ubuntu/hyperledger_ws/ca-client/caserver/admin/msp/IssuerRevocationPublicKey
+Name: admin, Type: client, Affiliation: , Max Enrollments: -1, Attributes: [{Name:hf.Registrar.DelegateRoles Value:* ECert:false} {Name:hf.Revoker Value:1 ECert:false} {Name:hf.IntermediateCA Value:1 ECert:false} {Name:hf.GenCRL Value:1 ECert:false} {Name:hf.Registrar.Attributes Value:* ECert:false} {Name:hf.AffiliationMgr Value:1 ECert:false} {Name:hf.Registrar.Roles Value:* ECert:false}]
+----
+
+
+.4. Register the organization's admin into our CA server
+
+In the following example we are registering 3 admins:  acme, budget and orderer.
+
+[source, bash]
+----
+$  ./register_admin.sh client acme-admin pw acme acme
+
+my FABRIC_CA_CLIENT_HOME=/home/ubuntu/hyperledger_ws/ca-client/caserver/admin
+total 16
+drwxrwxr-x 3 ubuntu ubuntu 4096 Aug 26 14:48 .
+drwxrwxr-x 3 ubuntu ubuntu 4096 Aug 26 14:48 ..
+-rw-r--r-- 1 ubuntu ubuntu 3281 Aug 26 14:48 fabric-ca-client-config.yaml
+drwx------ 6 ubuntu ubuntu 4096 Aug 26 14:48 msp
+Registering: acme-admin
+2019/08/26 14:51:01 [INFO] Configuration file location: /home/ubuntu/hyperledger_ws/ca-client/caserver/admin/fabric-ca-client-config.yaml
+Password: pw
+NOTE:  inform the user <acme-admin> and password <pw> to the admin of the organization <acme> (this information is also required to enroll organization\'s clients)
+----
+
+[source, bash]
+----
+$ ./register_admin.sh client budget-admin pw budget budget
+
+my FABRIC_CA_CLIENT_HOME=/home/ubuntu/hyperledger_ws/ca-client/caserver/admin
+total 16
+drwxrwxr-x 3 ubuntu ubuntu 4096 Aug 26 14:48 .
+drwxrwxr-x 3 ubuntu ubuntu 4096 Aug 26 14:48 ..
+-rw-r--r-- 1 ubuntu ubuntu 3281 Aug 26 14:48 fabric-ca-client-config.yaml
+drwx------ 6 ubuntu ubuntu 4096 Aug 26 14:48 msp
+Registering: budget-admin
+2019/08/26 14:51:43 [INFO] Configuration file location: /home/ubuntu/hyperledger_ws/ca-client/caserver/admin/fabric-ca-client-config.yaml
+Password: pw
+NOTE:  inform the user <budget-admin> and password <pw> to the admin of the organization <budget> (this information is also required to enroll organization\'s clients)
+----
+
+
+[source, bash]
+----
+$ ./register_admin.sh client orderer-admin pw orderer orderer
+
+my FABRIC_CA_CLIENT_HOME=/home/ubuntu/hyperledger_ws/ca-client/caserver/admin
+total 16
+drwxrwxr-x 3 ubuntu ubuntu 4096 Aug 28 09:11 .
+drwxrwxr-x 3 ubuntu ubuntu 4096 Aug 28 09:11 ..
+-rw-r--r-- 1 ubuntu ubuntu 3281 Aug 28 09:11 fabric-ca-client-config.yaml
+drwx------ 6 ubuntu ubuntu 4096 Aug 28 09:11 msp
+registering an orderer , setting attributes
+Registering: orderer-admin
+2019/08/28 09:14:29 [INFO] Configuration file location: /home/ubuntu/hyperledger_ws/ca-client/caserver/admin/fabric-ca-client-config.yaml
+Password: pw
+NOTE:  inform the user <orderer-admin> and password <pw> to the admin of the organization <orderer> (this information is also required to enroll organization\'s clients)
+----
+
+
+
+
+===== Organizations CA admin hosts (ca-admin)
+
+Each organization has its own ca-adminstrator, which will enroll the client
+registered by the CA-admin in the previous step.
+We have deployed one node for each (org1-msp-1 , org1-msp-2)
+
+Log into these nodes and run the following.
+
+[source, bash]
+----
+$ vagrant ssh org1-msp-1
+----
+
+.1. Enroll organization's adminstrators (ca-client) into the server.
+
+
+
+
+[source, bash]
+----
+$ cd setup_scripts
+
+$ ./enroll_admin.sh acme
+
+my FABRIC_CA_CLIENT_HOME=/home/ubuntu/hyperledger_ws/ca-client/acme/admin
+/home/ubuntu/hyperledger_ws/ca-client/acme/admin/fabric-ca-client-config.yaml not found in /home/ubuntu/hyperledger_ws/ca-client/acme/admin/
+Copy the Client Yaml from /home/ubuntu/hyperledger_ws/config_files/fabric-ca-client-config-acme.yaml
+/home/ubuntu/hyperledger_ws/ca-client/acme/admin/fabric-ca-client-config.yaml
+Enrolling: acme-admin
+fabric-ca-client enroll -u http://acme-admin:pw@192.168.1.10:7054
+2019/08/28 09:28:07 [INFO] generating key: &{A:ecdsa S:256}
+2019/08/28 09:28:07 [INFO] encoded CSR
+2019/08/28 09:28:07 [INFO] Stored client certificate at /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/signcerts/cert.pem
+2019/08/28 09:28:07 [INFO] Stored root CA certificate at /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/cacerts/192-168-1-10-7054.pem
+2019/08/28 09:28:07 [INFO] Stored Issuer public key at /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/IssuerPublicKey
+2019/08/28 09:28:07 [INFO] Stored Issuer revocation public key at /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/IssuerRevocationPublicKey
+----
+
+[source, bash]
+----
+$ vagrant ssh org2-msp-2
+
+$ cd setup_scripts
+
+$ ./enroll_admin.sh budget
+
+./enroll_admin.sh budget
+my FABRIC_CA_CLIENT_HOME=/home/ubuntu/hyperledger_ws/ca-client/budget/admin
+/home/ubuntu/hyperledger_ws/ca-client/budget/admin/fabric-ca-client-config.yaml not found in /home/ubuntu/hyperledger_ws/ca-client/budget/admin/
+Copy the Client Yaml from /home/ubuntu/hyperledger_ws/config_files/fabric-ca-client-config-budget.yaml
+/home/ubuntu/hyperledger_ws/ca-client/budget/admin/fabric-ca-client-config.yaml
+Enrolling: budget-admin
+fabric-ca-client enroll -u http://budget-admin:pw@192.168.1.10:7054
+2019/08/28 09:31:19 [INFO] generating key: &{A:ecdsa S:256}
+2019/08/28 09:31:19 [INFO] encoded CSR
+2019/08/28 09:31:19 [INFO] Stored client certificate at /home/ubuntu/hyperledger_ws/ca-client/budget/admin/msp/signcerts/cert.pem
+2019/08/28 09:31:19 [INFO] Stored root CA certificate at /home/ubuntu/hyperledger_ws/ca-client/budget/admin/msp/cacerts/192-168-1-10-7054.pem
+2019/08/28 09:31:19 [INFO] Stored Issuer public key at /home/ubuntu/hyperledger_ws/ca-client/budget/admin/msp/IssuerPublicKey
+2019/08/28 09:31:19 [INFO] Stored Issuer revocation public key at /home/ubuntu/hyperledger_ws/ca-client/budget/admin/msp/IssuerRevocationPublicKey
+----
+
+
+[source, bash]
+----
+$ vagrant ssh ordering-0
+
+$ cd setup_scripts
+
+$ ./enroll_admin.sh orderer
+
+my FABRIC_CA_CLIENT_HOME=/home/ubuntu/hyperledger_ws/ca-client/orderer/admin
+/home/ubuntu/hyperledger_ws/ca-client/orderer/admin/fabric-ca-client-config.yaml not found in /home/ubuntu/hyperledger_ws/ca-client/orderer/admin/
+Copy the Client Yaml from /home/ubuntu/hyperledger_ws/config_files/fabric-ca-client-config-orderer.yaml
+/home/ubuntu/hyperledger_ws/ca-client/orderer/admin/fabric-ca-client-config.yaml
+Enrolling: orderer-admin
+fabric-ca-client enroll -u http://orderer-admin:pw@192.168.1.10:7054
+2019/08/28 09:32:52 [INFO] generating key: &{A:ecdsa S:256}
+2019/08/28 09:32:52 [INFO] encoded CSR
+2019/08/28 09:32:52 [INFO] Stored client certificate at /home/ubuntu/hyperledger_ws/ca-client/orderer/admin/msp/signcerts/cert.pem
+2019/08/28 09:32:52 [INFO] Stored root CA certificate at /home/ubuntu/hyperledger_ws/ca-client/orderer/admin/msp/cacerts/192-168-1-10-7054.pem
+2019/08/28 09:32:52 [INFO] Stored Issuer public key at /home/ubuntu/hyperledger_ws/ca-client/orderer/admin/msp/IssuerPublicKey
+2019/08/28 09:32:52 [INFO] Stored Issuer revocation public key at /home/ubuntu/hyperledger_ws/ca-client/orderer/admin/msp/IssuerRevocationPublicKey
+----
+
+.2. Setup admin certificates
+
+Again, on each organization's admin host create the admincerts folder and copy
+the admin certificate from from the ca-server client  to  the local admincerts folder.
+Use the script as follows: setup_admin_certs.sh <org_name> <admin_certs_host>
+
+At the node org1-msp-1
+
+[source, bash]
+----
+$ ./setup_admin_certs.sh acme ca-admin
+
+my FABRIC_CA_CLIENT_HOME=/home/ubuntu/hyperledger_ws/ca-client/acme/admin
+Creating /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/admincerts
+====> /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/admincerts
+
+copying /home/ubuntu/hyperledger_ws/ca-client/caserver/admin/msp/signcerts/*  to /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/admincerts
+directory /home/ubuntu/hyperledger_ws/ca-client/caserver/admin/msp/signcerts does not exist locally
+getting admin certs using scp
+
+scp ca-admin:/home/ubuntu/hyperledger_ws/ca-client/caserver/admin/msp/signcerts/* /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/admincerts
+The authenticity of host '192.168.1.10 (192.168.1.10)' cant be established.
+ECDSA key fingerprint is SHA256:SeGPpyI9eV9Sva1LdKcGkZ6fDt1zOTt9+mOsG2BEDFA.
+Are you sure you want to continue connecting (yes/no)? yes
+
+Warning: Permanently added '192.168.1.10' (ECDSA) to the list of known hosts.
+cert.pem                                                                         100%  847     0.8KB/s   00:00
+total 12
+
+drwxrwxr-x 2 ubuntu ubuntu 4096 Aug 28 09:41 .
+drwx------ 7 ubuntu ubuntu 4096 Aug 28 09:41 ..
+-rw-r--r-- 1 ubuntu ubuntu  847 Aug 28 09:41 cert.pem
+
+root certificate does NOT exist at /home/ubuntu/hyperledger_ws/ca-server/ca-cert.pem
+scp ca-admin:/home/ubuntu/hyperledger_ws/ca-server/ca-cert.pem /home/ubuntu/hyperledger_ws/ca-client/acme/admin/../msp/cacerts
+ca-cert.pem                                                                      100%  761     0.7KB/s   00:00
+
+Created MSP at: /home/ubuntu/hyperledger_ws/ca-client/acme/admin/..
+--------------------------------------------------------------
+Name: acme-admin, Type: client, Affiliation: acme, Max Enrollments: 2, Attributes: [{Name:hf.Revoker Value:true ECert:false} {Name:hf.Registrar.Roles Value:peer,user,client ECert:false} {Name:hf.AffiliationMgr Value:true ECert:false} {Name:hf.EnrollmentID Value:acme-admin ECert:true} {Name:hf.Type Value:client ECert:true} {Name:hf.Affiliation Value:acme ECert:true}]
+Done MSP setup for org: acme
+
+----
+
+At the node org2-msp-2
+
+[source, bash]
+----
+s$ ./setup_admin_certs.sh budget ca-admin
+my FABRIC_CA_CLIENT_HOME=/home/ubuntu/hyperledger_ws/ca-client/budget/admin
+Creating /home/ubuntu/hyperledger_ws/ca-client/budget/admin/msp/admincerts
+====> /home/ubuntu/hyperledger_ws/ca-client/budget/admin/msp/admincerts
+copying /home/ubuntu/hyperledger_ws/ca-client/caserver/admin/msp/signcerts/*  to /home/ubuntu/hyperledger_ws/ca-client/budget/admin/msp/admincerts
+directory /home/ubuntu/hyperledger_ws/ca-client/caserver/admin/msp/signcerts does not exist locally
+getting admin certs using scp
+scp ca-admin:/home/ubuntu/hyperledger_ws/ca-client/caserver/admin/msp/signcerts/* /home/ubuntu/hyperledger_ws/ca-client/budget/admin/msp/admincerts
+The authenticity of host '192.168.1.10 (192.168.1.10)' cant be established.
+ECDSA key fingerprint is SHA256:SeGPpyI9eV9Sva1LdKcGkZ6fDt1zOTt9+mOsG2BEDFA.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added '192.168.1.10' (ECDSA) to the list of known hosts.
+cert.pem                                                                                                   100%  847     0.8KB/s   00:00
+total 12
+drwxrwxr-x 2 ubuntu ubuntu 4096 Aug 28 09:44 .
+drwx------ 7 ubuntu ubuntu 4096 Aug 28 09:44 ..
+-rw-r--r-- 1 ubuntu ubuntu  847 Aug 28 09:44 cert.pem
+root certificate does NOT exist at /home/ubuntu/hyperledger_ws/ca-server/ca-cert.pem
+scp ca-admin:/home/ubuntu/hyperledger_ws/ca-server/ca-cert.pem /home/ubuntu/hyperledger_ws/ca-client/budget/admin/../msp/cacerts
+ca-cert.pem                                                                                                100%  761     0.7KB/s   00:00
+Created MSP at: /home/ubuntu/hyperledger_ws/ca-client/budget/admin/..
+--------------------------------------------------------------
+Name: budget-admin, Type: client, Affiliation: budget, Max Enrollments: 2, Attributes: [{Name:hf.Revoker Value:true ECert:false} {Name:hf.Registrar.Roles Value:peer,user,client ECert:false} {Name:hf.AffiliationMgr Value:true ECert:false} {Name:hf.EnrollmentID Value:budget-admin ECert:true} {Name:hf.Type Value:client ECert:true} {Name:hf.Affiliation Value:budget ECert:true}]
+Done MSP setup for org: budget
+----
+
+
+
+
+.3. Check the CA identity list
+
+[source, bash]
+----
+
+----
+
+
+== Summary
+
+.Files and directories created by each scripts
+
+[width="100%",cols="25,25,25,25",options="header"]
+|=========================================================
+|script/host-path  | ca-admin/ca-server | ca-admin/ca-client | org-msp/ca-client
+
+| start-ca-server.sh | /home/ubuntu/hyperledger_ws/ca-server/fabric-ca-server-config.yaml   | |
+| | ca-server/ca-cert.pem (*CA certificate*)| |
+| | ca-server/IssuerPublicKey (*Issuer pub key*)| |
+| | ca-server/msp/keystore/IssuerSecretKey (*Issuer priv key*)| |
+| | ca-server/IssuerRevocationPublicKey  | |
+| | ca-server/msp/keystore/IssuerRevocationPrivateKey | |
+
+| enroll_bootstrap_identity.sh |  |  |
+|  | ca-client/caserver/admin/msp/signcerts/cert.pem
+(*client certificate*) | |
+|  | ca-client/caserver/admin/msp/cacerts/192-168-1-10-7054.pem (*ca-root certificate*) |  |
+|  | ca-client/caserver/admin/msp/IssuerPublicKey (*Issuer public key*)| |
+|  | ca-client/caserver/admin/msp/IssuerRevocationPublicKey (*Issuer revocation public key*)
+|  |
+
+| register_admin.sh | n/a | n/a |
+
+| enroll_admin.sh 'acme' |  |  |
+| | /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/signcerts/cert.pem (*client certificate*) | |
+| |  /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/cacerts/192-168-1-10-7054.pem (*root CA certificate*) | |
+| | /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/IssuerPublicKey (*Issuer public key*) | |
+| |  /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/IssuerRevocationPublicKey  (*Issuer revocation public key*) | |
+
+
+
+
+
+
+
+
+
+
+|=========================================================

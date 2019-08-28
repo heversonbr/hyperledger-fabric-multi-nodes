@@ -16,6 +16,7 @@ if [ -f "$FABRIC_CA_CLIENT_HOME/$FABRIC_CA_CLIENT_CONFIG" ]; then
     echo "Using client YAML: $FABRIC_CA_CLIENT_HOME/$FABRIC_CA_CLIENT_CONFIG"
 else
     echo "Client YAML not found in $FABRIC_CA_CLIENT_HOME/"
+    echo "mkdir -p $FABRIC_CA_CLIENT_HOME"
     mkdir -p $FABRIC_CA_CLIENT_HOME
     
     echo "Copying the $FABRIC_CONFIG_FILES/$FABRIC_CA_CLIENT_CONFIG to $FABRIC_CA_CLIENT_HOME"
@@ -26,7 +27,9 @@ echo "Enrolling ca-client with: $FABRIC_CA_CLIENT_HOME/$FABRIC_CA_CLIENT_CONFIG"
 
 #  fabric-ca-client enroll -u http://admin:pw@localhost:7054
 fabric-ca-client enroll -u http://$SERVER_ADMIN_USER:$SERVER_ADMIN_PASS@$CA_SERVER_HOST:7054
+echo "-------------- showing identities ----------------------"
 fabric-ca-client identity list
+echo "--------------------------------------------------------"
 
 
 # The enroll command stores an enrollment certificate (ECert), 

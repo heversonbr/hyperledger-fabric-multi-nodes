@@ -88,6 +88,8 @@ fi
 #cp $FABRIC_CA_CLIENT_HOME/msp/signcerts/* $DESTINATION_CLIENT_HOME/msp/admincerts 
 
 echo "Created MSP at: $DESTINATION_CLIENT_HOME"
-echo "--------------------------------------------------------------"
+
+echo "-------------- showing identities ----------------------"
 fabric-ca-client identity list
+echo "--------------------------------------------------------"
 echo "Done MSP setup for org: $ORG_NAME"
