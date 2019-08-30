@@ -8,9 +8,9 @@
 usage(){
     echo "------------------------------------------------------------------------"
     echo "USAGE: ./register_admin.sh <type> <name> <pass> <organization> <affiliation> "
-    echo "   ex: ./register_admin.sh client acme-admin    pw  acme    acme "
-    echo "   ex: ./register_admin.sh client budget-admin  pw  budget  budget "
-    echo "   ex: ./register_admin.sh client orderer-admin pw  orderer orderer "
+    echo "   ex: ./register_admin.sh client   acme-admin     pw    acme    acme   "
+    echo "   ex: ./register_admin.sh client   budget-admin   pw    budget  budget "
+    echo "   ex: ./register_admin.sh client   orderer-admin  pw    orderer orderer"
     echo "------------------------------------------------------------------------"
     exit
 }
@@ -32,14 +32,15 @@ AFFILIATION=$5
 ATTRIBUTES='"hf.Registrar.Roles=peer,user,client","hf.AffiliationMgr=true","hf.Revoker=true"'
 ATTRIBUTES_ORDERER='"hf.Registrar.Roles=orderer"'
 
-# AFFILIATION will be used as org name to define the subdirectory (try to check later why the org name is not mentioned here)
+## AFFILIATION will be used as org name to define the subdirectory (try to check later why the org name is not mentioned here)
+
 SUBDIR=caserver/admin
+echo "current FABRIC_CA_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME"
 export FABRIC_CA_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME/$SUBDIR
-echo "my FABRIC_CA_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME"
+echo "now FABRIC_CA_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME"
 
+#source set-ca-client.sh   caserver   admin
 ls -al  $FABRIC_CA_CLIENT_HOME
-
-
 
 if [ "$NAME" == "orderer-admin" ]; then
     echo "registering an orderer , setting attributes"

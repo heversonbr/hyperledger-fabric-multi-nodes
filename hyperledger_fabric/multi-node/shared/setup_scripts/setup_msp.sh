@@ -8,8 +8,8 @@
 
 usage(){
     echo "-------------------------------------------------------------"
-    echo "USAGE: ./setup_admin_certs.sh <org_name> <admin_certs_host>"
-    echo "   EX: ./setup_admin_certs.sh acme "
+    echo "USAGE: ./setup_admin_certs.sh <org_name> <ca-admin_host>"
+    echo "   EX: ./setup_admin_certs.sh acme ca-admin"
     echo "-------------------------------------------------------------"
     exit
 }
@@ -20,9 +20,9 @@ if [ $# -ne 2 ]; then
 fi
 
 ORG_NAME=$1
-ADMIN_CERTS_HOST=$2
+CA_ADMIN_HOST=$2
 
-ADMIN_CERTS_DIR="/home/ubuntu/hyperledger_ws/ca-client/caserver/admin/msp/signcerts"
+ADMIN_CERTS_DIR="$HYPERLEDGER_HOME/ca-client/caserver/admin/msp/signcerts"
 
 SUBDIR=$ORG_NAME/admin
 export FABRIC_CA_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME/$SUBDIR
@@ -42,8 +42,8 @@ echo "copying $ADMIN_CERTS_DIR/*  to $FABRIC_CA_CLIENT_HOME/msp/admincerts"
 if [ ! -d $ADMIN_CERTS_DIR ]; then
     echo "directory $ADMIN_CERTS_DIR does not exist locally"
     echo "getting admin certs using scp"
-    echo "scp $ADMIN_CERTS_HOST:$ADMIN_CERTS_DIR/* $FABRIC_CA_CLIENT_HOME/msp/admincerts"
-    scp $ADMIN_CERTS_HOST:$ADMIN_CERTS_DIR/* $FABRIC_CA_CLIENT_HOME/msp/admincerts
+    echo "scp $CA_ADMIN_HOST:$ADMIN_CERTS_DIR/* $FABRIC_CA_CLIENT_HOME/msp/admincerts"
+    scp $CA_ADMIN_HOST:$ADMIN_CERTS_DIR/* $FABRIC_CA_CLIENT_HOME/msp/admincerts
     ls -al $FABRIC_CA_CLIENT_HOME/msp/admincerts
 else
     # this is the default way of doing it locally using different directories
@@ -63,6 +63,7 @@ DESTINATION_CLIENT_HOME="$FABRIC_CA_CLIENT_HOME/.."
 
 
 # Create the MSP subfolders
+echo "create $DESTINATION_CLIENT_HOME/msp subfolders"
 mkdir -p $DESTINATION_CLIENT_HOME/msp/admincerts 
 mkdir -p $DESTINATION_CLIENT_HOME/msp/cacerts 
 mkdir -p $DESTINATION_CLIENT_HOME/msp/keystore
@@ -70,10 +71,11 @@ mkdir -p $DESTINATION_CLIENT_HOME/msp/keystore
 if [ ! -f $ROOT_CA_CERTIFICATE ] ; then 
     echo "root certificate does NOT exist at $ROOT_CA_CERTIFICATE"
     # Copy the Root CA Cert
-    echo "scp $ADMIN_CERTS_HOST:$ROOT_CA_CERTIFICATE $DESTINATION_CLIENT_HOME/msp/cacerts"
-    scp $ADMIN_CERTS_HOST:$ROOT_CA_CERTIFICATE $DESTINATION_CLIENT_HOME/msp/cacerts
+    echo "scp $CA_ADMIN_HOST:$ROOT_CA_CERTIFICATE $DESTINATION_CLIENT_HOME/msp/cacerts"
+    scp $CA_ADMIN_HOST:$ROOT_CA_CERTIFICATE $DESTINATION_CLIENT_HOME/msp/cacerts
 
     # Copy the admin certs - ORG admin is the admin for the specified Org
+    echo "cp $FABRIC_CA_CLIENT_HOME/msp/signcerts/* $DESTINATION_CLIENT_HOME/msp/admincerts"
     cp $FABRIC_CA_CLIENT_HOME/msp/signcerts/* $DESTINATION_CLIENT_HOME/msp/admincerts 
 
 
@@ -83,7 +85,6 @@ fi
 
 ## Copy the Root CA Cert
 #cp $ROOT_CA_CERTIFICATE $DESTINATION_CLIENT_HOME/msp/cacerts
-#
 ## Copy the admin certs - ORG admin is the admin for the specified Org
 #cp $FABRIC_CA_CLIENT_HOME/msp/signcerts/* $DESTINATION_CLIENT_HOME/msp/admincerts 
 

@@ -8,15 +8,19 @@ cd ~/ca/multi-org-ca
 fabric-ca-client enroll -u http://admin:pw@localhost:7054
 fabric-ca-client identity list
 
-## nouveau terminal `~/ca/multi-org-ca` acme-admin
+## nouveau terminal `~/ca/multi-org-ca` acme-admin (register user)
 . setclient.sh acme acme-admin   (.setclient.sh acme admin ???)
 fabric-ca-client enroll -u http://acme-admin:pw@192.168.1.10:7054
 fabric-ca-client register --id.type user --id.name jdoe --id.secret pw --id.affiliation acme.logistics
 fabric-ca-client identity list
-## nouveau terminal `~/ca/multi-org-ca` jdoe
+
+
+## nouveau terminal `~/ca/multi-org-ca` jdoe  (enroll user)
 . ./setclient.sh acme jdoe
 fabric-ca-client enroll -u http://jdoe:pw@192.168.1.10:7054
 ./add-admincerts.sh acme jdoe
+
+
 
 
 ## nouveau terminal `~/orderer/multi-org-ca/` orderer

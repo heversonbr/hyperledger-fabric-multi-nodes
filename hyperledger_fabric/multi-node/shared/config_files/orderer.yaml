@@ -32,13 +32,14 @@ General:
     # Directory for the private crypto material needed by the
     # orderer. 
     # LocalMSPDir: ./crypto-config/ordererOrganizations/acme.com/orderers/orderer.acme.com/msp
-    LocalMSPDir: ../../ca/multi-org-ca/client/orderer/orderer/msp
+    #LocalMSPDir: ../../ca/multi-org-ca/client/orderer/orderer/msp
+    LocalMSPDir: ../ca-client/orderer/msp
 
     # Identity to register the local MSP material with the MSP
     LocalMSPID: OrdererMSP
 
     # Listen address: The IP on which to bind to listen.
-    ListenAddress: 127.0.0.1
+    ListenAddress: 192.168.1.13
 
     # Listen port: The port on which to bind to listen.
     ListenPort: 7050
@@ -88,7 +89,7 @@ FileLedger:
     # by uncommenting the following line - comment the Location: ./ledger 
     # Location: /home/vagrant/ledgers/orderer/multi-org-ca/ledger
     # Location: ./ledger
-    Location: /var/ledgers/orderer/multi-org-ca/ledger
+    Location: /var/ledgers/orderer/ledger
 
     # The prefix to use when generating a ledger directory in temporary space.
     Prefix: hyperledger-fabric-ordererledger    

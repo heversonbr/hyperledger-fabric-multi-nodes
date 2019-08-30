@@ -155,6 +155,7 @@ Vagrant.configure("2") do |config|
                 os.user_data = """#!/bin/bash
                     echo '127.0.0.1 #{opts[:name]}' | tee -a /etc/hosts
                     echo 'nameserver 8.8.8.8'       | tee -a /etc/resolv.conf
+                    sudo apt-get install -y tree 
                 """
             end
             

@@ -24,11 +24,14 @@ export FABRIC_CA_CLIENT_CONFIG=fabric-ca-client-config.yaml
 export FABRIC_CA_SERVER_LOG=$FABRIC_CA_SERVER_HOME/ca-server.log
 
 
-# ORDERER 
+# ORDERER
+ 
 # next 3 variables come from generate-genesis.sh
 # export ORDERER_GENERAL_LOGLEVEL=debug
 export FABRIC_LOGGING_SPEC=INFO
 export FABRIC_CFG_PATH=$HYPERLEDGER_HOME/orderer
+# my variables
+export FABRIC_ORDERER_HOME=$FABRIC_CFG_PATH
 
 
 

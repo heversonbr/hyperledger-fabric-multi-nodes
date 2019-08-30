@@ -12,32 +12,38 @@
 
 usage(){
     echo "------------------------------------------------------------------------"
-    echo "USAGE: ./register_user.sh <new_user_name> <new_user_pass> <organization> <affiliation> "
-    echo "   ex: ./register_user.sh jdoe pw acme acme.logistics"
+    echo "USAGE: ./register_user.sh <user> <user_pw> <organization> <affiliation> <org-admin> <org-admin-pw>"
+    echo "   ex: ./register_user.sh jdoe pw acme acme.logistics acme-admin pw"
     echo "------------------------------------------------------------------------"
     exit
 }
+# <user> <user_pw> <organization> <affiliation> <org-admin> <org-admin-pw>
 
-if [ $# -ne 4 ]; then
+if [ $# -ne 6 ]; then
     usage
 fi
 
-NEW_USER_NAME=$1
+NEW_USER=$1
 NEW_USER_PW=$2
-ORG_NAME=$3
+ORG=$3
 NEW_USER_AFFILIATION=$4  #acme.logistics
+ADMIN_USER_NAME=$5
+ADMIN_USER_PW=$6
 
-ORG_ADMIN_USER=$ORG_NAME-admin   #(.setclient.sh acme admin ???)
-ORG_ADMIN_USER_PW=pw
-CA_SERVER_HOST=192.168.1.10
 TYPE=user
+CA_SERVER_HOST_IP=192.168.1.10
 
-. set-ca-client.sh $ORG_NAME $ORG_ADMIN_USER
+#TODO: to check this set home!
+#. set-ca-client.sh $ORG_NAME $ORG_ADMIN_USER
+SUBDIR=$ORG/$NEW_USER
+echo "current FABRIC_CA_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME"
+export FABRIC_CA_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME/$SUBDIR
+echo "now FABRIC_CA_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME"
 
-fabric-ca-client enroll -u http://$ORG_ADMIN_USER:$ORG_ADMIN_USER_PW@$CA_SERVER_HOST:7054
-fabric-ca-client register --id.type $TYPE --id.name $NEW_USER_NAME --id.secret $NEW_USER_PW --id.affiliation $NEW_USER_AFFILIATION
-echo "--------------------------------------------------"
+fabric-ca-client enroll -u http://$ADMIN_USER_NAME:$ADMIN_USER_PW@$CA_SERVER_HOST_IP:7054
+fabric-ca-client register --id.type $TYPE --id.name $NEW_USER --id.secret $NEW_USER_PW --id.affiliation $NEW_USER_AFFILIATION
+echo "------------------Listing Identities --------------------------"
 fabric-ca-client identity list
-echo "--------------------------------------------------"
+echo "---------------------------------------------------------------"
 
 

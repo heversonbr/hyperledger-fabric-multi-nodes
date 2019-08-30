@@ -59,6 +59,7 @@ Current machine states:
 ca-admin                  active (openstack)
 org1-msp-1                active (openstack)
 org2-msp-2                active (openstack)
+orderer                   active (openstack)
 ----
 
 Vagrant creates all the hosts defined at the Vagrantfile. Besides the creation
@@ -410,28 +411,77 @@ Done MSP setup for org: budget
 | | ca-server/msp/keystore/IssuerRevocationPrivateKey | |
 
 | enroll_bootstrap_identity.sh |  |  |
-|  | ca-client/caserver/admin/msp/signcerts/cert.pem
-(*client certificate*) | |
-|  | ca-client/caserver/admin/msp/cacerts/192-168-1-10-7054.pem (*ca-root certificate*) |  |
-|  | ca-client/caserver/admin/msp/IssuerPublicKey (*Issuer public key*)| |
-|  | ca-client/caserver/admin/msp/IssuerRevocationPublicKey (*Issuer revocation public key*)
-|  |
+| | | ca-client/caserver/admin/msp/signcerts/cert.pem
+(*client certificate*)  |
+| | | ca-client/caserver/admin/msp/cacerts/192-168-1-10-7054.pem (*ca-root certificate*)   |
+| | | ca-client/caserver/admin/msp/IssuerPublicKey (*Issuer public key*) |
+| | | ca-client/caserver/admin/msp/IssuerRevocationPublicKey (*Issuer revocation public key*) |
 
-| register_admin.sh | n/a | n/a |
+| register_admin.sh | n/a | n/a | n/a
 
-| enroll_admin.sh 'acme' |  |  |
-| | /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/signcerts/cert.pem (*client certificate*) | |
-| |  /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/cacerts/192-168-1-10-7054.pem (*root CA certificate*) | |
-| | /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/IssuerPublicKey (*Issuer public key*) | |
-| |  /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/IssuerRevocationPublicKey  (*Issuer revocation public key*) | |
+| enroll_admin.sh 'acme' | | | /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/signcerts/cert.pem (*client certificate*)
+| | | |  /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/cacerts/192-168-1-10-7054.pem (*root CA certificate*)
+| | | | /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/IssuerPublicKey (*Issuer public key*)
+| | | | /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/IssuerRevocationPublicKey  (*Issuer revocation public key*)
 
-
-
-
-
-
-
-
-
+| ./setup_admin_certs.sh acme ca-admin | | | creates /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/admincerts
+| | | |  scp ca-admin:/home/ubuntu/hyperledger_ws/ca-client/caserver/admin/msp/signcerts/* /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/admincerts
+| | | | scp ca-admin:/home/ubuntu/hyperledger_ws/ca-server/ca-cert.pem /home/ubuntu/hyperledger_ws/ca-client/acme/admin/../msp/cacerts
 
 |=========================================================
+
+
+
+
+=== Other Notes
+
+==== variables
+
+pwd = HLF2/ca/multi-org-ca
+
+- DEFAULT_SERVER_CONFIG_YAML="HLF2/setup/config/multi-org-ca/yaml.0/fabric-ca-server-config.yaml"
+- DEFAULT_CLIENT_CONFIG_YAML="HLF2/setup/config/multi-org-ca/yaml.0/fabric-ca-client-config.yaml"
+- export FABRIC_CA_SERVER_HOME=`pwd`/server
+
+
+
+==== start_server.sh
+
+. cp $DEFAULT_SERVER_CONFIG_YAML  ./server
+. fabric-ca-server start 2> $FABRIC_CA_SERVER_HOME/server.log
+
+==== Enroll the bootstrap admin identity  (enroll_bootstrap.sh)
+
+. FABRIC_CA_CLIENT_HOME=HLF2/ca/multi-org-ca/client/caserver/admin
+. mkdir -p $FABRIC_CA_CLIENT_HOME
+. cp $DEFAULT_CLIENT_CONFIG_YAML  "$FABRIC_CA_CLIENT_HOME/"
+
+
+==== Register admins
+
+. source setclient.sh   caserver   admin
+. # acme-admin:
+
+ fabric-ca-client register --id.type client --id.name acme-admin --id.secret pw --id.affiliation acme --id.attrs $ATTRIBUTES
+
+. # budget-admin:
+
+ fabric-ca-client register --id.type client --id.name budget-admin --id.secret pw --id.affiliation budget --id.attrs $ATTRIBUTES
+
+. # orderer-admin:
+
+ fabric-ca-client register --id.type client --id.name orderer-admin --id.secret pw --id.affiliation orderer --id.attrs $ATTRIBUTES
+
+==== Enroll admins
+
+===== acme-admin:
+
+. ORG_NAME="acme"
+. source setclient.sh   $ORG_NAME   admin
+.. FABRIC_CA_CLIENT_HOME=
+. copyyaml:
+.. SETUP_CONFIG_CLIENT_YAML="HLF2/setup/config/multi-org-ca/yaml.0"
+.. mkdir -p $FABRIC_CA_CLIENT_HOME
+.. cp "HLF2/setup/config/multi-org-ca/yaml.0/acme/fabric-ca-client-config.yaml" "$FABRIC_CA_CLIENT_HOME/fabric-ca-client-config.yaml"
+. fabric-ca-client enroll -u http://acme-admin:pw@localhost:7054
+. setup

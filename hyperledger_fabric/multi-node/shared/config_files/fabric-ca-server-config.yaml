@@ -43,6 +43,7 @@ affiliations:
 #############################################################################
 registry:
   # Default - Maximum number of times a password/secret can be reused for enrollment
+  # maxenrollments: -1 means infinite number of enrollments        
   maxenrollments: -1
 
   # Contains identity information which is used when LDAP is disabled
