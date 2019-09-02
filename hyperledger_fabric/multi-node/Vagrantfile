@@ -13,7 +13,7 @@ cluster = [
     {
         :name => "ca-admin",
         :username => "ubuntu",
-        :type => "msp",
+        :type => "caserver",
         :box => "hbr_ubuntu1604_img",
         :flavor => "j1.medium",
         :netid => "d085327f-2cea-4e14-8784-764ee72b92f4",
@@ -107,7 +107,7 @@ $bootstrapBinaries = <<-SCRIPT
     echo "-------------------------------------------"
 SCRIPT
 
-$installMSP = <<-SCRIPT
+$installMSPserver = <<-SCRIPT
     echo "-------------------------------------------"
     echo "Installing CA (client/server) at node `hostname`"
     sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/install_04_ca_server.sh'
@@ -165,9 +165,9 @@ Vagrant.configure("2") do |config|
             node.vm.provision "shell", inline: $checkprereqs
             node.vm.provision "shell", inline: $bootstrapBinaries
             
-            # for msp only
-            if opts[:type] == "msp"
-                node.vm.provision "shell", inline: $installMSP
+            # for msp server only
+            if opts[:type] == "caserver"
+                node.vm.provision "shell", inline: $installMSPserver
             end
 
             if opts[:type] == "orderer"
