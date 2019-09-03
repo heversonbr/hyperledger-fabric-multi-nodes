@@ -1,7 +1,11 @@
 # Ref: https://hyperledger-fabric.readthedocs.io/en/release-1.4/commands/configtxgen.html
 # The configtxgen tool’s output is largely controlled by the content of configtx.yaml. 
 # This file is searched for at FABRIC_CFG_PATH and must be present for configtxgen to operate.
-
+#
+#
+# File originally at:  
+# ../../setup/config/multi-org-ca/yaml.0/configtx.yaml 
+#
 
 #   CAPABILITIES
 Capabilities:
@@ -19,7 +23,7 @@ Organizations:
    ID: OrdererMSP
    #MSPDir: ./crypto-config/ordererOrganizations/acme.com/msp
    #MSPDir: ../../ca/multi-org-ca/client/orderer/msp
-   MSPDir: $HYPERLEDGER_HOME/ca-client/orderer/msp
+   MSPDir: ../ca-client/orderer/msp
    Policies: &OrdererPolicies
      Readers:
          Type: Signature
@@ -34,8 +38,8 @@ Organizations:
  - &Acme
    Name: Acme
    ID: AcmeMSP
-   #MSPDir: ./crypto-config/peerOrganizations/acme.com/msp
-   MSPDir: ../../ca/multi-org-ca/client/acme/msp
+   MSPDir: ./crypto-config/peerOrganizations/acme.com/msp
+   #MSPDir: ../../ca/multi-org-ca/client/acme/msp
    Policies: &AcmePolicies
      Readers:
          Type: Signature

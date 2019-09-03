@@ -130,5 +130,7 @@ echo "----------------------------------------------"
 echo "Installing Python"
 # The Fabric Node.js SDK requires Python 2.7 in order for npm install operations to complete successfully.
 sudo apt-get -qq  install -y python
+
+sudo apt-get install -y tree 
 echo "----------------------------------------------" 
 echo "prereqs install Done!"

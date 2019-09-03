@@ -3,7 +3,9 @@
 #   Budget Admin Client YAML file 
 #   Changes to the CSR
 #############################################################################
-
+# File originally at: 
+# ../setup/config/multi-org-ca/yaml.0/budget/fabric-ca-client-config.yaml
+#
 #############################################################################
 # Client Configuration
 #############################################################################

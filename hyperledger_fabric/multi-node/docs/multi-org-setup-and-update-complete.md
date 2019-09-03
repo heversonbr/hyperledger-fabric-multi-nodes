@@ -28,10 +28,14 @@ cd ../../orderer/multi-org-ca/
 cp ../../setup/config/multi-org-ca/yaml.0/configtx.yaml ./
 cp ../../setup/config/multi-org-ca/yaml.0/orderer.yaml ./
 ./generate-genesis.sh
+
 ./register-enroll-orderer.sh
+
 ./generate-channel-tx.sh
+
 cd ../../peer/multi-org-ca/
 ./sign-channel-tx.sh acme
+
 sudo mkdir /var/ledgers						## Etudier alternative launch.sh
 sudo chown vagrant:vagrant /var/ledgers/	## du orderer
 cd ../../orderer/multi-org-ca/				##

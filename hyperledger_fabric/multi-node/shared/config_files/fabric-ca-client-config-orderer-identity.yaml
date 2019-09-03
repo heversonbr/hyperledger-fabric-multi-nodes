@@ -4,13 +4,13 @@
 #   Changes to the CSR
 #############################################################################
 # File originally at: 
-# ../setup/config/multi-org-ca/yaml.0/orderer/fabric-ca-client-config.yaml
+# ../setup/config/multi-org-ca/yaml.0/identities/orderer/fabric-ca-client-config.yaml
+#
 #############################################################################
 # Client Configuration
 #############################################################################
 
 # URL of the Fabric-ca-server (default: http://localhost:7054)
-# url: http://localhost:7054
 url: http://192.168.1.10:7054
 
 # Membership Service Provider (MSP) directory
@@ -30,7 +30,7 @@ tls:
 #
 #############################################################################
 csr:
-  cn: orderer-admin
+  cn: orderer
   serialnumber:
   names:
     - C: US
@@ -46,18 +46,11 @@ csr:
 #  Registration section used to register a new identity with fabric-ca server
 #############################################################################
 id:
-  # Must override the name
-  name: XYZ
-  # By default the type is set to be user
+  name:
   type: user
-  # Default org is acme - make sure the org is set up in CA server :-)
-  affiliation: acme
-  # Set to max of 2
-  maxenrollments: -1
-  # Adds a custom attribute
+  affiliation: orderer
+  maxenrollments: 0
   attributes:
-  #  - name: myAttribute:ecert
-  #    value: val
 
 #############################################################################
 #  Enrollment section used to enroll an identity with fabric-ca server
