@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Register an identity with Fabric CA server
+# Register an identity with Fabric CA server. Example:
 # 2. Register acme-admin
 # ATTRIBUTES='"hf.Registrar.Roles=peer,user,client","hf.AffiliationMgr=true","hf.Revoker=true"'
 # fabric-ca-client register --id.type client --id.name acme-admin --id.secret pw --id.affiliation acme --id.attrs $ATTRIBUTES
@@ -8,9 +8,9 @@
 usage(){
     echo "------------------------------------------------------------------------"
     echo "USAGE: ./register_admin.sh <type> <name> <pass> <organization> <affiliation> "
-    echo "   ex: ./register_admin.sh client   acme-admin     pw    acme    acme   "
-    echo "   ex: ./register_admin.sh client   budget-admin   pw    budget  budget "
-    echo "   ex: ./register_admin.sh client   orderer-admin  pw    orderer orderer"
+    echo "   ex: ./03_register_admin.sh client   bcom-admin     pw    bcom    bcom   "
+    echo "   ex: ./03_register_admin.sh client   orange-admin   pw    orange  orange "
+    echo "   ex: ./03_register_admin.sh client   orderer-admin  pw    orderer orderer"
     echo "------------------------------------------------------------------------"
     exit
 }

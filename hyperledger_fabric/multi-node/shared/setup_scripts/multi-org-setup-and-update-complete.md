@@ -29,7 +29,8 @@ cd ../../peer/multi-org-ca/
 sudo mkdir /var/ledgers						## Etudier alternative launch.sh
 sudo chown vagrant:vagrant /var/ledgers/	## du orderer
 cd ../../orderer/multi-org-ca/				##
-orderer 									## ./launch.sh
+orderer 		
+							## ./launch.sh
 ## nouveau terminal `~/peer/multi-org-ca` peer1
 cd ../../peer/multi-org-ca/
 ./clean.sh

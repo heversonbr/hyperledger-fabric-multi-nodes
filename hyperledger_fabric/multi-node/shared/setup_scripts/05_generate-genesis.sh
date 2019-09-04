@@ -3,10 +3,11 @@
 # export FABRIC_LOGGING_SPEC=INFO
 # export FABRIC_CFG_PATH=$PWD
 
-PROFILE=AirlineOrdererGenesis
-OUTBLOCK=$FABRIC_ORDERER_HOME/airline-genesis.block
+GENESIS_BLK_NAME=my_genesis.block
+PROFILE=MyOrdererGenesisProfile
 CHANNELID=ordererchannel
 
+OUTBLOCK=$FABRIC_ORDERER_HOME/$GENESIS_BLK_NAME
 
 # --- 1) Copy config files
 if [ -d $FABRIC_ORDERER_HOME ]; then

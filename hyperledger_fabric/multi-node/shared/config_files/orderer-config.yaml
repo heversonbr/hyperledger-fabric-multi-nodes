@@ -13,8 +13,10 @@ General:
     # Genesis Block Method = file then GenesisFile need to be specified 
     # The genesis block file need to be generated using the configtxgen tool
     GenesisMethod: file
-    GenesisFile: ./airline-genesis.block
-
+    GenesisFile: ./my_genesis.block
+    # NOTE:
+    # our script 05_generate_genesis.sh copies this file orderer-config.yaml 
+    # to $FABRIC_ORDERER_HOME/orderer.yaml before using it. 
 
     # Ledger Type can be ram, json or file
     LedgerType: file
@@ -64,19 +66,12 @@ General:
         ClientAuthRequired: false
         ClientRootCAs:
 
-
-
     # Log Level: The level at which to log. This accepts logging specifications
     # per: fabric/docs/Setup/logging-control.md
     # LogLevel: info
 
     # Log Format:  The format string to use when logging.  Especially useful to disable color logging
     # LogFormat: '%{color}%{time:2006-01-02 15:04:05.000 MST} [%{module}] %{shortfunc} -> %{level:.4s} %{id:03x}%{color:reset} %{message}'
-
-
-
-
-
 
 ################################################################################
 #
@@ -95,12 +90,9 @@ FileLedger:
     # The prefix to use when generating a ledger directory in temporary space.
     Prefix: hyperledger-fabric-ordererledger    
 
-
-
 ################################################################################
 #
 #   Debug Configuration
-#
 #   - This controls the debugging options for the orderer
 #
 ################################################################################

@@ -15,8 +15,10 @@
 
 usage(){
     echo "-------------------------------------------------------------"
-    echo "USAGE: ./enroll_admin_and_setup_msp.sh <org_name> <ca-admin_HOSTNAME> <ca-admin_host_IP>"
-    echo "   EX: ./enroll_admin_and_setup_msp.sh acme ca-admin 192.168.1.10"
+    echo "USAGE: ./04_enroll_admin_and_setup_msp.sh <org_name> <ca-admin_HOSTNAME> <ca-admin_host_IP>"
+    echo "   EX: ./04_enroll_admin_and_setup_msp.sh bcom    ca-admin 192.168.1.10"
+    echo "   EX: ./04_enroll_admin_and_setup_msp.sh orange  ca-admin 192.168.1.10"
+    echo "   EX: ./04_enroll_admin_and_setup_msp.sh orderer ca-admin 192.168.1.10"
     echo "-------------------------------------------------------------"
     exit
 }

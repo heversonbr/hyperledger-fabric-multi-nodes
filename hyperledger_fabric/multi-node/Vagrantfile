@@ -66,16 +66,25 @@ cluster = [
 ssh_config = []
 ssh_entry = { :hostname => "", :username => "" , :ipadd => "", :keyfile => "" }
 
+# data structs for updating the resolv.conf file 
+dns_config = []
+dns_entry = { :hostname => "", :ipadd => "" }
+
 # initialization scripts
 $setSSHconfig = <<-SCRIPT
     echo "-------------------------------------------"
     echo "allNodes script started"
     # setup ~/.ssh/config file at all the nodes to allow connection among them. 
     # (after deployment only the floating IP of the first vm is required to connect)
-    echo "Setting ~/.ssh/config file"
+    echo "Setting ~/.ssh/config"
     mv /home/ubuntu/hyperledger_ws/config_files/ssh_config_template /home/ubuntu/.ssh/config
     mv /home/ubuntu/hyperledger_ws/install/openstack_cloudlab_bcom.key /home/ubuntu/.ssh/openstack_cloudlab_bcom.key
     chown ubuntu:ubuntu /home/ubuntu/.ssh/config /home/ubuntu/.ssh/openstack_cloudlab_bcom.key
+    echo "-------------------------------------------"
+    echo "Setting /etc/hosts"
+    cat " " >> /etc/hosts
+    cat " " >> /etc/hosts
+    cat /home/ubuntu/hyperledger_ws/config_files/dns_config_template >> /etc/hosts
     echo "-------------------------------------------"
 SCRIPT
 
@@ -170,26 +179,37 @@ Vagrant.configure("2") do |config|
             end
 
             if opts[:type] == "orderer"
-                node.vm.provision "shell", inline: $prepareOrderer
+                #node.vm.provision "shell", inline: $prepareOrderer
             end
         end
 
-        # Genenrate a shh config file with the information from each host
-        # the idea is to have all hostnames entries in the ~/.ssh/config
-        # and share the config with all the hosts
-        # this will allow to remove all the floating IPs allocated to each host by the openstack plugin (default behavior)
-	# allowing to consume less IPs while the machines are UP and RUNNING 
+        # Genenrate a ssh config file based onf the information from each host
+        #    the idea is to have all hostnames entries in the ~/.ssh/config
+        #    and share the config with all the hosts, This will allow to remove 
+        #    all the floating IPs allocated for each host by the openstack plugin (default behavior).
+	    #    Therefore, it allows to consume less IPs in our openstack cluster while the machines are UP and RUNNING. 
+        #    Solution: Creates an array called 'ssh_config' where entries are added at each loop in the hosts configuration
         new_ssh_entry = Hash.new()
         new_ssh_entry[:hostname] = opts[:name]
         new_ssh_entry[:username] = opts[:username]
         new_ssh_entry[:ipadd] = opts[:netadd]
         new_ssh_entry[:keyfile] = opts[:privkeyfile]
         ssh_config.push << new_ssh_entry
-        
+
+        # Same as we did for ssh config we also create an array for updating the dns at each host (/etc/hosts later)
+        new_dns_entry = Hash.new()
+        new_dns_entry[:hostname] = opts[:name]
+        new_dns_entry[:ipadd] = opts[:netadd]
+        dns_config.push << new_dns_entry
     end
     # Create a ssh config template file in the vagrant host machine to be shared with VMs with the collected information above
     File.open("./shared/config_files/ssh_config_template", "w+") do |f|
         ssh_config.each { |element| f.puts("Host " + element[:hostname].to_s, "     User " + element[:username].to_s, "     Hostname " + element[:ipadd].to_s, "     IdentityFile " + element[:keyfile].to_s) }
-    
     end
+
+    # Create the dns config template file in the vagrant host machine to be shared with VMs with the collected information above
+    File.open("./shared/config_files/dns_config_template", "w+") do |f|
+        dns_config.each { |element| f.puts(element[:ipadd].to_s + "   " + element[:hostname].to_s) }
+    end
+
 end 
