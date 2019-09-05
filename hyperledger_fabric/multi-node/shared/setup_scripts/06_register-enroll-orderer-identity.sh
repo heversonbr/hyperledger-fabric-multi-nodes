@@ -11,13 +11,16 @@ CA_SERVER_HOST=192.168.1.10
 # sets the FABRIC_CA_CLIENT_HOME to the orderer admin
 IDENTITY="admin"
 CA_CLIENT_FOLDER="$FABRIC_CA_CLIENT_HOME/orderer"
+echo "my FABRIC_CA_CLIENT_HOME: $FABRIC_CA_CLIENT_HOME"
 export FABRIC_CA_CLIENT_HOME="$CA_CLIENT_FOLDER/$IDENTITY"
+echo "now FABRIC_CA_CLIENT_HOME: $FABRIC_CA_CLIENT_HOME"
 ADMIN_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME
 
 
 # ----------------------------------------------------------
 # Step-1  Orderer Admin Registers the orderer identity
 echo "FABRIC_CA_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME"
+echo "Registering :=> fabric-ca-client register --id.type orderer --id.name orderer --id.secret pw --id.affiliation orderer "
 fabric-ca-client register --id.type orderer --id.name orderer --id.secret pw --id.affiliation orderer 
 echo "======Completed: Step 1 : Registered orderer (can be done only once)===="
 
@@ -25,8 +28,10 @@ echo "======Completed: Step 1 : Registered orderer (can be done only once)===="
 # Step-2 Copy the client config yaml file
 # Set the FABRIC_CA_CLIENT_HOME for orderer
 IDENTITY="orderer"
-CA_CLIENT_FOLDER="$FABRIC_CA_CLIENT_HOME/orderer"
+#CA_CLIENT_FOLDER="$FABRIC_CA_CLIENT_HOME"
+echo "my FABRIC_CA_CLIENT_HOME: $FABRIC_CA_CLIENT_HOME"
 export FABRIC_CA_CLIENT_HOME="$CA_CLIENT_FOLDER/$IDENTITY"
+echo "now FABRIC_CA_CLIENT_HOME: $FABRIC_CA_CLIENT_HOME"
 
 # Copy the client config yaml file
 # If client YAML not found then copy the client YAML before enrolling
@@ -53,8 +58,8 @@ echo "======Completed: Step 2 : Copy Check Orderer Client YAML=========="
 # Admin will  enroll the orderer identity. 
 # The MSP will be written in the FABRIC_CA_CLIENT_HOME
 # which was set to" FABRIC_CA_CLIENT_HOME/orderer/orderer" at lines 41-43
-
-fabric-ca-client enroll -u http://orderer:pw@CA_SERVER_HOST:7054
+echo "enrolling :=> fabric-ca-client enroll -u http://orderer:pw@$:CA_SERVER_HOST:7054"
+fabric-ca-client enroll -u http://orderer:pw@$CA_SERVER_HOST:7054
 echo "======Completed: Step 3 : Enrolled orderer ========"
 
 # ----------------------------------------------------------

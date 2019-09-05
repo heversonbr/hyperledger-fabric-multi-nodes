@@ -53,7 +53,7 @@ Organizations:
    ID: OrdererMSP
    #MSPDir: ./crypto-config/ordererOrganizations/acme.com/msp
    #MSPDir: ../../ca/multi-org-ca/client/orderer/msp
-   MSPDir: ../ca-client/orderer/msp
+   MSPDir: ../ca-client/orderer/orderer/msp
    Policies: &OrdererPolicies
      Readers:
          Type: Signature
@@ -94,7 +94,7 @@ Organizations:
    #   # and peers may to connect to to push transactions and receive blocks respectively.
    #     - "127.0.0.1:7050"
 
-   - &Orange
+ - &Orange
    Name: Orange
    # ID to load the MSP definition as
    ID: OrangeMSP
@@ -344,14 +344,16 @@ Profiles:
            <<: *ApplicationDefaults
 
            Organizations:
-               - <<: *Bcom
-               - <<: *Orange              
-
+               - <<: *Orderer
+               #- <<: *Bcom
+               #- <<: *Orange              
+      # Orderers also maintain the list of organizations that are allowed to create channels. 
+      # This list of organizations is known as the “consortium"
      Consortiums:
        MyConsortium:
            Organizations:
-                 - <<: *Bcom
-                 - <<: *Orange                              
+                 #- <<: *Bcom
+                 #- <<: *Orange                              
                 
  MyChannelProfile:
    <<: *ChannelDefaults

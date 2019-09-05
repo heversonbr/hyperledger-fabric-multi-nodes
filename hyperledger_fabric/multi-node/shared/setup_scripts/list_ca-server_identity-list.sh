@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "------------Fabric ENV -----------------"
-env | grep FABRIC
+./list_env_vars.sh
 echo "------------Setting HOME ---------------"
 SUBDIR=caserver/admin
 echo "current FABRIC_CA_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME"

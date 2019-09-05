@@ -497,7 +497,11 @@ chaincode:
         escc: enable
         vscc: enable
         qscc: enable
-
+            # QSCC (Query System Chaincode) for ledger and Fabric-related queries
+            # CSCC (Configuration System Chaincode) which helps regulate access control
+            # LSCC (Lifecycle System Chaincode) which defines the rules for the channel
+            # ESCC (Endorsement System Chaincode) for endorsing transactions
+            # VSCC (Validation System Chaincode) for validating transactions
     # System chaincode plugins: in addition to being imported and compiled
     # into fabric through core/chaincode/importsysccs.go, system chaincodes
     # can also be loaded as shared objects compiled as Go plugins.

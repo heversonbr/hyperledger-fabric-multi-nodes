@@ -11,7 +11,7 @@
 # -channelID string :   The channel ID to use in the configtx
 
 PROFILE=MyChannelProfile 
-OUTPUT_CHANNEL=$FABRIC_ORDERER_HOME/my-channel.tx 
+OUTPUT_CHANNEL=$ORDERER_HOME/my-channel.tx 
 CHANNELID=mychannelid
 
 echo    '================ Writing $CHANNELID ================'

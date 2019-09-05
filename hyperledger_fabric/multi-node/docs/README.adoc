@@ -408,8 +408,9 @@ Name: budget-admin, Type: client, Affiliation: budget, Max Enrollments: 2, Attri
 
 Name: orderer-admin, Type: client, Affiliation: orderer, Max Enrollments: 2, Attributes: [{Name:hf.Registrar.Roles Value:orderer ECert:false} {Name:hf.EnrollmentID Value:orderer-admin ECert:true} {Name:hf.Type Value:client ECert:true} {Name:hf.Affiliation Value:orderer ECert:true}]
 ----------------------------------------
-
 ----
+
+
 
 
 == Summary

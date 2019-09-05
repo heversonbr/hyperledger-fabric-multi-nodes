@@ -1,8 +1,14 @@
 ################################################################################
 #
-#   Orderer Configuration
+#   Orderer Configuration: 
+#   - This controls the type and configuration of the orderer
+#   The configuration of the orderer is handled through a yaml filed called orderer.yaml. 
+#   The FABRIC_CFG_PATH environment variable is used to point to an orderer.yaml
+#
 #   File originally at: 
 #   ../../setup/config/multi-org-ca/yaml.0/orderer.yaml
+#   Ref:
+#   https://github.com/hyperledger/fabric/blob/release-1.4/sampleconfig/orderer.yaml
 ################################################################################
 General:
 
@@ -16,12 +22,17 @@ General:
     GenesisFile: ./my_genesis.block
     # NOTE:
     # our script 05_generate_genesis.sh copies this file orderer-config.yaml 
-    # to $FABRIC_ORDERER_HOME/orderer.yaml before using it. 
+    # to $ORDERER_HOME/orderer.yaml before using it. 
 
-    # Ledger Type can be ram, json or file
+    # Ledger Type: The ledger type to provide to the orderer.
+    # Two non-production ledger types are provided for test purposes only:
+    #  - ram: An in-memory ledger whose contents are lost on restart.
+    #  - json: A simple file ledger that writes blocks to disk in JSON format.
+    # Only one production ledger type is provided:
+    #  - file: A production file-based ledger.
     LedgerType: file
 
-    # BCCSP Setup
+    # BCCSP configures the blockchain crypto service providers.
     BCCSP:
         # Setup to use the Software CSP
         Default: SW
@@ -36,7 +47,7 @@ General:
     # orderer. 
     # LocalMSPDir: ./crypto-config/ordererOrganizations/acme.com/orderers/orderer.acme.com/msp
     #LocalMSPDir: ../../ca/multi-org-ca/client/orderer/orderer/msp
-    LocalMSPDir: ../ca-client/orderer/msp
+    LocalMSPDir: ../ca-client/orderer/orderer/msp
 
     # Identity to register the local MSP material with the MSP
     LocalMSPID: OrdererMSP

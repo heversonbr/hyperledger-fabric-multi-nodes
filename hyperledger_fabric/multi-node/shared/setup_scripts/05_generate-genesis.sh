@@ -4,23 +4,28 @@
 # export FABRIC_CFG_PATH=$PWD
 
 GENESIS_BLK_NAME=my_genesis.block
-PROFILE=MyOrdererGenesisProfile
+PROFILE=MyOrdererGenesisProfile  
 CHANNELID=ordererchannel
+# profile in configtx.yaml
 
-OUTBLOCK=$FABRIC_ORDERER_HOME/$GENESIS_BLK_NAME
+OUTBLOCK=$ORDERER_HOME/$GENESIS_BLK_NAME
+
+echo "FABRIC_LOGGING_SPEC: $FABRIC_LOGGING_SPEC"
+echo "FABRIC_CFG_PATH : $FABRIC_CFG_PATH"
 
 # --- 1) Copy config files
-if [ -d $FABRIC_ORDERER_HOME ]; then
+if [ -d $ORDERER_HOME ]; then
     echo "orderer folder exists, cleaning it"
-    rm -Rf $FABRIC_ORDERER_HOME
-    mkdir -p $FABRIC_ORDERER_HOME
+    rm -Rf $ORDERER_HOME
+    mkdir -p $ORDERER_HOME
 else
     echo "orderer folder does not exist, creating it"
-    mkdir -p $FABRIC_ORDERER_HOME
+    mkdir -p $ORDERER_HOME
 fi
 
-cp $FABRIC_CONFIG_FILES/configtx.yaml $FABRIC_ORDERER_HOME/
-cp $FABRIC_CONFIG_FILES/orderer-config.yaml $FABRIC_ORDERER_HOME/orderer.yaml
+cp $FABRIC_CONFIG_FILES/configtx.yaml $ORDERER_HOME/
+cp $FABRIC_CONFIG_FILES/orderer-config.yaml $ORDERER_HOME/orderer.yaml
+cp $FABRIC_CONFIG_FILES/core.yaml $ORDERER_HOME/
 # ------------------------------
 
 # --- 2) Generate-genesis.sh --- 

@@ -19,7 +19,7 @@ crlsizelimit: 512000
 #############################################################################
 ca:
   # Unique Name (across the network) of this CA
-  name: acme-ca
+  name: bcom-ca
   # Key file (is only used to import a private key into BCCSP)
   keyfile:
   # Certificate file (default: ca-cert.pem)
@@ -30,13 +30,14 @@ ca:
 # Affiliations are hierarchical in nature. 
 #############################################################################
 affiliations:
-   acme:
-      - logistics
+   bcom:
       - accounting
-      - b2b
+      #- logistics
+      #- accounting
+      #- b2b
    orderer:
       - support
-   budget:
+   orange:
       - b2b
 #############################################################################
 #  Used for ID registry setup
@@ -77,15 +78,15 @@ registry:
 #  - C is the country
 ###########################################################################
 csr:
-   cn: Acme-CA
+   cn: Bcom-CA
    names:
-      - C: US
-        ST: "New York"
-        L: Newark
-        O: Acme
-        OU: B2B
+      - C: FR
+        ST: "Bretagne"
+        L: Rennes
+        O: Bcom
+        OU: 
    hosts:
-     - acme.com
+     - ca-admin
      - localhost
    ca:
       expiry: 131400h

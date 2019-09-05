@@ -16,6 +16,10 @@ else
     ORG_NAME=$1
 fi
 
+# Variable holds path to the channel tx file
+CHANNEL_TX_FILE=$ORDERER_HOME/my-channel.tx
+
+
 IDENTITY="admin"
 # Set the environment variable $1 = ORG_NAME Identity=admin
 # source set-identity.sh (lines 24 to 33 come from set-identity)
@@ -31,16 +35,15 @@ echo "CORE_PEER_LOCALMSPID: $CORE_PEER_LOCALMSPID"
 echo "Switched Identity to: $ORG_NAME   $IDENTITY"
 echo "FABRIC_CFG_PATH: $FABRIC_CFG_PATH"
 
-# Variable holds path to the channel tx file
-CHANNEL_TX_FILE=$FABRIC_ORDERER_HOME/my-channel.tx
 
 echo "CHANNEL_TX_FILE: $CHANNEL_TX_FILE"
+ls -al $CHANNEL_TX_FILE
 # Execute command to sign the tx file in place
 echo "running: peer channel signconfigtx -f $CHANNEL_TX_FILE"
 peer channel signconfigtx -f $CHANNEL_TX_FILE
 
 echo "====> Done. Signed file with identity $ORG_NAME/admin"
 echo "====> Check size & timestamp of file $CHANNEL_TX_FILE"
-
+ls -al $CHANNEL_TX_FILE
 # NOTE: The join cannot be execute without a channel created
 # peer channel join -o localhost:7050 -b $PWD/../../orderer/multi-org-ca/airline-channel.tx

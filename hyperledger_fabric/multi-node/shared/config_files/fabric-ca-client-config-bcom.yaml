@@ -49,7 +49,7 @@ csr:
 #############################################################################
 id:
   # Must override the name
-  name: 
+  name: XYZ
   # By default the type is set to be user
   type: user
   # Default org is bcom - make sure the org is set up in CA server :-)
