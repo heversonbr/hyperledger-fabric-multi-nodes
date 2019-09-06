@@ -58,7 +58,7 @@ echo "======Completed: Step 2 : Copy Check Orderer Client YAML=========="
 # Admin will  enroll the orderer identity. 
 # The MSP will be written in the FABRIC_CA_CLIENT_HOME
 # which was set to" FABRIC_CA_CLIENT_HOME/orderer/orderer" at lines 41-43
-echo "enrolling :=> fabric-ca-client enroll -u http://orderer:pw@$:CA_SERVER_HOST:7054"
+echo "enrolling :=> fabric-ca-client enroll -u http://orderer:pw@$:$CA_SERVER_HOST:7054"
 fabric-ca-client enroll -u http://orderer:pw@$CA_SERVER_HOST:7054
 echo "======Completed: Step 3 : Enrolled orderer ========"
 

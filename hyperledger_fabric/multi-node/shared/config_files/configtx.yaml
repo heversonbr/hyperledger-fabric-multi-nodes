@@ -53,7 +53,7 @@ Organizations:
    ID: OrdererMSP
    #MSPDir: ./crypto-config/ordererOrganizations/acme.com/msp
    #MSPDir: ../../ca/multi-org-ca/client/orderer/msp
-   MSPDir: ../ca-client/orderer/orderer/msp
+   MSPDir: ../ca-client/orderer/msp
    Policies: &OrdererPolicies
      Readers:
          Type: Signature
@@ -82,12 +82,12 @@ Organizations:
      Admins:
          Type: Signature
          Rule: "OR('BcomMSP.admin')"
-   AnchorPeers:
+   #AnchorPeers:
      # AnchorPeers defines the location of peers which can be used
      # for cross org gossip communication.  Note, this value is only
      # encoded in the genesis block in the Application section context.
      # ex:  Host: peer0.org1
-     - Host: peer0  
+   # - Host: peer0  
        Port: 7051
    #OrdererEndpoints:
    #   # OrdererEndpoints is a list of all orderers this org runs which clients
@@ -116,13 +116,12 @@ Organizations:
      # for cross org gossip communication.  Note, this value is only
      # encoded in the genesis block in the Application section context.
      # ex:  Host: peer0.org1
-     - Host: peer1  
-       Port: 7051
+    # - Host: peer1  
+    #   Port: 7051
    #OrdererEndpoints:
    #   # OrdererEndpoints is a list of all orderers this org runs which clients
    #   # and peers may to connect to to push transactions and receive blocks respectively.
    #     - "127.0.0.1:7050"
-
 ################################################################################
 #
 #   SECTION: Orderer
@@ -363,5 +362,5 @@ Profiles:
        <<: *ApplicationDefaults
       
        Organizations:
-           - <<: *Bcom
-           - <<: *Orange 
+           #- <<: *Bcom
+           #- <<: *Orange 

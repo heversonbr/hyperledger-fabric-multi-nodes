@@ -1,7 +1,7 @@
 ################################################################################
 #
 #   Orderer Configuration: 
-#   - This controls the type and configuration of the orderer
+#   - This controls the type and configuration of the orderer itself
 #   The configuration of the orderer is handled through a yaml filed called orderer.yaml. 
 #   The FABRIC_CFG_PATH environment variable is used to point to an orderer.yaml
 #
