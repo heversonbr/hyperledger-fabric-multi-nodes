@@ -1,13 +1,5 @@
 #!/bin/bash
 # Enroll identity with Fabric CA server
-# sequence of commands for acme-admin
-#     echo "Enrolling: acme-admin"
-#     ORG_NAME="acme"
-#     source setclient.sh   $ORG_NAME   admin
-#     checkCopyYAML
-#     fabric-ca-client enroll -u http://acme-admin:pw@localhost:7054
-#     setupMSP
-#
 # The enroll command stores an enrollment certificate (ECert), 
 # corresponding private key and CA certificate chain PEM files 
 # in the subdirectories of the Fabric CA client’s msp directory. 
@@ -16,9 +8,9 @@
 usage(){
     echo "-------------------------------------------------------------"
     echo "USAGE: ./04_enroll_admin_and_setup_msp.sh <org_name> <ca-admin_HOSTNAME> <ca-admin_host_IP>"
-    echo "   EX: ./04_enroll_admin_and_setup_msp.sh bcom    ca-admin 192.168.1.10"
-    echo "   EX: ./04_enroll_admin_and_setup_msp.sh orange  ca-admin 192.168.1.10"
-    echo "   EX: ./04_enroll_admin_and_setup_msp.sh orderer ca-admin 192.168.1.10"
+    echo "   EX: ./04_enroll_admin_and_setup_msp.sh bcom    msp-root-bcom 192.168.1.10"
+    echo "   EX: ./04_enroll_admin_and_setup_msp.sh orange  msp-root-bcom 192.168.1.10"
+    echo "   EX: ./04_enroll_admin_and_setup_msp.sh orderer msp-root-bcom 192.168.1.10"
     echo "-------------------------------------------------------------"
     exit
 }
@@ -33,33 +25,43 @@ CA_SERVER_HOST_IP=$3
 
 ADMIN_USER=$ORG_NAME-admin
 ADMIN_USER_PW=pw
-# path to the client certificate at the ca-server's client (?)
-ADMIN_CERTS_DIR="$HYPERLEDGER_HOME/ca-client/caserver/admin/msp/signcerts"
 
-# set ca client home
-SUBDIR=$ORG_NAME/admin
+# path to the client certificate at the ca-server admin: 
+ADMIN_CERTS_DIR="$BASE_FABRIC_CA_CLIENT_HOME/caserver/admin/msp/signcerts"
+
+SOURCE_CA_CLIENT_CONFIG_FILE="fabric-ca-client-config-$ORG_NAME-admin.yaml"
+
+# set ca client to org-admin
 echo "current FABRIC_CA_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME"
-export FABRIC_CA_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME/$SUBDIR
+export FABRIC_CA_CLIENT_HOME=$BASE_FABRIC_CA_CLIENT_HOME/$ORG_NAME/admin
 echo "now FABRIC_CA_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME"
 
-#copy yaml
+# Copy yaml
 # If client YAML not found then copy the client YAML before enrolling
-if [ -f "$FABRIC_CA_CLIENT_HOME/$FABRIC_CA_CLIENT_CONFIG" ]; then 
-    echo "Using the existing Client $FABRIC_CA_CLIENT_HOME/$FABRIC_CA_CLIENT_CONFIG for $ORG_NAME admin"
+if [ -f "$FABRIC_CA_CLIENT_HOME/$FABRIC_CA_CLIENT_CONFIG_FILE" ]; then 
+    echo "Using the existing Client $FABRIC_CA_CLIENT_HOME/$FABRIC_CA_CLIENT_CONFIG_FILE for $ORG_NAME admin"
 else
-    echo "$FABRIC_CA_CLIENT_HOME/$FABRIC_CA_CLIENT_CONFIG not found in $FABRIC_CA_CLIENT_HOME/"
+    echo "$FABRIC_CA_CLIENT_HOME/$FABRIC_CA_CLIENT_CONFIG_FILE not found in $FABRIC_CA_CLIENT_HOME/"
     echo "creating : mkdir -p $FABRIC_CA_CLIENT_HOME " 
     mkdir -p $FABRIC_CA_CLIENT_HOME
 
-    echo "Copy the Client Yaml from $FABRIC_CONFIG_FILES/fabric-ca-client-config-$ORG_NAME.yaml"
-    echo "cp $FABRIC_CONFIG_FILES/fabric-ca-client-config-$ORG_NAME.yaml $FABRIC_CA_CLIENT_HOME/$FABRIC_CA_CLIENT_CONFIG"
-    cp  $FABRIC_CONFIG_FILES/fabric-ca-client-config-$ORG_NAME.yaml $FABRIC_CA_CLIENT_HOME/$FABRIC_CA_CLIENT_CONFIG
-    echo "checking with: ls $FABRIC_CA_CLIENT_HOME/$FABRIC_CA_CLIENT_CONFIG"
-    ls $FABRIC_CA_CLIENT_HOME/$FABRIC_CA_CLIENT_CONFIG
+    echo "Copy $BASE_CONFIG_FILES/$SOURCE_CA_CLIENT_CONFIG_FILE  to $FABRIC_CA_CLIENT_HOME/$FABRIC_CA_CLIENT_CONFIG_FILE"
+    cp  $BASE_CONFIG_FILES/$SOURCE_CA_CLIENT_CONFIG_FILE  $FABRIC_CA_CLIENT_HOME/$FABRIC_CA_CLIENT_CONFIG_FILE
+    
+    echo "checking with: ls $FABRIC_CA_CLIENT_HOME/$FABRIC_CA_CLIENT_CONFIG_FILE"
+    ls $FABRIC_CA_CLIENT_HOME/$FABRIC_CA_CLIENT_CONFIG_FILE
+    if [ `echo $?` = 0 ]; then 
+        echo "File $FABRIC_CA_CLIENT_HOME/$FABRIC_CA_CLIENT_CONFIG_FILE found."; 
+    else 
+        echo "ERROR: file $FABRIC_CA_CLIENT_HOME/$FABRIC_CA_CLIENT_CONFIG_FILE not found!"; 
+        exit
+    fi
 fi
 
-# enroll
-echo "Enrolling: $ORG_NAME-admin:"
+# enroll admin
+echo "###################################"
+echo "# Enrolling: $ORG_NAME-admin:"
+echo "###################################"
 # Exemple for acme:  fabric-ca-client enroll -u http://acme-admin:pw@localhost:7054
 echo "fabric-ca-client enroll -u http://$ADMIN_USER:$ADMIN_USER_PW@$CA_SERVER_HOST_IP:7054"
 fabric-ca-client enroll -u http://$ADMIN_USER:$ADMIN_USER_PW@$CA_SERVER_HOST_IP:7054
@@ -68,8 +70,9 @@ fabric-ca-client enroll -u http://$ADMIN_USER:$ADMIN_USER_PW@$CA_SERVER_HOST_IP:
 # Setup creates the admincerts folder and copies the admin's cert to 
 # admincerts folder
 # run this script from the msp hosts at the organizations
-
-
+echo "###################################"
+echo "# Setting up admincerts folder"
+echo "###################################"
 
 ### setupMSP ### 
 if [ ! -d  $FABRIC_CA_CLIENT_HOME/msp/admincerts ]; then 

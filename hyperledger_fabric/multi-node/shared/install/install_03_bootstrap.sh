@@ -64,6 +64,7 @@ getSamples() {
 }
 
 getBinaries(){
+    #TODO: add a flag to determine when 'ca-fabric client' should be installed (ca-nodes) or not (no-msp nodes) 
     # echo "USER: $USER whoami: `whoami` id -un: `id -un` FABRIC_USER: $FABRIC_USER  HOME: $HOME  LOGNAME: $LOGNAME" 
     echo "----------------------------------------------------------------------------"
     echo "===> Downloading version ${FABRIC_VERSION} platform specific fabric binaries"

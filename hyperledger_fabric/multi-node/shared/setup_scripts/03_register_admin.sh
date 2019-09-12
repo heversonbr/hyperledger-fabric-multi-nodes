@@ -4,14 +4,15 @@
 # 2. Register acme-admin
 # ATTRIBUTES='"hf.Registrar.Roles=peer,user,client","hf.AffiliationMgr=true","hf.Revoker=true"'
 # fabric-ca-client register --id.type client --id.name acme-admin --id.secret pw --id.affiliation acme --id.attrs $ATTRIBUTES
+# The identity performing the register request must be currently enrolled
 
 usage(){
-    echo "------------------------------------------------------------------------"
+    echo "-----------------------------------------------------------------------------"
     echo "USAGE: ./register_admin.sh <type> <name> <pass> <organization> <affiliation> "
-    echo "   ex: ./03_register_admin.sh client   bcom-admin     pw    bcom    bcom   "
-    echo "   ex: ./03_register_admin.sh client   orange-admin   pw    orange  orange "
-    echo "   ex: ./03_register_admin.sh client   orderer-admin  pw    orderer orderer"
-    echo "------------------------------------------------------------------------"
+    echo "   ex: ./03_register_admin.sh client  bcom-admin     pw  bcom    bcom   "
+    echo "   ex: ./03_register_admin.sh client  orange-admin   pw  orange  orange "
+    echo "   ex: ./03_register_admin.sh client  orderer-admin  pw  orderer orderer"
+    echo "------------------------------------------------------------------------------"
     exit
 }
 
@@ -25,22 +26,15 @@ PASS=$3
 ORG=$4
 AFFILIATION=$5
 
-
-#ATTRIBUTES="\"hf.Registrar.Roles=peer,user,client\",\"hf.AffiliationMgr=true","hf.Revoker=true\""
-#ATTRIBUTES_ORDERER="\"hf.Registrar.Roles=orderer\""
-
 ATTRIBUTES='"hf.Registrar.Roles=peer,user,client","hf.AffiliationMgr=true","hf.Revoker=true"'
 ATTRIBUTES_ORDERER='"hf.Registrar.Roles=orderer"'
 
-## AFFILIATION will be used as org name to define the subdirectory (try to check later why the org name is not mentioned here)
-
+# Set ca-client variable
 SUBDIR=caserver/admin
 echo "current FABRIC_CA_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME"
-export FABRIC_CA_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME/$SUBDIR
+export FABRIC_CA_CLIENT_HOME=$BASE_FABRIC_CA_CLIENT_HOME/$SUBDIR
 echo "now FABRIC_CA_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME"
 
-#source set-ca-client.sh   caserver   admin
-ls -al  $FABRIC_CA_CLIENT_HOME
 
 if [ "$NAME" == "orderer-admin" ]; then
     echo "registering an orderer , setting attributes"

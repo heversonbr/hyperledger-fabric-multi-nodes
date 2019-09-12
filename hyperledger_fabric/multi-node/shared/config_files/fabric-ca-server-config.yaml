@@ -43,7 +43,8 @@ affiliations:
 #  Used for ID registry setup
 #############################################################################
 registry:
-  # Default - Maximum number of times a password/secret can be reused for enrollment
+  # Default - Maximum number of times a password/secret can be reused for
+  # enrollment
   # maxenrollments: -1 means infinite number of enrollments        
   maxenrollments: -1
 
@@ -86,7 +87,7 @@ csr:
         O: Bcom
         OU: 
    hosts:
-     - ca-admin
+     - msp-root-bcom
      - localhost
    ca:
       expiry: 131400h

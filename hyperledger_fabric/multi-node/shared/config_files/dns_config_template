@@ -1,4 +1,7 @@
-192.168.1.10   ca-admin
-192.168.1.11   org1-msp-1
-192.168.1.12   org2-msp-2
-192.168.1.13   ordering-0
+192.168.1.10   msp-root-bcom
+192.168.1.11   msp-org-admin-bcom
+192.168.1.12   msp-org-admin-orange
+192.168.1.13   msp-org-admin-orderer
+192.168.1.14   ordering-0-orderer
+192.168.1.15   peer1-bcom
+192.168.1.16   peer1-orange

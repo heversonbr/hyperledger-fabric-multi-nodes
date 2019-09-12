@@ -33,13 +33,13 @@ csr:
   cn: orderer-admin
   serialnumber:
   names:
-    - C: US
-      ST: "New York"
-      L:  "Newark"
-      O:  bcom
+    - C: FR
+      ST: "Bretagne"
+      L:  "Rennes"
+      O:  orderer
       OU: 
   hosts:
-    - ordering-0
+    - msp-org-admin-orderer
     - localhost
 
 #############################################################################
@@ -51,7 +51,7 @@ id:
   # By default the type is set to be user
   type: user
   # Default org is bcom - make sure the org is set up in CA server :-)
-  affiliation: bcom
+  affiliation: orderer
   # Set to max of 2
   maxenrollments: -1
   # Adds a custom attribute

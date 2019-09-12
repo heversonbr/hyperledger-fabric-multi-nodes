@@ -12,7 +12,7 @@
 peer:
 
     # The Peer id is used for identifying this Peer instance.
-    id: devpeer
+    id: orderer-peer-orderer
 
     # The networkId allows for logical seperation of networks
     networkId: dev
@@ -289,7 +289,7 @@ peer:
     # Path on the file system where peer will find MSP local configurations
     #mspConfigPath: ../../../orderer/multi-org/crypto-config/peerOrganizations/acme.com/users/Admin@acme.com/msp
     #mspConfigPath: ../../../ca/multi-org-ca/client/acme/admin/msp
-    mspConfigPath: ../ca-client/bcom/admin/msp
+    mspConfigPath: ../ca-client/orderer/admin/msp
 
     # Identifier of the local MSP
     # ----!!!!IMPORTANT!!!-!!!IMPORTANT!!!-!!!IMPORTANT!!!!----
@@ -298,7 +298,7 @@ peer:
     # to match the name of one of the MSPs in each of the channel
     # that this peer is a member of. Otherwise this peer's messages
     # will not be identified as valid by other nodes.
-    localMspId: BcomMSP
+    localMspId: OrdererMSP
 
     # CLI common client config options
     client:
@@ -456,7 +456,6 @@ chaincode:
         # for Java chaincode runtime.
         Dockerfile:  |
             from $(DOCKER_NS)/fabric-javaenv:$(ARCH)-1.1.0
-
     node:
         # need node.js engine at runtime, currently available in baseimage
         # but not in baseos

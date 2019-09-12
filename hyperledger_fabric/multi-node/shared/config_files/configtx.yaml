@@ -53,7 +53,7 @@ Organizations:
    ID: OrdererMSP
    #MSPDir: ./crypto-config/ordererOrganizations/acme.com/msp
    #MSPDir: ../../ca/multi-org-ca/client/orderer/msp
-   MSPDir: ../ca-client/orderer/msp
+   MSPDir: ../../ca-client/orderer/msp
    Policies: &OrdererPolicies
      Readers:
          Type: Signature
@@ -71,7 +71,7 @@ Organizations:
    ID: BcomMSP
    # MSPDir: ./crypto-config/peerOrganizations/acme.com/msp
    # MSPDir: ../../ca/multi-org-ca/client/acme/msp
-   MSPDir: ../ca-client/bcom/msp
+   MSPDir: ../../ca-client/bcom/msp
    Policies: &BcomPolicies
      Readers:
          Type: Signature
@@ -87,8 +87,8 @@ Organizations:
      # for cross org gossip communication.  Note, this value is only
      # encoded in the genesis block in the Application section context.
      # ex:  Host: peer0.org1
-   # - Host: peer0  
-       Port: 7051
+     #  - Host: peer0  
+     # Port: 7051
    #OrdererEndpoints:
    #   # OrdererEndpoints is a list of all orderers this org runs which clients
    #   # and peers may to connect to to push transactions and receive blocks respectively.
@@ -100,7 +100,7 @@ Organizations:
    ID: OrangeMSP
    # MSPDir: ./crypto-config/peerOrganizations/acme.com/msp
    # MSPDir: ../../ca/multi-org-ca/client/acme/msp
-   MSPDir: ../ca-client/orange/msp
+   MSPDir: ../../ca-client/orange/msp
    Policies: &BcomPolicies
      Readers:
          Type: Signature
@@ -116,8 +116,8 @@ Organizations:
      # for cross org gossip communication.  Note, this value is only
      # encoded in the genesis block in the Application section context.
      # ex:  Host: peer0.org1
-    # - Host: peer1  
-    #   Port: 7051
+     - Host: peer1  
+       Port: 7051
    #OrdererEndpoints:
    #   # OrdererEndpoints is a list of all orderers this org runs which clients
    #   # and peers may to connect to to push transactions and receive blocks respectively.

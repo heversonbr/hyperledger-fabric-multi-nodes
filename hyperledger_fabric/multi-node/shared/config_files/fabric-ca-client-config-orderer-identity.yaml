@@ -1,6 +1,6 @@
 
 #############################################################################
-#   Orderer Admin Client YAML file 
+#   Orderer Client YAML file 
 #   Changes to the CSR
 #############################################################################
 # File originally at: 
@@ -33,13 +33,13 @@ csr:
   cn: orderer
   serialnumber:
   names:
-    - C: US
-      ST: "New York"
-      L:  "Newark"
-      O:  acme
+    - C: FR
+      ST: "Bretagne"
+      L:  "Rennes"
+      O:  orderer
       OU: 
   hosts:
-    - acme.com
+    - ordering-0-orderer
     - localhost
 
 #############################################################################

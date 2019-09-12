@@ -4,6 +4,8 @@ function usage {
     echo    "           Uses the Organization Identity provided to submit transaction"
     echo    "           Script will fail if the Orderer is not up !!!"
 }
+# from:  ../../peer/multi-org-ca/
+
 
 # Org Name is needed
 if [ -z $1 ]

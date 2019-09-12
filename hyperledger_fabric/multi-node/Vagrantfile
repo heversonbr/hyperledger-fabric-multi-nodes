@@ -1,29 +1,26 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 require 'vagrant-openstack-provider'
-
-
 #os.networks = 'd085327f-2cea-4e14-8784-764ee72b92f4'  # id network hbr_net_test2  (hyper)
 #os.networks = '2a7f5866-ded3-45ea-b263-5826a997de2a'  # id network hbr_net_test1  (k8s)
 #os.networks = '0ed56125-8083-4fd8-9c46-4e4e29ce50f6'  # id network hbr_net_test3  (gluster)  
-
 #types for hyperledger:   MSP(CA) , peer , endorser-peer , ordering-node
 
 cluster = [
     {
-        :name => "ca-admin",
-        :username => "ubuntu",
+        :name => "msp-root-bcom",
         :type => "caserver",
+        :username => "ubuntu",
         :box => "hbr_ubuntu1604_img",
-        :flavor => "j1.medium",
+        :flavor => "j1.small",
         :netid => "d085327f-2cea-4e14-8784-764ee72b92f4",
         :netadd => "192.168.1.10",
         :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"  
     },
     {
-        :name => "org1-msp-1",
+        :name => "msp-org-admin-bcom",
+        :type => "msp-admin",
         :username => "ubuntu",
-        :type => "msp",
         :box => "hbr_ubuntu1604_img",
         :flavor => "j1.small",
         :netid =>  "d085327f-2cea-4e14-8784-764ee72b92f4",
@@ -31,35 +28,56 @@ cluster = [
         :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
     },
     {
-        :name => "org2-msp-2",
+        :name => "msp-org-admin-orange",
+        :type => "msp-admin",
         :username => "ubuntu",
-        :type => "msp",
         :box => "hbr_ubuntu1604_img",
         :flavor => "j1.small",
         :netid =>  "d085327f-2cea-4e14-8784-764ee72b92f4",
         :netadd => "192.168.1.12",
         :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
-     },
-      {
-        :name => "ordering-0",
+    },
+    {
+        :name => "msp-org-admin-orderer",
+        :type => "msp-admin",
         :username => "ubuntu",
-        :type => "orderer",
         :box => "hbr_ubuntu1604_img",
         :flavor => "j1.small",
         :netid =>  "d085327f-2cea-4e14-8784-764ee72b92f4",
         :netadd => "192.168.1.13",
         :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
-       }#,
-    #{
-    #    :name => "msp-0",
-    #    :username => "ubuntu",
-    #    :type => "msp",
-    #    :box => "hbr_ubuntu1604_img",
-    #    :flavor => "j1.small",
-    #    :netid =>  "d085327f-2cea-4e14-8784-764ee72b92f4",
-    #    :netadd => "192.168.1.13",
-    #    :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
-    #}
+    },
+    {
+        :name => "ordering-0-orderer",
+        :type => "orderer",
+        :username => "ubuntu",
+        :box => "hbr_ubuntu1604_img",
+        :flavor => "j1.small",
+        :netid =>  "d085327f-2cea-4e14-8784-764ee72b92f4",
+        :netadd => "192.168.1.14",
+        :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
+    },
+    {
+        :name => "peer1-bcom",
+        :type => "peer",
+        :username => "ubuntu",
+        :box => "hbr_ubuntu1604_img",
+        :flavor => "j1.small",
+        :netid =>  "d085327f-2cea-4e14-8784-764ee72b92f4",
+        :netadd => "192.168.1.15",
+        :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
+    },
+    {
+        :name => "peer1-orange",
+        :type => "peer",
+        :username => "ubuntu",
+        :box => "hbr_ubuntu1604_img",
+        :flavor => "j1.small",
+        :netid =>  "d085327f-2cea-4e14-8784-764ee72b92f4",
+        :netadd => "192.168.1.16",
+        :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
+    }
+
 ]
 
 # data structs for creating the config file in ~/.ssh
@@ -71,7 +89,8 @@ dns_config = []
 dns_entry = { :hostname => "", :ipadd => "" }
 
 # initialization scripts
-$setSSHconfig = <<-SCRIPT
+
+$setSSHDNSconfig = <<-SCRIPT
     echo "-------------------------------------------"
     echo "allNodes script started"
     # setup ~/.ssh/config file at all the nodes to allow connection among them. 
@@ -82,9 +101,12 @@ $setSSHconfig = <<-SCRIPT
     chown ubuntu:ubuntu /home/ubuntu/.ssh/config /home/ubuntu/.ssh/openstack_cloudlab_bcom.key
     echo "-------------------------------------------"
     echo "Setting /etc/hosts"
-    cat " " >> /etc/hosts
-    cat " " >> /etc/hosts
-    cat /home/ubuntu/hyperledger_ws/config_files/dns_config_template >> /etc/hosts
+    if [ -f /etc/hosts ]; then
+        echo " " | tee -a /etc/hosts
+        cat /home/ubuntu/hyperledger_ws/config_files/dns_config_template | tee -a /etc/hosts
+    else
+        echo "Warning: /etc/hosts does not exist"
+    fi
     echo "-------------------------------------------"
 SCRIPT
 
@@ -126,7 +148,6 @@ SCRIPT
 $prepareOrderer = <<-SCRIPT
     echo "-------------------------------------------"
     echo "Preparing Orderer node at node `hostname`"
-    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/setup_scripts/prepare_orderer.sh'
     echo "-------------------------------------------"
 SCRIPT
 
@@ -161,14 +182,15 @@ Vagrant.configure("2") do |config|
                 override.vm.synced_folder '.', '/vagrant', disabled: true  # this share is created by default. Specify the synchronization method between the host and the remote VM. Default value is "rsync". If your OpenStack image does not include rsync, you must set to "none".
                 override.vm.synced_folder './shared', '/home/ubuntu/hyperledger_ws/', type: 'rsync'  #   rsync and none as types present some bugs.
                 # note that: the os.user_data script will run before the inline script below
-                os.user_data = """#!/bin/bash
-                    echo '127.0.0.1 #{opts[:name]}' | tee -a /etc/hosts
-                    echo 'nameserver 8.8.8.8'       | tee -a /etc/resolv.conf
-                """
+                # echo '127.0.0.1 #{opts[:name]}' | tee -a /etc/hosts
+                # os.user_data = """#!/bin/bash
+                #    echo '127.0.0.1 localhost' | tee -a /etc/hosts
+                #    echo 'nameserver 8.8.8.8'  | tee -a /etc/resolv.conf
+                # """
             end
             
             # for all:
-            node.vm.provision "shell", inline: $setSSHconfig
+            node.vm.provision "shell", inline: $setSSHDNSconfig
             node.vm.provision "shell", inline: $installprereqs
             node.vm.provision "shell", inline: $checkprereqs
             node.vm.provision "shell", inline: $bootstrapBinaries
@@ -178,9 +200,6 @@ Vagrant.configure("2") do |config|
                 node.vm.provision "shell", inline: $installMSPserver
             end
 
-            if opts[:type] == "orderer"
-                #node.vm.provision "shell", inline: $prepareOrderer
-            end
         end
 
         # Genenrate a ssh config file based onf the information from each host
@@ -211,5 +230,6 @@ Vagrant.configure("2") do |config|
     File.open("./shared/config_files/dns_config_template", "w+") do |f|
         dns_config.each { |element| f.puts(element[:ipadd].to_s + "   " + element[:hostname].to_s) }
     end
+
 
 end 

@@ -1,8 +1,11 @@
+
 #############################################################################
-#   CA Server Client YAML file for the CA Server Admin
+#   ACME Admin Client YAML file 
 #   Changes to the CSR
 #############################################################################
-
+# File originally at: 
+# ../setup/config/multi-org-ca/yaml.0/acme/fabric-ca-client-config.yaml
+#
 #############################################################################
 # Client Configuration
 #############################################################################
@@ -12,19 +15,10 @@
 url: http://192.168.1.10:7054
 
 # Membership Service Provider (MSP) directory
-# This is useful when the client is used to enroll a peer or orderer, so
-# that the enrollment artifacts are stored in the format expected by MSP.
 mspdir: msp
 
 #############################################################################
-#    TLS section for secure socket connection
-#
-#  certfiles - PEM-encoded list of trusted root certificate files
-#  client:
-#    certfile - PEM-encoded certificate file for when client authentication
-#    is enabled on server
-#    keyfile - PEM-encoded key file for when client authentication
-#    is enabled on server
+#    TLS Disabled by default
 #############################################################################
 tls:
   # TLS section for secure socket connection
@@ -37,16 +31,17 @@ tls:
 #
 #############################################################################
 csr:
-  cn: admin
+  cn: bcom-admin
   serialnumber:
   names:
     - C: FR
       ST: "Bretagne"
       L:  "Rennes"
-      O:  Bcom
+      O:  bcom
       OU: 
   hosts:
-    - msp-root-bcom
+    #- acme.com
+    - msp-org-admin-bcom
     - localhost
 
 #############################################################################
@@ -57,10 +52,10 @@ id:
   name: XYZ
   # By default the type is set to be user
   type: user
-  # Default org is acme - make sure the org is set up in CA server :-)
+  # Default org is bcom - make sure the org is set up in CA server :-)
   affiliation: bcom
   # Set to max of 2
-  maxenrollments: -1
+  maxenrollments: 5
   # Adds a custom attribute
   attributes:
   #  - name: myAttribute:ecert
@@ -68,7 +63,6 @@ id:
 
 #############################################################################
 #  Enrollment section used to enroll an identity with fabric-ca server
-#
 #  profile - Name of the signing profile to use in issuing the certificate
 #  label - Label to use in HSM operations
 #############################################################################

@@ -1,17 +1,16 @@
 
 #############################################################################
-#   Orange Admin Client YAML file 
+#   Peer 2 identity Client YAML file 
 #   Changes to the CSR
 #############################################################################
 # File originally at: 
-# ../setup/config/multi-org-ca/yaml.0/budget/fabric-ca-client-config.yaml
+# ../setup/config/multi-org-ca/yaml.0/identities/orderer/fabric-ca-client-config.yaml
 #
 #############################################################################
 # Client Configuration
 #############################################################################
 
 # URL of the Fabric-ca-server (default: http://localhost:7054)
-# url: http://localhost:7054
 url: http://192.168.1.10:7054
 
 # Membership Service Provider (MSP) directory
@@ -31,35 +30,27 @@ tls:
 #
 #############################################################################
 csr:
-  cn: orange-admin
+  cn: peer2
   serialnumber:
   names:
-    - C: US
-      ST: "California"
-      L:  "Los Angeles"
-      O:  orange
+    - C: FR
+      ST: "Bretagne"
+      L:  "Rennes"
+      O:  bcom
       OU: 
   hosts:
-    # - budget.com
-    - org1-msp-1
+    - peer2-bcom
     - localhost
 
 #############################################################################
 #  Registration section used to register a new identity with fabric-ca server
 #############################################################################
 id:
-  # Must override the name
-  name: 
-  # By default the type is set to be user
-  type: user
-  # Default org is acme - make sure the org is set up in CA server :-)
-  affiliation: orange
-  # Set to max of 2
-  maxenrollments: 2
-  # Adds a custom attribute
+  name: peer2
+  type: peer
+  affiliation: bcom
+  maxenrollments: 0
   attributes:
-  #  - name: myAttribute:ecert
-  #    value: val
 
 #############################################################################
 #  Enrollment section used to enroll an identity with fabric-ca server
