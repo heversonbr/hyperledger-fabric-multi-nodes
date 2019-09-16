@@ -19,5 +19,5 @@ CHANNELID=mychannelid
 
 echo    '================ Writing $CHANNELID ================'
 configtxgen -profile $PROFILE -outputCreateChannelTx $OUTPUT_CHANNEL -channelID $CHANNELID
-echo "you can use 'configtxgen -inspectChannelCreateTx  <$OUTPUT_CHANNEL>' to verifiy the generated channel "
+echo "you can use ' configtxgen -inspectChannelCreateTx  $OUTPUT_CHANNEL ' to verifiy the generated channel "
 echo    '======= Done. Launch by executing orderer ======'

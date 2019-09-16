@@ -27,6 +27,10 @@ fi
 
 
 # Set up the environment variables
+# this is important for all peers related scripts 
+# NOTE: FABRIC_CFG_PATH is set in set-env.sh below 
+#       FABRIC_CFG_PATH="$FABRIC_CFG_PATH/$ORG_NAME/$PEER_NAME"
+
 source set-env.sh
 ./list_env_vars.sh
 
@@ -46,6 +50,7 @@ sudo -E $HYPERLEDGER_HOME/bin/peer node start 2> $PEER_LOGS/peer.log &
 
 echo "====>PLEASE Check Peer Log under $PEER_LOGS/peer.log"
 echo "###################################################"
-cat $PEER_LOGS/peer.log
+sleep 3
+cat "$PEER_LOGS/peer.log"
 echo "###################################################"
 echo "====>Make sure there are no errors!!!"

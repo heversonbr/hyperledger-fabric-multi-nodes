@@ -22,5 +22,5 @@ for FILE in `ls $FABRIC_CA_SERVER_HOME/ | grep -v ca-server.log`; do
     fi
 done
 
-echo "removing config files in $FABRIC_CA_CLIENT_HOME"
-rm -Rf $FABRIC_CA_CLIENT_HOME
+echo "removing config files in $BASE_FABRIC_CA_CLIENT_HOME"
+rm -Rf $BASE_FABRIC_CA_CLIENT_HOME

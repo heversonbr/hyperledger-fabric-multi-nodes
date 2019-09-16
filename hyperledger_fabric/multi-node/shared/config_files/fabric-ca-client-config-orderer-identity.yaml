@@ -49,7 +49,7 @@ id:
   name:
   type: user
   affiliation: orderer
-  maxenrollments: 0
+  maxenrollments: 2
   attributes:
 
 #############################################################################
