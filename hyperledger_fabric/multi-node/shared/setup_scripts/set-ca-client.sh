@@ -7,7 +7,7 @@ function usage {
     echo    "-------------------------------------------------------------------"
     echo    " Sets the FABRIC_CA_CLIENT_HOME based on (a) org (b) enrollment ID "
     echo    " USAGE: .  ./set-ca-client.sh ORG-Name Enrollment-ID"
-    echo    "   ex:  .  ./set-ca-client.sh bcom admin            "
+    echo    "   ex:  .  ./set-ca-client.sh org1 admin            "
     echo    "-------------------------------------------------------------------"
     echo    "  the . before ./ is required to source the file"        
     echo    "  current FABRIC_CA_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME"

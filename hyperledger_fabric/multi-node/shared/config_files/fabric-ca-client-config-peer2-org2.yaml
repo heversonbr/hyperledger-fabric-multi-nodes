@@ -36,10 +36,10 @@ csr:
     - C: FR
       ST: "Bretagne"
       L:  "Rennes"
-      O:  bcom
+      O:  org2
       OU: 
   hosts:
-    - peer2-bcom
+    - peer2-org2
     - localhost
 
 #############################################################################
@@ -48,7 +48,7 @@ csr:
 id:
   name: peer2
   type: peer
-  affiliation: bcom
+  affiliation: org2
   maxenrollments: 0
   attributes:
 

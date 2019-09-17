@@ -47,13 +47,13 @@ General:
     # orderer. 
     # LocalMSPDir: ./crypto-config/ordererOrganizations/acme.com/orderers/orderer.acme.com/msp
     #LocalMSPDir: ../../ca/multi-org-ca/client/orderer/orderer/msp
-    LocalMSPDir: ../../ca-client/orderer/orderer/msp
+    LocalMSPDir: ../../ca-client/orderer/msp
 
     # Identity to register the local MSP material with the MSP
     LocalMSPID: OrdererMSP
 
     # Listen address: The IP on which to bind to listen.
-    ListenAddress: 192.168.1.13
+    ListenAddress: 192.168.1.14
 
     # Listen port: The port on which to bind to listen.
     ListenPort: 7050

@@ -19,26 +19,25 @@ crlsizelimit: 512000
 #############################################################################
 ca:
   # Unique Name (across the network) of this CA
-  name: bcom-ca
+  name: ca-root
   # Key file (is only used to import a private key into BCCSP)
-  keyfile:
+  keyfile: 
   # Certificate file (default: ca-cert.pem)
   certfile:
   # Chain file - contains certificates that may be trusted
   chainfile:
 #############################################################################
 # Affiliations are hierarchical in nature. 
+# note that, these affiliations below are simple examples. 
+# i've tried 
 #############################################################################
 affiliations:
-   bcom:
-      - accounting
-      #- logistics
-      #- accounting
-      #- b2b
+   org1:
+      - dept1
+   org2:
+      - dept1
    orderer:
-      - support
-   orange:
-      - b2b
+      - dept1
 #############################################################################
 #  Used for ID registry setup
 #############################################################################
@@ -79,15 +78,15 @@ registry:
 #  - C is the country
 ###########################################################################
 csr:
-   cn: Bcom-CA
+   cn: Org1-CA
    names:
       - C: FR
         ST: "Bretagne"
         L: Rennes
-        O: Bcom
+        O: org1
         OU: 
    hosts:
-     - msp-root-bcom
+     - msp-root-org1
      - localhost
    ca:
       expiry: 131400h
@@ -132,8 +131,6 @@ tls:
     type: noclientcert
     certfiles:
 
-
-
 #############################################################################
 # This section contains configuration options that are used
 # during gencrl request processing.
@@ -141,7 +138,6 @@ tls:
 crl:
   # Specifies expiration for the generated CRL. 
   expiry: 24h
-
 
 
 #############################################################################

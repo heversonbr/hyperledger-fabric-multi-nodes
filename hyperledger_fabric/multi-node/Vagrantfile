@@ -8,7 +8,7 @@ require 'vagrant-openstack-provider'
 
 cluster = [
     {
-        :name => "msp-root-bcom",
+        :name => "msp-root-org1",
         :type => "caserver",
         :username => "ubuntu",
         :box => "hbr_ubuntu1604_img",
@@ -18,7 +18,7 @@ cluster = [
         :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"  
     },
     {
-        :name => "msp-org-admin-bcom",
+        :name => "msp-admin-org1",
         :type => "msp-admin",
         :username => "ubuntu",
         :box => "hbr_ubuntu1604_img",
@@ -28,7 +28,7 @@ cluster = [
         :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
     },
     {
-        :name => "msp-org-admin-orange",
+        :name => "msp-admin-org2",
         :type => "msp-admin",
         :username => "ubuntu",
         :box => "hbr_ubuntu1604_img",
@@ -38,7 +38,7 @@ cluster = [
         :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
     },
     {
-        :name => "msp-org-admin-orderer",
+        :name => "msp-admin-orderer",
         :type => "msp-admin",
         :username => "ubuntu",
         :box => "hbr_ubuntu1604_img",
@@ -48,7 +48,7 @@ cluster = [
         :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
     },
     {
-        :name => "ordering-0-orderer",
+        :name => "ordering-0",
         :type => "orderer",
         :username => "ubuntu",
         :box => "hbr_ubuntu1604_img",
@@ -58,7 +58,7 @@ cluster = [
         :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
     },
     {
-        :name => "peer1-bcom",
+        :name => "peer1-org1",
         :type => "peer",
         :username => "ubuntu",
         :box => "hbr_ubuntu1604_img",
@@ -68,13 +68,33 @@ cluster = [
         :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
     },
     {
-        :name => "peer1-orange",
+        :name => "peer1-org2",
         :type => "peer",
         :username => "ubuntu",
         :box => "hbr_ubuntu1604_img",
         :flavor => "j1.small",
         :netid =>  "d085327f-2cea-4e14-8784-764ee72b92f4",
         :netadd => "192.168.1.16",
+        :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
+    },
+    {
+        :name => "peer2-org1",
+        :type => "peer",
+        :username => "ubuntu",
+        :box => "hbr_ubuntu1604_img",
+        :flavor => "j1.small",
+        :netid =>  "d085327f-2cea-4e14-8784-764ee72b92f4",
+        :netadd => "192.168.1.17",
+        :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
+    },
+    {
+        :name => "peer2-org2",
+        :type => "peer",
+        :username => "ubuntu",
+        :box => "hbr_ubuntu1604_img",
+        :flavor => "j1.small",
+        :netid =>  "d085327f-2cea-4e14-8784-764ee72b92f4",
+        :netadd => "192.168.1.18",
         :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
     }
 

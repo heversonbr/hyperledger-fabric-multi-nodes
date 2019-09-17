@@ -33,13 +33,13 @@ csr:
   cn: peer1
   serialnumber:
   names:
-    - C: US
-      ST: "New York"
-      L:  "Newark"
-      O:  bcom
+    - C: FR
+      ST: "Bretagne"
+      L:  "Rennes"
+      O:  org2
       OU: 
   hosts:
-    - peer1-bcom
+    - peer1-org2
     - localhost
 
 #############################################################################
@@ -48,7 +48,7 @@ csr:
 id:
   name: peer1
   type: peer
-  affiliation: bcom
+  affiliation: org2
   maxenrollments: 0
   attributes:
 

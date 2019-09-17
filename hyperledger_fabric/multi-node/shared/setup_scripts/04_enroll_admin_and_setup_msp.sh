@@ -8,9 +8,9 @@
 usage(){
     echo "-------------------------------------------------------------"
     echo "USAGE: ./04_enroll_admin_and_setup_msp.sh <org_name> <ca-admin_HOSTNAME> <ca-admin_host_IP>"
-    echo "   EX: ./04_enroll_admin_and_setup_msp.sh bcom    msp-root-bcom 192.168.1.10"
-    echo "   EX: ./04_enroll_admin_and_setup_msp.sh orange  msp-root-bcom 192.168.1.10"
-    echo "   EX: ./04_enroll_admin_and_setup_msp.sh orderer msp-root-bcom 192.168.1.10"
+    echo "   EX: ./04_enroll_admin_and_setup_msp.sh org1    msp-root-org1 192.168.1.10"
+    echo "   EX: ./04_enroll_admin_and_setup_msp.sh org2    msp-root-org1 192.168.1.10"
+    echo "   EX: ./04_enroll_admin_and_setup_msp.sh orderer msp-root-org1 192.168.1.10"
     echo "-------------------------------------------------------------"
     exit
 }

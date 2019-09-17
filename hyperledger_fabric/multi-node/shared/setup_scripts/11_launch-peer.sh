@@ -3,7 +3,12 @@
 function usage {
     echo "  Sets the environment variables for the peer & then launches it"
     echo " "
-    echo ". ./launch-peer.sh  <org_name> <peer_name> [<PEER_IP_ADDRESS> default=localhost] [<PORT_NUMBER> default=7050] [IDENTITY default=peer-name]"
+    echo ". ./launch-peer_new.sh  <org_name> <peer_name> [<PEER_IP_ADDRESS> default=localhost] [<PORT_NUMBER> default=7050] [IDENTITY default=peer-name]"
+    echo ". ./launch-peer_new.sh  org1 peer1 192.168.1.15"
+    echo ". ./launch-peer_new.sh  org1 peer2 192.168.1.17"
+    echo ". ./launch-peer_new.sh  org2 peer1 192.168.1.16"
+    echo ". ./launch-peer_new.sh  org2 peer2 192.168.1.18"
+
 }
 
 # Change this to appropriate level
@@ -85,36 +90,34 @@ export FABRIC_CFG_PATH="$FABRIC_CFG_PATH/$ORG_NAME/$PEER_NAME"
 echo "FABRIC_CFG_PATH: $FABRIC_CFG_PATH"
 
 ############################################################################
-export NODECHAINCODE="$FABRIC_CFG_PATH/nodechaincode"
-export CORE_PEER_FILESYSTEM_PATH="/var/ledgers/$ORG_NAME/$PEER_NAME/ledger" 
-
-# This is to avoid Port Number contention
-VAR=$((PORT_NUMBER_BASE+1))
-export CORE_PEER_LISTENADDRESS=$PEER_IP_ADD:$VAR
-export CORE_PEER_ADDRESS=$PEER_IP_ADD:$VAR
-VAR=$((PORT_NUMBER_BASE+2))
-export CORE_PEER_CHAINCODELISTENADDRESS=$PEER_IP_ADD:$VAR
-VAR=$((PORT_NUMBER_BASE+3))
-export CORE_PEER_EVENTS_ADDRESS=$PEER_IP_ADD:$VAR
-
-# All Peers will connect to this - peer 
-export CORE_PEER_GOSSIP_BOOTSTRAP=$PEER_IP_ADD:7051
+#export NODECHAINCODE="$FABRIC_CFG_PATH/nodechaincode"
+#export CORE_PEER_FILESYSTEM_PATH="/var/ledgers/$ORG_NAME/$PEER_NAME/ledger" 
+#
+## This is to avoid Port Number contention
+#VAR=$((PORT_NUMBER_BASE+1))
+#export CORE_PEER_LISTENADDRESS=$PEER_IP_ADD:$VAR
+#export CORE_PEER_ADDRESS=$PEER_IP_ADD:$VAR
+#VAR=$((PORT_NUMBER_BASE+2))
+#export CORE_PEER_CHAINCODELISTENADDRESS=$PEER_IP_ADD:$VAR
+#VAR=$((PORT_NUMBER_BASE+3))
+#export CORE_PEER_EVENTS_ADDRESS=$PEER_IP_ADD:$VAR
+#
+## All Peers will connect to this - peer 
+#export CORE_PEER_GOSSIP_BOOTSTRAP=$PEER_IP_ADD:7051
 
 export PEER_LOGS=$FABRIC_CFG_PATH
+mkdir -p $PEER_LOGS
 ##########################################################################################################
 
 
 ./list_env_vars.sh
 
-# export CORE_PEER_FILESYSTEMPATH="/var/ledgers/$ORG_NAME/$PEER_NAME/ledger" 
-
 # Create the ledger folders
 # To retain the environment vars we need to use -E flag with sudo
-#sudo -E mkdir -p $CORE_PEER_FILESYSTEMPATH
-sudo -E mkdir -p $CORE_PEER_FILESYSTEM_PATH
+# sudo -E mkdir -p $CORE_PEER_FILESYSTEM_PATH
 
 # Create the folder for the logs
-mkdir -p $PEER_LOGS
+
 cp $BASE_CONFIG_FILES/core-$ORG_NAME-$PEER_NAME.yaml   $FABRIC_CFG_PATH/core.yaml
 
 # Start the peer

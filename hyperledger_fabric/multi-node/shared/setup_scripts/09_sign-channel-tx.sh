@@ -1,6 +1,6 @@
 # Sign the airline channel tx file org admins
-# E.g.,   ./sign-channel-tx.sh   bcom       Signs the file with bcom admin certificate/key
-# E.g.,   ./sign-channel-tx.sh   orange     Signs the file with orange admin certificate/key
+# E.g.,   ./sign-channel-tx.sh   org1       Signs the file with org1 admin certificate/key
+# E.g.,   ./sign-channel-tx.sh   org2     Signs the file with org2 admin certificate/key
 function usage {
     echo "./sign-channel-tx.sh ORG_NAME"
     echo " Signs the channel transaction file with identity of admin from ORG_ADMIN"
@@ -19,7 +19,7 @@ fi
 # this is important for all orderer related scripts (the base FABRIC_CFG_PATH=$HYPERLEDGER_HOME/fabric)
 export FABRIC_CFG_PATH=$FABRIC_CFG_PATH/orderer
 echo "FABRIC_CFG_PATH: $FABRIC_CFG_PATH"
-cp $BASE_CONFIG_FILES/core-orderer.yaml $FABRIC_CFG_PATH/core.yaml
+cp $BASE_CONFIG_FILES/core-orderer-node.yaml $FABRIC_CFG_PATH/core.yaml
 
 
 # Variable holds path to the channel tx file

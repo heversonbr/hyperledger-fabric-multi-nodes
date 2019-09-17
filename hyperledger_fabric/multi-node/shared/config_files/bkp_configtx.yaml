@@ -15,7 +15,8 @@ Organizations:
  - &Orderer
    Name: Orderer
    ID: OrdererMSP
-   MSPDir: ../../ca-client/orderer/msp
+   #MSPDir: ./crypto-config/ordererOrganizations/acme.com/msp
+   MSPDir: ../../ca/multi-org-ca/client/orderer/msp
    Policies: &OrdererPolicies
      Readers:
          Type: Signature
@@ -27,20 +28,21 @@ Organizations:
          Type: Signature
          Rule: "OR('OrdererMSP.admin')"
 
- - &Org1
-   Name: Org1
-   ID: Org1MSP
-   MSPDir: ../../ca-client/org1/msp
-   Policies: &Org1Policies
+ - &Acme
+   Name: Acme
+   ID: AcmeMSP
+   #MSPDir: ./crypto-config/peerOrganizations/acme.com/msp
+   MSPDir: ../../ca/multi-org-ca/client/acme/msp
+   Policies: &AcmePolicies
      Readers:
          Type: Signature
-         Rule: "OR('Org1MSP.member')"
+         Rule: "OR('AcmeMSP.member')"
      Writers:
          Type: Signature
-         Rule: "OR('Org1MSP.member')"
+         Rule: "OR('AcmeMSP.member')"
      Admins:
          Type: Signature
-         Rule: "OR('Org1MSP.admin')"
+         Rule: "OR('AcmeMSP.admin')"
    AnchorPeers:
      - Host: localhost
        Port: 7051
@@ -51,7 +53,7 @@ Orderer: &OrdererDefaults
  OrdererType: solo
 
  Addresses:
-   - 192.168.1.14:7050
+   - localhost:7050
 
    # Policies for Orderer
  Policies:
@@ -185,7 +187,7 @@ Channel: &ChannelDefaults
  #   PROFILES
 Profiles:
 
- MyOrdererGenesisProfile:
+ AirlineOrdererGenesis:
      <<: *ChannelDefaults
      Orderer:
          <<: *OrdererDefaults
@@ -197,21 +199,21 @@ Profiles:
            <<: *ApplicationDefaults
 
            Organizations:
-               - <<: *Org1              
+               - <<: *Acme              
 
      Consortiums:
 
-       MyConsortium:
+       AirlineConsortium:
           
            Organizations:
-                 - <<: *Org1                              
+                 - <<: *Acme                              
                 
- MyChannelProfile:
+ AirlineChannel:
    <<: *ChannelDefaults
-   Consortium: MyConsortium
+   Consortium: AirlineConsortium
       
    Application:
        <<: *ApplicationDefaults
       
        Organizations:
-           - <<: *Org1
+           - <<: *Acme

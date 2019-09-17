@@ -6,7 +6,10 @@
 usage(){
     echo "------------------------------------------------------------------------"
     echo "USAGE: ./11_peer_enroll.sh <peer_name> <peer_pw> <org_name> <org-admin_HOSTNAME>"
-    echo "   ex: ./11_peer_enroll.sh peer1 pw bcom"
+    echo "   ex: ./11_peer_enroll.sh peer1 pw org1 msp-admin-org1"
+    echo "   ex: ./11_peer_enroll.sh peer2 pw org1 msp-admin-org1"
+    echo "   ex: ./11_peer_enroll.sh peer1 pw org2 msp-admin-org2"
+    echo "   ex: ./11_peer_enroll.sh peer2 pw org2 msp-admin-org2"
     echo "------------------------------------------------------------------------"
     exit
 }
@@ -22,6 +25,8 @@ CA_ORG_ADMIN_HOSTNAME=$4
 
 TYPE=peer
 CA_SERVER_HOST_IP=192.168.1.10
+
+SOURCE_CONFIG_CLIENT_YAML="$BASE_CONFIG_FILES/fabric-ca-client-config-$PEER_NAME-$ORG_NAME.yaml"
 
 # ---------------------------------------
 echo  "###############################################"
@@ -40,8 +45,6 @@ echo "now FABRIC_CA_CLIENT_HOME= $FABRIC_CA_CLIENT_HOME"
 ## CA_CLIENT_HOME ==  FABRIC_CA_CLIENT_HOME
 
 # Step-2 Copies the YAML file for CSR setup
-SOURCE_CONFIG_CLIENT_YAML="$BASE_CONFIG_FILES/fabric-ca-client-config-peer1-bcom-identity.yaml"
-
 if [ -f "$FABRIC_CA_CLIENT_HOME/$FABRIC_CA_CLIENT_CONFIG_FILE" ]; then 
     echo "Using $FABRIC_CA_CLIENT_HOME/$FABRIC_CA_CLIENT_CONFIG_FILE for $ORG_NAME / $IDENTITY"
 else

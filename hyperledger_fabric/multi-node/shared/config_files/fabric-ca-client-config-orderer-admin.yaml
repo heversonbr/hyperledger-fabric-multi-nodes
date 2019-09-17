@@ -36,10 +36,10 @@ csr:
     - C: FR
       ST: "Bretagne"
       L:  "Rennes"
-      O:  orderer
+      O: orderer
       OU: 
   hosts:
-    - msp-org-admin-orderer
+    - msp-admin-orderer
     - localhost
 
 #############################################################################
@@ -50,7 +50,7 @@ id:
   name: XYZ
   # By default the type is set to be user
   type: user
-  # Default org is bcom - make sure the org is set up in CA server :-)
+  # Default org is org1 - make sure the org is set up in CA server :-)
   affiliation: orderer
   # Set to max of 2
   maxenrollments: -1

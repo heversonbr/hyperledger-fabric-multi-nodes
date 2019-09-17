@@ -1,16 +1,17 @@
 
 #############################################################################
-#   Orderer Client YAML file 
+#   ACME Admin Client YAML file 
 #   Changes to the CSR
 #############################################################################
 # File originally at: 
-# ../setup/config/multi-org-ca/yaml.0/identities/orderer/fabric-ca-client-config.yaml
+# ../setup/config/multi-org-ca/yaml.0/acme/fabric-ca-client-config.yaml
 #
 #############################################################################
 # Client Configuration
 #############################################################################
 
 # URL of the Fabric-ca-server (default: http://localhost:7054)
+# url: http://localhost:7054
 url: http://192.168.1.10:7054
 
 # Membership Service Provider (MSP) directory
@@ -30,31 +31,37 @@ tls:
 #
 #############################################################################
 csr:
-  cn: orderer
+  cn: org1-admin
   serialnumber:
   names:
     - C: FR
       ST: "Bretagne"
       L:  "Rennes"
-      O:  orderer
+      O: org1
       OU: 
   hosts:
-    - ordering-0-orderer
+    - msp-admin-org1
     - localhost
 
 #############################################################################
 #  Registration section used to register a new identity with fabric-ca server
 #############################################################################
 id:
-  name:
+  # Must override the name
+  name: XYZ
+  # By default the type is set to be user
   type: user
-  affiliation: orderer
-  maxenrollments: 2
+  # Default org is org1 - make sure the org is set up in CA server :-)
+  affiliation: org1
+  # Set to max of 2
+  maxenrollments: 5
+  # Adds a custom attribute
   attributes:
+  #  - name: myAttribute:ecert
+  #    value: val
 
 #############################################################################
 #  Enrollment section used to enroll an identity with fabric-ca server
-#
 #  profile - Name of the signing profile to use in issuing the certificate
 #  label - Label to use in HSM operations
 #############################################################################

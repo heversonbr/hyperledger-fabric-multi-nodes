@@ -1,28 +1,36 @@
-Host msp-root-bcom
+Host msp-root-org1
      User ubuntu
      Hostname 192.168.1.10
      IdentityFile ~/.ssh/openstack_cloudlab_bcom.key
-Host msp-org-admin-bcom
+Host msp-admin-org1
      User ubuntu
      Hostname 192.168.1.11
      IdentityFile ~/.ssh/openstack_cloudlab_bcom.key
-Host msp-org-admin-orange
+Host msp-admin-org2
      User ubuntu
      Hostname 192.168.1.12
      IdentityFile ~/.ssh/openstack_cloudlab_bcom.key
-Host msp-org-admin-orderer
+Host msp-admin-orderer
      User ubuntu
      Hostname 192.168.1.13
      IdentityFile ~/.ssh/openstack_cloudlab_bcom.key
-Host ordering-0-orderer
+Host ordering-0
      User ubuntu
      Hostname 192.168.1.14
      IdentityFile ~/.ssh/openstack_cloudlab_bcom.key
-Host peer1-bcom
+Host peer1-org1
      User ubuntu
      Hostname 192.168.1.15
      IdentityFile ~/.ssh/openstack_cloudlab_bcom.key
-Host peer1-orange
+Host peer1-org2
      User ubuntu
      Hostname 192.168.1.16
+     IdentityFile ~/.ssh/openstack_cloudlab_bcom.key
+Host peer2-org1
+     User ubuntu
+     Hostname 192.168.1.17
+     IdentityFile ~/.ssh/openstack_cloudlab_bcom.key
+Host peer2-org2
+     User ubuntu
+     Hostname 192.168.1.18
      IdentityFile ~/.ssh/openstack_cloudlab_bcom.key

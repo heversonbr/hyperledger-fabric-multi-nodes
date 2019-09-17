@@ -43,10 +43,10 @@ csr:
     - C: FR
       ST: "Bretagne"
       L:  "Rennes"
-      O:  Bcom
+      O: org1
       OU: 
   hosts:
-    - msp-root-bcom
+    - msp-root-org1
     - localhost
 
 #############################################################################
@@ -58,7 +58,7 @@ id:
   # By default the type is set to be user
   type: user
   # Default org is acme - make sure the org is set up in CA server :-)
-  affiliation: bcom
+  affiliation: org1
   # Set to max of 2
   maxenrollments: -1
   # Adds a custom attribute

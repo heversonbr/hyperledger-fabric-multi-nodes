@@ -2,14 +2,11 @@
 
 usage(){
     echo "-------------------------------------------------------------"
-    echo "USAGE: ./10_submit-create-channel.sh  <ORG_NAME> <IDENTITY> [IDENTITY default=admin]  [ORDERER_ADDRESS default=192.168.1.10] [ORDERER_PORT default=7050]"
-    echo "   ex: ./10_submit-create-channel.sh bcom admin"
+    echo "USAGE: ./10_submit-create-channel.sh  <ORG_NAME> <IDENTITY> [IDENTITY default=admin]  [ORDERER_ADDRESS default=192.168.1.14] [ORDERER_PORT default=7050]"
+    echo "   ex: ./10_submit-create-channel.sh org1 admin"
     echo "-------------------------------------------------------------"
     exit
 }
-
-
-
 
 if [ -z $1 ]
 then
@@ -30,7 +27,7 @@ fi
 # ORDERER IP ADD check
 if [ -z $3 ]
 then
-    ADD="192.168.1.10"
+    ADD="192.168.1.14"
 else 
     ADD=$3
 fi

@@ -1,6 +1,6 @@
 
 #############################################################################
-#   Peer 1 identity Client YAML file 
+#   Peer 2 identity Client YAML file 
 #   Changes to the CSR
 #############################################################################
 # File originally at: 
@@ -30,25 +30,25 @@ tls:
 #
 #############################################################################
 csr:
-  cn: peer1
+  cn: peer2
   serialnumber:
   names:
     - C: FR
       ST: "Bretagne"
       L:  "Rennes"
-      O:  orange
+      O:  org1
       OU: 
   hosts:
-    - peer1-orange
+    - peer2-org1
     - localhost
 
 #############################################################################
 #  Registration section used to register a new identity with fabric-ca server
 #############################################################################
 id:
-  name: peer1
+  name: peer2
   type: peer
-  affiliation: orange
+  affiliation: org1
   maxenrollments: 0
   attributes:
 
