@@ -5,11 +5,11 @@
 
 usage(){
     echo "------------------------------------------------------------------------"
-    echo "USAGE: ./11_peer_enroll.sh <peer_name> <peer_pw> <org_name> <org-admin_HOSTNAME>"
-    echo "   ex: ./11_peer_enroll.sh peer1 pw org1 msp-admin-org1"
-    echo "   ex: ./11_peer_enroll.sh peer2 pw org1 msp-admin-org1"
-    echo "   ex: ./11_peer_enroll.sh peer1 pw org2 msp-admin-org2"
-    echo "   ex: ./11_peer_enroll.sh peer2 pw org2 msp-admin-org2"
+    echo "USAGE: ./14_peer_enroll.sh <peer_name> <peer_pw> <org_name> <org-admin_HOSTNAME>"
+    echo "   ex: ./14_peer_enroll.sh peer1 pw org1 msp-admin-org1"
+    echo "   ex: ./14_peer_enroll.sh peer2 pw org1 msp-admin-org1"
+    echo "   ex: ./14_peer_enroll.sh peer1 pw org2 msp-admin-org2"
+    echo "   ex: ./14_peer_enroll.sh peer2 pw org2 msp-admin-org2"
     echo "------------------------------------------------------------------------"
     exit
 }

@@ -5,11 +5,11 @@
 
 usage(){
     echo "------------------------------------------------------------------------"
-    echo "USAGE: ./10_peer_register.sh <peer_name> <peer_pw> <org_name>"
-    echo "   ex: ./10_peer_register.sh peer1 pw org1"
-    echo "   ex: ./10_peer_register.sh peer2 pw org1"
-    echo "   ex: ./10_peer_register.sh peer1 pw org2"
-    echo "   ex: ./10_peer_register.sh peer2 pw org2"
+    echo "USAGE: ./13_peer_register.sh <peer_name> <peer_pw> <org_name>"
+    echo "   ex: ./13_peer_register.sh peer1 pw org1"
+    echo "   ex: ./13_peer_register.sh peer2 pw org1"
+    echo "   ex: ./13_peer_register.sh peer1 pw org2"
+    echo "   ex: ./13_peer_register.sh peer2 pw org2"
     echo "------------------------------------------------------------------------"
     exit
 }

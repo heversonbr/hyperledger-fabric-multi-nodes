@@ -1,5 +1,6 @@
-# Generates the channel transaction
+#!/bin/bash
 
+# Generates the channel transaction
 # # export ORDERER_GENERAL_LOGLEVEL=debug
 # export FABRIC_LOGGING_SPEC=INFO
 # export FABRIC_CFG_PATH=$PWD
@@ -11,7 +12,7 @@
 # -channelID string :   The channel ID to use in the configtx
 
 # this is important for all orderer related scripts (the base FABRIC_CFG_PATH=$HYPERLEDGER_HOME/fabric)
-export FABRIC_CFG_PATH=$FABRIC_CFG_PATH/orderer
+# export FABRIC_CFG_PATH=$FABRIC_CFG_PATH/orderer
 
 PROFILE=MyChannelProfile 
 OUTPUT_CHANNEL=$FABRIC_CFG_PATH/my-channel.tx 

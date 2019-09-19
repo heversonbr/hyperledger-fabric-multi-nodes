@@ -1,10 +1,10 @@
-# Generates genesis block for a channel 
+#!/bin/bash
 
+# Generates genesis block for a channel 
 # export ORDERER_GENERAL_LOGLEVEL=debug
 # export FABRIC_LOGGING_SPEC=INFO
-
 # this is important for all orderer related scripts (the base FABRIC_CFG_PATH=$HYPERLEDGER_HOME/fabric)
-export FABRIC_CFG_PATH=$FABRIC_CFG_PATH/orderer
+# export FABRIC_CFG_PATH=$FABRIC_CFG_PATH/orderer
 
 GENESIS_BLK_NAME=my_genesis.block
 CHANNELID=ordererchannel
@@ -24,7 +24,7 @@ else
 fi
 
 echo "################################################"
-echo "FABRIC_CFG_PATH : $FABRIC_CFG_PATH"
+echo "using FABRIC_CFG_PATH : $FABRIC_CFG_PATH"
 echo "################################################"
 
 cp $BASE_CONFIG_FILES/configtx.yaml $FABRIC_CFG_PATH/
@@ -40,6 +40,9 @@ configtxgen -profile $PROFILE -outputBlock $OUTBLOCK -channelID $CHANNELID
 # profile : the profile from configtx.yaml
 # outputBlock : the path to write the genesis block
 # channelID  :  channel ID to use in the configtx
+echo "#########################################################################################"
 echo "you can use ' configtxgen -inspectBlock $OUTBLOCK ' to verifiy the generated block"
-echo    '================ Done generating the Genesis Block ================'
+echo "NOTE: check the variable FABRIC_CFG_PATH before. it must be : $FABRIC_CFG_PATH "
+echo "#########################################################################################"
+echo        '================ Done generating the Genesis Block ================'
 # ------------------------------

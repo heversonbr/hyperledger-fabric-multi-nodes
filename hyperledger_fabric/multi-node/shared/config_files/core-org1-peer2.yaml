@@ -12,19 +12,19 @@
 peer:
 
     # The Peer id is used for identifying this Peer instance.
-    id: orderer-node
+    id: peer2
 
     # The networkId allows for logical seperation of networks
     networkId: dev
 
     # The Address at local network interface this Peer will listen on.
     # By default, it will listen on all network interfaces
-    listenAddress: 192.168.1.14:7051
+    listenAddress: 192.168.1.17:7051
 
     # The endpoint this peer uses to listen for inbound chaincode connections.
     # If this is commented-out, the listen address is selected to be
     # the peer's address (see below) with port 7052
-    chaincodeListenAddress: 192.168.1.14:7052
+    chaincodeListenAddress: 192.168.1.17:7052
 
     # The endpoint the chaincode for this peer uses to connect to the peer.
     # If this is not specified, the chaincodeListenAddress address is selected.
@@ -36,7 +36,7 @@ peer:
     # in the same organization. For peers in other organization, see
     # gossip.externalEndpoint for more info.
     # When used as CLI config, this means the peer's endpoint to interact with
-    address: 192.168.1.14:7051
+    address: 192.168.1.17:7051
 
     # Whether the Peer should programmatically determine its address
     # This case is useful for docker containers.
@@ -188,7 +188,7 @@ peer:
     # EventHub related configuration
     events:
         # The address that the Event service will be enabled on the peer
-        address: 0.0.0.0:7053
+        address: 192.168.1.17:7053
 
         # total number of events that could be buffered without blocking send
         buffersize: 100
@@ -289,7 +289,7 @@ peer:
     # Path on the file system where peer will find MSP local configurations
     #mspConfigPath: ../../../orderer/multi-org/crypto-config/peerOrganizations/acme.com/users/Admin@acme.com/msp
     #mspConfigPath: ../../../ca/multi-org-ca/client/acme/admin/msp
-    mspConfigPath: ../ca-client/orderer/admin/msp
+    mspConfigPath: ../ca-client/org1/peer2/msp
 
     # Identifier of the local MSP
     # ----!!!!IMPORTANT!!!-!!!IMPORTANT!!!-!!!IMPORTANT!!!!----
@@ -298,7 +298,8 @@ peer:
     # to match the name of one of the MSPs in each of the channel
     # that this peer is a member of. Otherwise this peer's messages
     # will not be identified as valid by other nodes.
-    localMspId: OrdererMSP
+    localMspId: Org1MSP
+    #localMspId: Peer1MSP
 
     # CLI common client config options
     client:
@@ -456,6 +457,7 @@ chaincode:
         # for Java chaincode runtime.
         Dockerfile:  |
             from $(DOCKER_NS)/fabric-javaenv:$(ARCH)-1.1.0
+
     node:
         # need node.js engine at runtime, currently available in baseimage
         # but not in baseos

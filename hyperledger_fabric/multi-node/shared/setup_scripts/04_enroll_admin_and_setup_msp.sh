@@ -62,7 +62,6 @@ fi
 echo "###################################"
 echo "# Enrolling: $ORG_NAME-admin:"
 echo "###################################"
-# Exemple for acme:  fabric-ca-client enroll -u http://acme-admin:pw@localhost:7054
 echo "fabric-ca-client enroll -u http://$ADMIN_USER:$ADMIN_USER_PW@$CA_SERVER_HOST_IP:7054"
 fabric-ca-client enroll -u http://$ADMIN_USER:$ADMIN_USER_PW@$CA_SERVER_HOST_IP:7054
 

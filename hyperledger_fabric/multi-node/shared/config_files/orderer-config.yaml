@@ -47,7 +47,8 @@ General:
     # orderer. 
     # LocalMSPDir: ./crypto-config/ordererOrganizations/acme.com/orderers/orderer.acme.com/msp
     #LocalMSPDir: ../../ca/multi-org-ca/client/orderer/orderer/msp
-    LocalMSPDir: ../../ca-client/orderer/msp
+    # this is information is required when starting the orderer node. (by 10_start_orderer.sh)
+    LocalMSPDir: ../ca-client/orderer/orderer-node/msp
 
     # Identity to register the local MSP material with the MSP
     LocalMSPID: OrdererMSP

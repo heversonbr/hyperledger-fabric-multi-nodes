@@ -3,11 +3,11 @@
 function usage {
     echo "  Sets the environment variables for the peer & then launches it"
     echo " "
-    echo ". ./launch-peer_new.sh  <org_name> <peer_name> [<PEER_IP_ADDRESS> default=localhost] [<PORT_NUMBER> default=7050] [IDENTITY default=peer-name]"
-    echo ". ./launch-peer_new.sh  org1 peer1 192.168.1.15"
-    echo ". ./launch-peer_new.sh  org1 peer2 192.168.1.17"
-    echo ". ./launch-peer_new.sh  org2 peer1 192.168.1.16"
-    echo ". ./launch-peer_new.sh  org2 peer2 192.168.1.18"
+    echo ". ./15_start_peer.sh  <org_name> <peer_name> [<PEER_IP_ADDRESS> default=localhost] [<PORT_NUMBER> default=7050] [IDENTITY default=peer-name]"
+    echo ". ./15_start_peer.sh  org1 peer1 192.168.1.15"
+    echo ". ./15_start_peer.sh  org1 peer2 192.168.1.17"
+    echo ". ./15_start_peer.sh  org2 peer1 192.168.1.16"
+    echo ". ./15_start_peer.sh  org2 peer2 192.168.1.18"
 
 }
 

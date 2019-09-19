@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Creates/Enrolls the Orderer's identity + Sets up MSP for orderer
 # Script may executed multiple times 
 # Similar to the register/enroll made for the orderer admin, but in this case the orderer admin is registering 
@@ -9,8 +11,8 @@
 
 usage(){
     echo "------------------------------------------------------------------------"
-    echo "USAGE: ./06_register_orderer.sh <ORDERER_NAME>  [PEER_PW , default=pw] [ORG_NAME , default=orderer]"
-    echo "   ex: ./06_register_orderer.sh orderer-node [pw] [orderer]"
+    echo "USAGE: ./09_register_orderer.sh <ORDERER_NAME>  [PEER_PW , default=pw] [ORG_NAME , default=orderer]"
+    echo "   ex: ./09_register_orderer.sh orderer-node [pw] [orderer]"
     echo "------------------------------------------------------------------------"
     exit
 }

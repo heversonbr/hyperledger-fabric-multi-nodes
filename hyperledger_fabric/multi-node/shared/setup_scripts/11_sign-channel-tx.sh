@@ -1,10 +1,13 @@
-# Sign the airline channel tx file org admins
-# E.g.,   ./sign-channel-tx.sh   org1       Signs the file with org1 admin certificate/key
-# E.g.,   ./sign-channel-tx.sh   org2     Signs the file with org2 admin certificate/key
+#!/bin/bash
+
+# Sign the channel tx file org admins
+# E.g.,   ./sign-channel-tx.sh   org1  Signs the file with org1 admin certificate/key
+# E.g.,   ./sign-channel-tx.sh   org2  Signs the file with org2 admin certificate/key
 function usage {
-    echo "./sign-channel-tx.sh ORG_NAME"
-    echo " Signs the channel transaction file with identity of admin from ORG_ADMIN"
-    echo " NOTE: Signs the tx file under ./orderer/my-channel.tx "
+    echo "./08_sign-channel-tx.sh ORG_NAME"
+    echo "./08_sign-channel-tx.sh orderer    : Signs the file with orderer admin certificate/key"
+    echo "./08_sign-channel-tx.sh org1       : Signs the file with org1 admin certificate/key"
+    echo " Signs the channel transaction file with identity of admin"
 }
 
 if [ -z $1 ]
@@ -16,15 +19,30 @@ else
     ORG_NAME=$1
 fi
 
-# this is important for all orderer related scripts (the base FABRIC_CFG_PATH=$HYPERLEDGER_HOME/fabric)
-export FABRIC_CFG_PATH=$FABRIC_CFG_PATH/orderer
 echo "FABRIC_CFG_PATH: $FABRIC_CFG_PATH"
+if [ ! -d $FABRIC_CFG_PATH ]; then
+    echo "$FABRIC_CFG_PATH folder does not exist, creating it."
+    mkdir -p $FABRIC_CFG_PATH
+fi
+
 cp $BASE_CONFIG_FILES/core-orderer-node.yaml $FABRIC_CFG_PATH/core.yaml
 
+
+ORDERER_ADMIN_HOSTNAME=msp-admin-orderer
 
 # Variable holds path to the channel tx file
 CHANNEL_TX_FILE=$FABRIC_CFG_PATH/my-channel.tx
 echo "CHANNEL_TX_FILE: $CHANNEL_TX_FILE"
+if [ ! -f CHANNEL_TX_FILE ] ; then
+    echo "File $CHANNEL_TX_FILE does not exist locally. (running from OTHER than orderer?)"
+    echo "Getting CHANNEL_TX_FILE from orderer using scp"
+    echo "scp ubuntu@$ORDERER_ADMIN_HOSTNAME:$FABRIC_CFG_PATH/my-channel.tx $FABRIC_CFG_PATH/"
+    scp ubuntu@$ORDERER_ADMIN_HOSTNAME:$FABRIC_CFG_PATH/my-channel.tx $FABRIC_CFG_PATH/
+else 
+    echo "File $CHANNEL_TX_FILE exists locally. (running from ORDERER?)"
+fi
+
+
 
 IDENTITY="admin"
 # Set the environment variable $1 = ORG_NAME Identity=admin
@@ -42,7 +60,7 @@ export CORE_PEER_LOCALMSPID=$MSP_ID"MSP"
 echo "CORE_PEER_LOCALMSPID: $CORE_PEER_LOCALMSPID"
 echo "Switched Identity to: $ORG_NAME   $IDENTITY"
 
-
+ls -al $CHANNEL_TX_FILE
 # Execute command to sign the tx file in place
 echo "running: peer channel signconfigtx -f $CHANNEL_TX_FILE"
 peer channel signconfigtx -f $CHANNEL_TX_FILE
@@ -52,4 +70,4 @@ echo "====> Check size & timestamp of file $CHANNEL_TX_FILE"
 ls -al $CHANNEL_TX_FILE
 
 # NOTE: The join cannot be execute without a channel created
-# peer channel join -o localhost:7050 -b my-channel.tx
+# peer channel join -o <PEER_IP>:7050 -b my-channel.tx

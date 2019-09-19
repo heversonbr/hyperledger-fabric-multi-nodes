@@ -35,7 +35,7 @@ echo "now FABRIC_CA_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME"
 fabric-ca-client enroll -u http://$USER:$USER_PW@$CA_SERVER_HOST:7054
 
 
-# ./add-admincerts.sh $ORG_NAME $USER
+
 # Create the destination cliet home folder path
 # source set-ca-client.sh $ORG_NAME  $ENROLLMENT_ID
 echo "set DESTINATION_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME"

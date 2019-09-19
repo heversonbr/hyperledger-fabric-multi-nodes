@@ -15,7 +15,7 @@ Organizations:
  - &Orderer
    Name: Orderer
    ID: OrdererMSP
-   MSPDir: ../../ca-client/orderer/msp
+   MSPDir: ../ca-client/orderer/msp  
    Policies: &OrdererPolicies
      Readers:
          Type: Signature
@@ -30,7 +30,7 @@ Organizations:
  - &Org1
    Name: Org1
    ID: Org1MSP
-   MSPDir: ../../ca-client/org1/msp
+   MSPDir: ../ca-client/org1/msp
    Policies: &Org1Policies
      Readers:
          Type: Signature
@@ -42,7 +42,7 @@ Organizations:
          Type: Signature
          Rule: "OR('Org1MSP.admin')"
    AnchorPeers:
-     - Host: localhost
+     - Host: 192.168.1.15
        Port: 7051
 
 #   ORDERER
