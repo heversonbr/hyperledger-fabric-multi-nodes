@@ -86,7 +86,7 @@ export CORE_PEER_LOCALMSPID=$MSP_ID"MSP"
 echo "CORE_PEER_LOCALMSPID: $CORE_PEER_LOCALMSPID"
 
 
-export NODECHAINCODE="$FABRIC_CFG_PATH/nodechaincode"
+export NODECHAINCODE="$FABRIC_CFG_PATH/chaincode_example/nodechaincode"
 export CORE_PEER_FILESYSTEM_PATH="/var/ledgers/$ORG_NAME/$PEER_NAME/ledger" 
 
 # This is to avoid Port Number contention

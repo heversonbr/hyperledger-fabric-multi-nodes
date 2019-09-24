@@ -5,7 +5,7 @@ export ORDERER_FILELEDGER_LOCATION="$FABRIC_CFG_PATH/ledgers/ledger"
 
 if [ ! -d /var/ledgers ]; then
    echo "/var/ledgers does not exist, creating it"
-   mkdir /var/ledgers
+   sudo mkdir /var/ledgers
 fi
 sudo chown ubuntu:ubuntu /var/ledgers/
 

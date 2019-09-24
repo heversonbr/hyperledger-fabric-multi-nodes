@@ -11,8 +11,8 @@
 
 usage(){
     echo "------------------------------------------------------------------------"
-    echo "USAGE: ./09_register_orderer.sh <ORDERER_NAME>  [PEER_PW , default=pw] [ORG_NAME , default=orderer]"
-    echo "   ex: ./09_register_orderer.sh orderer-node [pw] [orderer]"
+    echo "USAGE: ./08_register_orderer-node.sh <ORDERER_NAME>  [PEER_PW , default=pw] [ORG_NAME , default=orderer]"
+    echo "   ex: ./08_register_orderer-node.sh orderer-node [pw] [orderer]"
     echo "------------------------------------------------------------------------"
     exit
 }

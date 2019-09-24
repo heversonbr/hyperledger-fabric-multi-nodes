@@ -1,0 +1,42 @@
+require 'vagrant-openstack-provider'
+
+Vagrant.configure('2') do |config|
+
+  config.ssh.username = "ubuntu"
+  config.ssh.private_key_path = '/home/rheverson/.ssh/openstack_cloudlab_bcom.pem'
+
+  config.vm.provider :openstack do |os|
+    os.openstack_auth_url = 'http://10.50.0.103:5000/v2.0'
+    os.username = 'rheverson'
+    os.password = '1234'
+    os.tenant_name = 'hbr_test'
+    os.security_groups = ['default']
+    os.availability_zone = 'nova'
+    os.region = 'regionOne'
+    os.flavor = 'j1.small'
+    os.image = 'hbr_ubuntu1604_img'
+    os.networks = 'd085327f-2cea-4e14-8784-764ee72b92f4'    # id network hbr_net_test2  (hyper)
+    # os.networks = '2a7f5866-ded3-45ea-b263-5826a997de2a'  # id network hbr_net_test1  (k8s)
+    # os.networks = '0ed56125-8083-4fd8-9c46-4e4e29ce50f6'  # id network hbr_net_test3  (gluster)
+    
+    os.keypair_name = 'openstack_cloudlab_bcom'
+  end
+
+  config.vm.define 'vmtype1' do |s|
+    s.vm.provider :openstack do |os, override|
+      override.vm.synced_folder '.', '/vagrant', disabled: true  # this share is created by default. Specify the synchronization method between the host and the remote VM. Default value is "rsync". If your OpenStack image does not include rsync, you must set to "none".
+      override.vm.synced_folder '.', '/home/ubuntu/hyperledger_ws/', type: 'rsync'  #   rsync and none as types present some bugs.
+      os.floating_ip_pool   = 'ext_net'
+      os.server_name = 'myhost-1'
+      os.user_data = """#!/bin/bash
+        set -x
+        echo '127.0.0.1  myhost-1' >> /etc/hosts
+      """
+    end
+  end
+
+  
+  #config.vm.provision "shell", path: "/home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/scripts/fabric_prereqs.sh"
+
+end
+

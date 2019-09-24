@@ -5,14 +5,15 @@
 Vagrant.configure('2') do |config|
 
     config.vm.provider "virtualbox" do |v|
-      v.memory = 2048
+      v.memory = 256
       v.cpus = 1
     end
 
-    
-    config.vm.define "server-1" do |s|
+    (1..2).each do |i|
+      config.vm.define "server-#{i}" do |s|
         s.vm.box = "ubuntu/xenial64"
-        s.vm.network :private_network, ip: "192.168.0.10" 
-        s.vm.hostname = "server-1"
-    end
-end
+        s.vm.network :private_network, ip: "192.168.0.1#{i}" 
+        s.vm.hostname = "server-#{i}"
+      end
+     end
+  end

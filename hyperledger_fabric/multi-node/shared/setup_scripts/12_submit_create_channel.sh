@@ -4,8 +4,8 @@
 
 usage(){
     echo "-------------------------------------------------------------"
-    echo "USAGE: ./12_submit-create-channel.sh  <ORG_NAME> <IDENTITY> [IDENTITY default=admin]  [ORDERER_ADDRESS default=192.168.1.14] [ORDERER_PORT default=7050]"
-    echo "   ex: ./12_submit-create-channel.sh  org1 admin"
+    echo "USAGE: ./12_submit_create_channel.sh  <ORG_NAME> <IDENTITY> [IDENTITY default=admin]  [ORDERER_ADDRESS default=192.168.1.14] [ORDERER_PORT default=7050]"
+    echo "   ex: ./12_submit_create_channel.sh  org1  admin"
     echo "-------------------------------------------------------------"
     exit
 }
@@ -77,9 +77,11 @@ fi
 echo "Getting CHANNEL_TX_FILE and core.yaml from orderer using scp"
 echo "scp ubuntu@$ORDERER_ADMIN_HOSTNAME:$ORDERER_FABRIC_CFG_PATH/my-channel.tx $FABRIC_CFG_PATH/"
 scp ubuntu@$ORDERER_ADMIN_HOSTNAME:$ORDERER_FABRIC_CFG_PATH/my-channel.tx $FABRIC_CFG_PATH/
-echo "scp ubuntu@$ORDERER_ADMIN_HOSTNAME:$ORDERER_FABRIC_CFG_PATH/core.yaml $FABRIC_CFG_PATH/"
-scp ubuntu@$ORDERER_ADMIN_HOSTNAME:$ORDERER_FABRIC_CFG_PATH/core.yaml $FABRIC_CFG_PATH/
 
+# TODO: check if I really need to copy this core.yaml here!!!!
+#echo "scp ubuntu@$ORDERER_ADMIN_HOSTNAME:$ORDERER_FABRIC_CFG_PATH/core.yaml $FABRIC_CFG_PATH/"
+#scp ubuntu@$ORDERER_ADMIN_HOSTNAME:$ORDERER_FABRIC_CFG_PATH/core.yaml $FABRIC_CFG_PATH/
+cp $BASE_CONFIG_FILES/core-orderer-node.yaml $FABRIC_CFG_PATH/core.yaml
 
 echo "#######################################################################"
 echo "#######################################################################"
@@ -108,7 +110,7 @@ echo "# Submit the channel create transation"
 echo "#######################################################################"
 
 echo "running: peer channel create -o $ORDERER_ADDRESS_PORT -c $CHANNELID -f $FABRIC_CFG_PATH/$CHANNEL_TX_FILE"
-# peer channel create -o $ORDERER_ADDRESS_PORT -c $CHANNELID -f $FABRIC_CFG_PATH/$CHANNEL_TX_FILE
+peer channel create -o $ORDERER_ADDRESS_PORT -c $CHANNELID -f $FABRIC_CFG_PATH/$CHANNEL_TX_FILE
 echo "#######################################################################"
 echo "====> Done. Check Orderer logs for any errors !!!"
 

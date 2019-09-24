@@ -11,9 +11,9 @@
 
 usage(){
     echo "------------------------------------------------------------------------"
-    echo "USAGE: ./10_enroll_orderer.sh <ORDERER_NAME>  [ORDERER_PW , default=pw] [ORG_NAME , default=orderer] [<ORG-ADMIN-HOSTNAME , default=msp-admin-orderer]"
-    echo "   ex: ./10_enroll_orderer.sh orderer-node pw orderer msp-admin-orderer"
-    echo "   ex: ./10_enroll_orderer.sh orderer-node "
+    echo "USAGE: ./09_enroll_orderer-node.sh <ORDERER_NAME>  [ORDERER_PW , default=pw] [ORG_NAME , default=orderer] [<ORG-ADMIN-HOSTNAME , default=msp-admin-orderer]"
+    echo "   ex: ./09_enroll_orderer-node.sh orderer-node pw orderer msp-admin-orderer"
+    echo "   ex: ./09_enroll_orderer-node.sh orderer-node "
     echo "------------------------------------------------------------------------"
     exit
 }
@@ -41,7 +41,7 @@ then
     ORG_NAME="orderer"
     echo "ORG_NAME=$ORG_NAME"
 else
-    ORG_NAME=$2
+    ORG_NAME=$3
 fi
 
 if [ -z $4 ]

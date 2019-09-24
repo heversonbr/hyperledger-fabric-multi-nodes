@@ -4,8 +4,8 @@
 
 usage(){
     echo "-------------------------------------------------------------"
-    echo "USAGE: ./05_get_remote_pub_certs.sh <org_name> [admin_HOSTNAME , default=msp-admin-ORG_NAME]"
-    echo "   EX: ./05_get_remote_pub_certs.sh org1  [msp-admin-org1] "
+    echo "USAGE: ./05_get_org-pub-certs <org_name> [admin_HOSTNAME , default=msp-admin-ORG_NAME]"
+    echo "   EX: ./05_get_org-pub-certs    org1    [msp-admin-org1] "
     echo "-------------------------------------------------------------"
     exit
 }
