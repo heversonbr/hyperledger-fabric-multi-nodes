@@ -21,12 +21,20 @@ package main
 //to be modified as well with the new ID of chaincode_example02.
 //chaincode_example05 show's how chaincode ID can be passed in as a parameter instead of
 //hard-coding.
+// 
+
+/*  the link "github.com/hyperledger/fabric/core/chaincode/shim"  mentioned in the 
+	original example does not corresponds to a gitbug link.
+	I found this one instead: github.com/hyperledger/fabric/tree/release-1.4/core/chaincode/shim
+	same for "github.com/hyperledger/fabric/protos/peer"
+	i've found:  https://github.com/hyperledger/fabric/tree/release-1.4/protos/peer
+*/
 
 import (
 	"fmt"
 	"strconv"
 
-	"github.com/hyperledger/fabric/core/chaincode/shim" 
+	"github.com/hyperledger/fabric/core/chaincode/shim"
 	
 	pb "github.com/hyperledger/fabric/protos/peer"
 )

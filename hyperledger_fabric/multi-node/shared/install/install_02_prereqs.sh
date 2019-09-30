@@ -20,9 +20,9 @@ echo $PATH
 echo "----------------------------------------------" 
 
 
-# check if environment variables were added into .bashrc , update .bashrc if not! 
-
+# check if environment variables were added into .bashrc , update .bashrc if not! \
 grep "source $HYPERLEDGER_HOME/install/fabric.env.sh" /home/$FABRIC_USER/.bashrc
+
 status=$?
 if [ $status -eq 0 ]; then 
     echo "found"
@@ -87,7 +87,6 @@ echo "----------------------------------------------"
 echo "Installing Golang"
 # download the archive
 wget -q  https://dl.google.com/go/go1.12.2.linux-amd64.tar.gz || res=$?
-
 if [ ! -z "$res" ]; then
     echo "==> ERROR: There was an error downloading Golang"
     exit 1;
@@ -96,8 +95,15 @@ else
 fi
 
 # extract it into /usr/local, creating a Go tree in /usr/local/go 
-sudo tar -C /usr/local -xzf go1.12.2.linux-amd64.tar.gz
-rm go1.12.2.linux-amd64.tar.gz
+if [ ! -f go1.12.2.linux-amd64.tar.gz ]; then
+    echo "ERROR : can't find golang file go1.12.2.linux-amd64.tar.gz to install! "
+else
+    echo "===> decompressing go1.12.2.linux-amd64.tar.gz"
+    sudo tar -C /usr/local -xzf go1.12.2.linux-amd64.tar.gz
+    echo "===> removing go1.12.2.linux-amd64.tar.gz"
+    rm go1.12.2.linux-amd64.tar.gz
+
+fi 
 
 # ----------------------------------------------
 # Golag variables

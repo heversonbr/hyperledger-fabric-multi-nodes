@@ -5,7 +5,7 @@ killprocess(){
 
     MYPROC=$1
     echo "Checking for $MYPROC process to kill:"
-    ps -ef | grep $MYPROC  | grep -v grep | awk {'print $2'}
+    ps -ef | grep $MYPROC  | grep -v grep | grep -v ssh |  awk {'print $2'}
     MYPID=`ps -ef | grep $MYPROC  | grep -v grep | awk {'print $2'}`
     if [ -z $MYPID ]; then
         echo "process $MYPROC not found!"
@@ -25,6 +25,10 @@ killprocess orderer
 killprocess peer
 killprocess fabric-ca-server
 
+
+echo "removing ledgers dir in /var/ledgers "
+sudo rm -Rf /var/ledgers
+echo "-----------------------------------------------------------"
 
 
 echo "removing config files in $HYPERLEDGER_HOME/fabric/"

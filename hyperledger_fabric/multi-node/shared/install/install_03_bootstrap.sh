@@ -1,9 +1,9 @@
 #!/bin/bash
+#######################################################################################
 # based on IBM's bootstrap script
-
 # starting with 1.2.0, multi-arch images are
 # release version,  ca version, thirdparty images (couchdb, kafka and zookeeper) version
-
+########################################################################################
 # source all environment variables
 .  /home/ubuntu/hyperledger_ws/install/fabric.env.sh
 
@@ -40,10 +40,10 @@ getSamples() {
     if [ -d $HYPERLEDGER_HOME/fabric-samples ]; then
         # if $HYPERLEDGER_HOME/fabric-samples already exists, go into it and checkout corresponding version
         cd $HYPERLEDGER_HOME/fabric-samples
-        echo "===> Checking out v${FABRIC_VERSION} of hyperledger/fabric-samples"
+        echo "===> [install_03_bootstrap.sh (getSamples)] : Checking out v${FABRIC_VERSION} of hyperledger/fabric-samples"
         git checkout v${FABRIC_VERSION}
     else
-        echo "===> Cloning hyperledger/fabric-samples repo and checkout v${FABRIC_VERSION}"
+        echo "===> [install_03_bootstrap.sh (getSamples)] : Cloning hyperledger/fabric-samples repo and checkout v${FABRIC_VERSION}"
         cd $HYPERLEDGER_HOME
         #git clone -b master $FABRIC_GIT_REPO $HYPERLEDGER_HOME/fabric-samples
         if [ $HOME = "/root" ]; then
@@ -60,6 +60,7 @@ getSamples() {
             git checkout v${FABRIC_VERSION}
         fi
     fi
+    sudo chown -R ubuntu:ubuntu $HYPERLEDGER_HOME/fabric-samples
     echo "----------------------------------------------------------------------------"
 }
 
@@ -67,8 +68,8 @@ getBinaries(){
     #TODO: add a flag to determine when 'ca-fabric client' should be installed (ca-nodes) or not (no-msp nodes) 
     # echo "USER: $USER whoami: `whoami` id -un: `id -un` FABRIC_USER: $FABRIC_USER  HOME: $HOME  LOGNAME: $LOGNAME" 
     echo "----------------------------------------------------------------------------"
-    echo "===> Downloading version ${FABRIC_VERSION} platform specific fabric binaries"
-    echo "===> Downloading fabric from: " ${URL_FABRIC}
+    echo "===> [install_03_bootstrap.sh (getBinaries)] : Downloading version ${FABRIC_VERSION} platform specific fabric binaries"
+    echo "===> [install_03_bootstrap.sh (getBinaries)] : Downloading fabric from: " ${URL_FABRIC}
 
     echo "----------------------------------------------------------------------------"
     curl ${URL_FABRIC} | tar xz || rc1=$?
@@ -78,10 +79,17 @@ getBinaries(){
     else
       echo "==> Done"
     fi
+    echo "moving config dir created by getbinaries to config_files only for backup "
+    sudo mkdir -p config_files/fabric-config/
+    cp $HYPERLEDGER_HOME/config/* $HYPERLEDGER_HOME/config_files/fabric-config/
+    sudo chown -R ubuntu:ubuntu  $HYPERLEDGER_HOME/config_files/fabric-config
+    sudo rm -Rf $HYPERLEDGER_HOME/config/
+    
+    #TODO: maybe remove this later. maybe we dont need it as all config files are treated at config.
 
     echo "----------------------------------------------------------------------------"
-    echo "===> Downloading version ${CA_VERSION} platform specific fabric-ca-client binary"
-    echo "===> Downloading fabric-ca from: " ${URL_FABRIC_CA}
+    echo "===> [install_03_bootstrap.sh (getBinaries)] : Downloading version ${CA_VERSION} platform specific fabric-ca-client binary"
+    echo "===> [install_03_bootstrap.sh (getBinaries)] : Downloading fabric-ca from: " ${URL_FABRIC_CA}
 
     curl ${URL_FABRIC_CA} | tar xz || rc1=$?
     echo $rc1
@@ -90,6 +98,10 @@ getBinaries(){
     else
       echo "==> Done"
     fi
+
+    sudo chown -R ubuntu:ubuntu  $HYPERLEDGER_HOME/bin
+    
+
 }
 
 

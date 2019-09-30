@@ -20,7 +20,7 @@ echo "Starting server with: $FABRIC_CA_SERVER_HOME/$FABRIC_CA_SERVER_CONFIG_FILE
 cd $FABRIC_CA_SERVER_HOME
 fabric-ca-server start 2> $FABRIC_CA_SERVER_LOG &
 
-sleep 2
+sleep 3
 echo "Server Started ... Logs available at $FABRIC_CA_SERVER_LOG"
 echo "---------------------------- $FABRIC_CA_SERVER_LOG -----------------------------------"
 cat $FABRIC_CA_SERVER_LOG

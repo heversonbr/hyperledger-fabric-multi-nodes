@@ -1,21 +1,36 @@
-# configtx.0
-# Used in the multi-org-ca setup
+# The structure of the configtx.yaml file consist of
+# - organizations section
+# - orderers section
+# - applications section
+# - capabilities section
+# - profiles section
 
+#####################################################################################
 #   CAPABILITIES
+#####################################################################################
+#  Capabilities is new feature in Hyperledger Fabric 1.1. 
+#  The idea behind this is to avoid any impact to the network when there are different 
+#  version of Fabric code running on nodes and everyone has same view of transaction.
+#####################################################################################
 Capabilities:
+
  Application: &ApplicationCapabilities
    V1_2: true
+   # apply to peers only and are located in the Application group
  Orderer: &OrdererCapabilities
+    #  apply to orderers only and are located in the Orderer group
    V1_1: true
  Channel: &ChannelCapabilities
+    #  apply to both peer and orderers and are located in the root Channel grou
    V1_1: true
-
-# ORGANIZATIONS
+#####################################################################################
+# ORGANIZATIONS:
+#####################################################################################
 Organizations:
  - &Orderer
    Name: Orderer
    ID: OrdererMSP
-   MSPDir: ../ca-client/orderer/msp  
+   MSPDir: ../ca-client/orderer/msp   # location where cryptography material for the organization is stored.
    Policies: &OrdererPolicies
      Readers:
          Type: Signature
@@ -41,7 +56,7 @@ Organizations:
      Admins:
          Type: Signature
          Rule: "OR('Org1MSP.admin')"
-   AnchorPeers:
+   AnchorPeers:                        #  host and port details for it's anchor peer
      - Host: 192.168.1.15
        Port: 7051
 
@@ -71,7 +86,8 @@ Orderer: &OrdererDefaults
        Type: ImplicitMeta
        Rule: "ANY Writers"
 
- # Batch Timeout: The amount of time to wait before creating a batch
+ # Batch Timeout: The amount of time to wait before creating a batch. 
+ # Orderer job is to create a batch of transactions so this is wait time for that.
  BatchTimeout: 2s
 
  # Batch Size: Controls the number of messages batched into a block
@@ -162,6 +178,8 @@ Application: &ApplicationDefaults
    StrictAdminPolicy:
        Type: ImplicitMeta
        Rule: "ANY Admins"
+ # Organizations is the list of orgs which are defined as participants on
+ # the application side of the network
  Organizations:
 
  Capabilities:
@@ -182,7 +200,9 @@ Channel: &ChannelDefaults
 
  Capabilities:
 
- #   PROFILES
+#####################################################################################
+#   PROFILES
+#####################################################################################
 Profiles:
 
  MyOrdererGenesisProfile:

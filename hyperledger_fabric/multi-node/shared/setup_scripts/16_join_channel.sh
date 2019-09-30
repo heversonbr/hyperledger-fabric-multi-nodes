@@ -87,10 +87,9 @@ cp $BASE_CONFIG_FILES/core-$ORG_NAME-$PEER_NAME.yaml $FABRIC_CFG_PATH/core.yaml
 # Capitalize the first letter of Org name e.g., acme => Acme  budget => Budget
 MSP_ID="$(tr '[:lower:]' '[:upper:]' <<< ${ORG_NAME:0:1})${ORG_NAME:1}"
 export CORE_PEER_LOCALMSPID=$MSP_ID"MSP"
-
 export NODECHAINCODE="$FABRIC_CFG_PATH/nodechaincode"
 export CORE_PEER_FILESYSTEM_PATH="/var/ledgers/$ORG_NAME/$PEER_NAME/ledger" 
-mkdir -p $CORE_PEER_FILESYSTEM_PATH
+sudo mkdir -p $CORE_PEER_FILESYSTEM_PATH
 
 # This is to avoid Port Number contention
 VAR=$((PORT_NUMBER+1))
@@ -102,27 +101,31 @@ VAR=$((PORT_NUMBER+3))
 export CORE_PEER_EVENTS_ADDRESS=$PEER_IP:$VAR
 # All Peers will connect to this - peer 
 export CORE_PEER_GOSSIP_BOOTSTRAP=$PEER_IP:7051
-
 #  export PEER_LOGS=$FABRIC_CFG_PATH/$ORG_NAME/$PEER_NAME
 export PEER_LOGS=$FABRIC_CFG_PATH
-echo "CORE_PEER_LOCALMSPID: $CORE_PEER_LOCALMSPID"
-echo "NODECHAINCODE: $NODECHAINCODE "
-echo "CORE_PEER_FILESYSTEM_PATH: $CORE_PEER_FILESYSTEM_PATH "
-echo "CORE_PEER_LISTENADDRESS: $CORE_PEER_LISTENADDRESS"
-echo "CORE_PEER_ADDRESS: $CORE_PEER_ADDRESS"
-echo "CORE_PEER_CHAINCODELISTENADDRESS: $CORE_PEER_CHAINCODELISTENADDRESS"
-echo "CORE_PEER_EVENTS_ADDRESS: $CORE_PEER_EVENTS_ADDRESS"
-echo "CORE_PEER_GOSSIP_BOOTSTRAP: $CORE_PEER_GOSSIP_BOOTSTRAP"
-echo "PEER_LOGS: $PEER_LOGS"
-
 # Only admin is allowed to execute join command
 export CORE_PEER_MSPCONFIGPATH=$CRYPTO_CONFIG_ROOT_FOLDER/$ORG_NAME/admin/msp
-echo "Peer will use CORE_PEER_MSPCONFIGPATH=$CORE_PEER_MSPCONFIGPATH"
-echo "Peer will use FABRIC_CFG_PATH=$FABRIC_CFG_PATH"
+
+
 echo "################################################################"
+echo "CRYPTO_CONFIG_ROOT_FOLDER: $CRYPTO_CONFIG_ROOT_FOLDER"
+echo "CORE_PEER_MSPCONFIGPATH: $CORE_PEER_MSPCONFIGPATH"
+echo "FABRIC_CFG_PATH: $FABRIC_CFG_PATH" 
+echo "MSP_ID: $MSP_ID" 
+echo "CORE_PEER_LOCALMSPID: $CORE_PEER_LOCALMSPID" 
+echo "NODECHAINCODE: $NODECHAINCODE" 
+echo "CORE_PEER_FILESYSTEM_PATH: $CORE_PEER_FILESYSTEM_PATH"  
+echo "CORE_PEER_LISTENADDRESS: $CORE_PEER_LISTENADDRESS" 
+echo "CORE_PEER_ADDRESS: $CORE_PEER_ADDRESS" 
+echo "CORE_PEER_CHAINCODELISTENADDRESS: $CORE_PEER_CHAINCODELISTENADDRESS" 
+echo "CORE_PEER_EVENTS_ADDRESS: $CORE_PEER_EVENTS_ADDRESS" 
+echo "CORE_PEER_GOSSIP_BOOTSTRAP: $CORE_PEER_GOSSIP_BOOTSTRAP"
+echo "PEER_LOGS: $PEER_LOGS" 
+echo "##########################################################################"
+
+
 
 CHANNEL_BLOCK=$FABRIC_CFG_PATH/mychannel.block
-# CHANNELID=mychannelid (1st argument)
 
 echo "################################################################"
 # Fetch channel configuration
@@ -133,7 +136,7 @@ echo "################################################################"
 peer channel join -o $ORDERER_ADDRESS -b $CHANNEL_BLOCK
 # Execute the anchor peer update
 echo "################################################################"
-
-
+echo "Check orderer and peer logs! "
+echo "################################################################"
 #peer channel fetch 0 -c airlinechannel -o localhost:7050
 #peer channel join -o localhost:7050 -b airlinechannel_0.block
