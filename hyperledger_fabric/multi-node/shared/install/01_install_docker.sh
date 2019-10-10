@@ -9,6 +9,18 @@ echo "Installing docker..."
 echo "installing with user: $USER"
 echo "installing with user: $FABRIC_USER"
 
+# check if environment variables were added into .bashrc , update .bashrc if not! \
+grep "source $HYPERLEDGER_HOME/install/fabric.env.sh" /home/$FABRIC_USER/.bashrc
+
+status=$?
+if [ $status -eq 0 ]; then 
+    echo "found"
+    echo "source $HYPERLEDGER_HOME/install/fabric.env.sh already in /home/$FABRIC_USER/.bashrc. Doing nothing!" 
+else 
+    echo "not found"
+    echo "source $HYPERLEDGER_HOME/install/fabric.env.sh" | sudo tee -a /home/$FABRIC_USER/.bashrc
+fi
+
 
 # install the latest version
 

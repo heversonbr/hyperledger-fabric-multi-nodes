@@ -84,6 +84,7 @@ if [ ! -d $FABRIC_CFG_PATH ];then
 fi
 cp $BASE_CONFIG_FILES/core-$ORG_NAME-$PEER_NAME.yaml $FABRIC_CFG_PATH/core.yaml
 
+
 # Capitalize the first letter of Org name e.g., acme => Acme  budget => Budget
 MSP_ID="$(tr '[:lower:]' '[:upper:]' <<< ${ORG_NAME:0:1})${ORG_NAME:1}"
 export CORE_PEER_LOCALMSPID=$MSP_ID"MSP"

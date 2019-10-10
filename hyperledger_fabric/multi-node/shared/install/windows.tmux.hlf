@@ -1,0 +1,47 @@
+new-session -s 'hlf';
+new-window -n msp-root-org1 ; 
+split-window -h ;
+select-pane -t 0;
+resize-pane -R 40;
+split-window -v;
+select-pane -t 0;
+
+
+new-window -n msp-admin-org1  ssh -o StrictHostKeyChecking=no msp-admin-org1;
+split-window -h  ssh -o StrictHostKeyChecking=no msp-admin-org1;
+select-pane -t 0;
+resize-pane -R 40;
+split-window -v  ssh -o StrictHostKeyChecking=no msp-admin-org1;
+select-pane -t 0;
+
+
+new-window -n msp-admin-orderer  ssh -o StrictHostKeyChecking=no msp-admin-orderer;
+split-window -h  ssh -o StrictHostKeyChecking=no msp-admin-orderer ;
+select-pane -t 0;
+resize-pane -R 40;
+split-window -v  ssh -o StrictHostKeyChecking=no msp-admin-orderer ;
+select-pane -t 0;
+
+
+new-window -n orderer-node  ssh -o StrictHostKeyChecking=no orderer-node;
+split-window -h ssh -o StrictHostKeyChecking=no orderer-node;
+select-pane -t 0;
+resize-pane -R 40;
+split-window -v  ssh -o StrictHostKeyChecking=no orderer-node;
+select-pane -t 0;
+
+
+new-window -n peer1-org1  ssh -o StrictHostKeyChecking=no peer1-org1;
+split-window -h ssh -o StrictHostKeyChecking=no peer1-org1;
+select-pane -t 0;
+resize-pane -R 40;
+split-window -v ssh -o StrictHostKeyChecking=no peer1-org1;
+select-pane -t 0;
+
+
+new-window -n peer2-org1  ssh -o StrictHostKeyChecking=no peer2-org1; 
+split-window -h ssh -o StrictHostKeyChecking=no peer2-org1;
+select-pane -t 0;
+resize-pane -R 40;
+split-window -v ssh -o StrictHostKeyChecking=no peer2-org1 ;
+select-pane -t 0

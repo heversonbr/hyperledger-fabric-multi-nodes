@@ -77,22 +77,14 @@ echo "##################################"
 
 # Create the path to the crypto config folder
 CRYPTO_CONFIG_ROOT_FOLDER=$BASE_FABRIC_CA_CLIENT_HOME
-echo "CRYPTO_CONFIG_ROOT_FOLDER: $CRYPTO_CONFIG_ROOT_FOLDER"
+
 # Capitalize the first letter of Org name
 MSP_ID="$(tr '[:lower:]' '[:upper:]' <<< ${ORG_NAME:0:1})${ORG_NAME:1}"
 export CORE_PEER_LOCALMSPID=$MSP_ID"MSP"
-echo "CORE_PEER_LOCALMSPID: $CORE_PEER_LOCALMSPID"
-
 export CORE_PEER_MSPCONFIGPATH=$CRYPTO_CONFIG_ROOT_FOLDER/$ORG_NAME/$IDENTITY/msp
-echo "CORE_PEER_MSPCONFIGPATH: $CORE_PEER_MSPCONFIGPATH"
-# check it here: export or not ?
 export FABRIC_CFG_PATH="$FABRIC_CFG_PATH/$ORG_NAME/$PEER_NAME"
-echo "FABRIC_CFG_PATH: $FABRIC_CFG_PATH"
-
-############################################################################
 export NODECHAINCODE="$FABRIC_CFG_PATH/nodechaincode"
 export CORE_PEER_FILESYSTEM_PATH="/var/ledgers/$ORG_NAME/$PEER_NAME/ledger" 
-
 # This is to avoid Port Number contention
 VAR=$((PORT_NUMBER_BASE+1))
 export CORE_PEER_LISTENADDRESS=$PEER_IP_ADD:$VAR
@@ -101,16 +93,28 @@ VAR=$((PORT_NUMBER_BASE+2))
 export CORE_PEER_CHAINCODELISTENADDRESS=$PEER_IP_ADD:$VAR
 VAR=$((PORT_NUMBER_BASE+3))
 export CORE_PEER_EVENTS_ADDRESS=$PEER_IP_ADD:$VAR
-
 # All Peers will connect to this - peer 
 export CORE_PEER_GOSSIP_BOOTSTRAP=$PEER_IP_ADD:7051
-
 export PEER_LOGS=$FABRIC_CFG_PATH
 mkdir -p $PEER_LOGS
 ##########################################################################################################
 
-
 ./list_env_vars.sh
+echo "################################################################"
+echo "CRYPTO_CONFIG_ROOT_FOLDER: $CRYPTO_CONFIG_ROOT_FOLDER"
+echo "CORE_PEER_MSPCONFIGPATH: $CORE_PEER_MSPCONFIGPATH"
+echo "FABRIC_CFG_PATH: $FABRIC_CFG_PATH" 
+echo "MSP_ID: $MSP_ID" 
+echo "CORE_PEER_LOCALMSPID: $CORE_PEER_LOCALMSPID" 
+echo "NODECHAINCODE: $NODECHAINCODE" 
+echo "CORE_PEER_FILESYSTEM_PATH: $CORE_PEER_FILESYSTEM_PATH"  
+echo "CORE_PEER_LISTENADDRESS: $CORE_PEER_LISTENADDRESS" 
+echo "CORE_PEER_ADDRESS: $CORE_PEER_ADDRESS" 
+echo "CORE_PEER_CHAINCODELISTENADDRESS: $CORE_PEER_CHAINCODELISTENADDRESS" 
+echo "CORE_PEER_EVENTS_ADDRESS: $CORE_PEER_EVENTS_ADDRESS" 
+echo "CORE_PEER_GOSSIP_BOOTSTRAP: $CORE_PEER_GOSSIP_BOOTSTRAP"
+echo "PEER_LOGS: $PEER_LOGS" 
+echo "##########################################################################"
 
 # Create the ledger folders
 # To retain the environment vars we need to use -E flag with sudo

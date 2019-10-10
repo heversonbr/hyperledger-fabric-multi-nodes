@@ -10,11 +10,12 @@
 # 4. Executes invoke on peer1
 # 5. Executes query on peer2
 
+
 function usage {
     echo "USAGE: "     
-    echo "ex:   ./17_validate_3_instantiate_cc_peer1.sh <ORG_NAME> <PEER_NAME> [<PEER_IP_ADDRESS>, default=192.168.1.15  [PORT_BASE_NUMBER default=7050]"
-    echo "      ./17_validate_3_instantiate_cc_peer1.sh  org1   peer1   192.168.1.15"
-    echo "      ./17_validate_3_instantiate_cc_peer1.sh  org1   peer1"
+    echo "ex:   ./17_validate_4_exec_query_peer2.sh <ORG_NAME> <PEER_NAME> [<PEER_IP_ADDRESS>, default=192.168.1.15  [PORT_BASE_NUMBER default=7050]"
+    echo "      ./17_validate_4_exec_query_peer2.sh   org1   peer2   192.168.1.17"
+    echo "      ./17_validate_4_exec_query_peer2.sh   org1   peer2"
 }
 
 if [ -z $1 ]
@@ -35,7 +36,7 @@ fi
 
 if [ -z $3 ]
 then
-    PEER_IP_ADDRESS=192.168.1.15
+    PEER_IP_ADDRESS=192.168.1.17
 else 
     PEER_IP_ADDRESS=$3
 fi
@@ -54,19 +55,20 @@ fi
 ##############################################################
 CC_CONSTRUCTOR='{"Args":["init","a","100","b","200"]}'
 CC_NAME="gocc"
-#CC_PATH="../src/"
+CC_PATH="../src/"
 CC_VERSION="1.0"
 CC_CHANNEL_ID="mychannelid"
 
 ##############################################################
 IDENTITY="admin"
 
-# 2. Instantiating CC
-echo "====> 2   Instantiating chaincode (may fail if CC/version already instantiated) on $PEER_NAME"
+# 4. Executes query on peer2
+echo "##########################################################################"
+echo "====> 4. Querying for value of A on $PEER_NAME"
 echo "ORG_NAME: $ORG_NAME, PEER_NAME: $PEER_NAME, PEER_IP_ADDRESS: $PEER_IP_ADDRESS , PEER_BASE_PORT: $PEER_BASE_PORT, IDENTITY: $IDENTITY"
 ##############################################################
 # source  set-env.sh  $ORG_NAME $PEER_NAME $PEER_BASE_PORT $IDENTITY
-
+# source  set-env.sh  org1 peer2 7050 admin
 ##############################################################
 CRYPTO_CONFIG_ROOT_FOLDER=$BASE_FABRIC_CA_CLIENT_HOME
 export CORE_PEER_MSPCONFIGPATH=$CRYPTO_CONFIG_ROOT_FOLDER/$ORG_NAME/$IDENTITY/msp
@@ -87,7 +89,8 @@ export CORE_PEER_EVENTS_ADDRESS=$PEER_IP_ADDRESS:$VAR
 export CORE_PEER_GOSSIP_BOOTSTRAP=$PEER_IP_ADDRESS:7051
 export PEER_LOGS=$FABRIC_CFG_PATH
 ##############################################################
-echo "##########################################################################"
+
+echo "########################## ENV VARS #######################################"
 echo "CRYPTO_CONFIG_ROOT_FOLDER: $CRYPTO_CONFIG_ROOT_FOLDER"
 echo "CORE_PEER_MSPCONFIGPATH: $CORE_PEER_MSPCONFIGPATH"
 echo "FABRIC_CFG_PATH: $FABRIC_CFG_PATH" 
@@ -106,5 +109,5 @@ echo "CORE_PEER_GOSSIP_BOOTSTRAP: $CORE_PEER_GOSSIP_BOOTSTRAP"
 echo "PEER_LOGS: $PEER_LOGS" 
 echo "##########################################################################"
 ##############################################################
-echo "peer chaincode instantiate -C $CC_CHANNEL_ID -n $CC_NAME  -v $CC_VERSION -c $CC_CONSTRUCTOR"
-peer chaincode instantiate -C $CC_CHANNEL_ID -n $CC_NAME  -v $CC_VERSION -c $CC_CONSTRUCTOR
+echo "peer chaincode query -C $CC_CHANNEL_ID -n $CC_NAME  -c '{'Args':['query','a']}'"
+peer chaincode query -C $CC_CHANNEL_ID -n $CC_NAME  -c '{"Args":["query","a"]}'

@@ -28,12 +28,13 @@ echo $PATH
 echo "----------------------------------------------" 
 
 getSamples() {
-    echo "----------------------------------------------------------------------------"
+        echo "--------------------------------- DEBUG: getSamples-------------------------------------------"
     pwd
     echo "USER: $USER whoami: `whoami` id -un: `id -un` FABRIC_USER: $FABRIC_USER  HOME: $HOME  LOGNAME: $LOGNAME" 
     cd $HYPERLEDGER_HOME
     pwd
     test -f "/bin/bash" && echo "This system has a bash shell"
+    echo "----------------------------------------------------------------------------"
 
     # clone (if needed) hyperledger/fabric-samples and checkout corresponding
     # version to the binaries and docker images to be downloaded
@@ -47,14 +48,14 @@ getSamples() {
         cd $HYPERLEDGER_HOME
         #git clone -b master $FABRIC_GIT_REPO $HYPERLEDGER_HOME/fabric-samples
         if [ $HOME = "/root" ]; then
-            echo "igual"
+            echo "running from /root"
             export HOME="/home/$FABRIC_USER"
             git clone -q -b master $FABRIC_GIT_REPO $HYPERLEDGER_HOME/fabric-samples
             cd  $HYPERLEDGER_HOME/fabric-samples 
             git checkout v${FABRIC_VERSION}
             export HOME="/root"
         else
-            echo "different"
+            echo "running from $HOME"
             git clone -q -b master $FABRIC_GIT_REPO $HYPERLEDGER_HOME/fabric-samples
             cd  $HYPERLEDGER_HOME/fabric-samples 
             git checkout v${FABRIC_VERSION}
@@ -66,7 +67,12 @@ getSamples() {
 
 getBinaries(){
     #TODO: add a flag to determine when 'ca-fabric client' should be installed (ca-nodes) or not (no-msp nodes) 
-    # echo "USER: $USER whoami: `whoami` id -un: `id -un` FABRIC_USER: $FABRIC_USER  HOME: $HOME  LOGNAME: $LOGNAME" 
+    echo "--------------------------------- DEBUG: getBinaries-------------------------------------------"
+    pwd
+    echo "USER: $USER whoami: `whoami` id -un: `id -un` FABRIC_USER: $FABRIC_USER  HOME: $HOME  LOGNAME: $LOGNAME" 
+    cd $HYPERLEDGER_HOME
+    pwd
+    test -f "/bin/bash" && echo "This system has a bash shell"
     echo "----------------------------------------------------------------------------"
     echo "===> [install_03_bootstrap.sh (getBinaries)] : Downloading version ${FABRIC_VERSION} platform specific fabric binaries"
     echo "===> [install_03_bootstrap.sh (getBinaries)] : Downloading fabric from: " ${URL_FABRIC}
@@ -106,27 +112,49 @@ getBinaries(){
 
 
 getAllImages() {
+    echo "--------------------------------- DEBUG: getAllImages-------------------------------------------"
+    pwd
+    echo "USER: $USER whoami: `whoami` id -un: `id -un` FABRIC_USER: $FABRIC_USER  HOME: $HOME  LOGNAME: $LOGNAME" 
+    cd $HYPERLEDGER_HOME
+    pwd
+    test -f "/bin/bash" && echo "This system has a bash shell"
+    echo "----------------------------------------------------------------------------"
     which docker >& /dev/null
     if [ "$?" == 1 ]; then
         echo "==> Docker not installed! "
         exit 1;
     fi
     # pulls docker images from fabric and chaincode repositories
-    for IMAGES in peer orderer ccenv tools baseos nodeenv javaenv; do
+    # for IMAGES in peer orderer ccenv tools baseos nodeenv javaenv; do
+    for IMAGES in peer orderer ccenv tools nodeenv javaenv; do
+        echo "----------------------------------------------" 
         echo "==> FABRIC IMAGE: $IMAGES"
-        docker pull hyperledger/fabric-$IMAGES:$FABRIC_VERSION
-        docker tag hyperledger/fabric-$IMAGES:$FABRIC_VERSION hyperledger/fabric-$IMAGES
+        echo "PULLING: docker pull hyperledger/fabric-$IMAGES:$FABRIC_VERSION"
+        docker pull "hyperledger/fabric-$IMAGES:$FABRIC_VERSION"
+        echo "TAGGING: docker tag hyperledger/fabric-$IMAGES:$FABRIC_VERSION hyperledger/fabric-$IMAGES"
+        docker tag "hyperledger/fabric-$IMAGES:$FABRIC_VERSION" "hyperledger/fabric-$IMAGES"
+
     done
+    # there is a problem with the baseos image pulling. im doing manually and temporarily here: to be sure that is coming.
+    docker pull hyperledger/fabric-baseos:0.4.15
+
     for IMAGES in couchdb kafka zookeeper; do
+        echo "----------------------------------------------" 
         echo "==> THIRDPARTY DOCKER IMAGE: $IMAGES"
-        docker pull hyperledger/fabric-$IMAGES:$THIRDPARTY_IMAGE_VERSION
-        docker tag hyperledger/fabric-$IMAGES:$THIRDPARTY_IMAGE_VERSION hyperledger/fabric-$IMAGES
+        echo "PULLING: docker pull hyperledger/fabric-$IMAGES:$THIRDPARTY_IMAGE_VERSION"
+        docker pull "hyperledger/fabric-$IMAGES:$THIRDPARTY_IMAGE_VERSION"
+        echo "TAGGING: docker tag hyperledger/fabric-$IMAGES:$THIRDPARTY_IMAGE_VERSION hyperledger/fabric-$IMAGES"
+        docker tag "hyperledger/fabric-$IMAGES:$THIRDPARTY_IMAGE_VERSION" "hyperledger/fabric-$IMAGES"
     done
-    echo "==> FABRIC CA (server and client) IMAGE"
-    docker pull hyperledger/fabric-ca:$CA_VERSION
-    docker tag hyperledger/fabric-ca:$CA_VERSION hyperledger/fabric-ca
-    echo "===> List hyperledger docker images"
-	  docker images | grep hyperledger*
+
+    echo "==> FABRIC CA (server and client) IMAGE: NOT PULLING CA-IMAGES: check bootstrap (line 132) if needed! "
+    #docker "pull hyperledger/fabric-ca:$CA_VERSION"
+    #docker "tag hyperledger/fabric-ca:$CA_VERSION" "hyperledger/fabric-ca"
+    echo "----------------------------------------------"
+    echo "===> IMPORTANT: Listing hyperledger docker images"
+    docker images 
+    docker ps 
+    echo "----------------------------------------------"
 }
 
 
@@ -136,8 +164,8 @@ echo "bootstrap : Installing Hyperledger Fabric binaries"
 getBinaries
 echo "----------------------------------------------" 
 echo "bootstrap : Installing Hyperledger Fabric docker images"
-#getAllImages
-#echo "----------------------------------------------" 
+getAllImages
+echo "----------------------------------------------" 
 echo "bootstrap : Installing hyperledger/fabric-samples repo"
 getSamples
 echo "----------------------------------------------" 

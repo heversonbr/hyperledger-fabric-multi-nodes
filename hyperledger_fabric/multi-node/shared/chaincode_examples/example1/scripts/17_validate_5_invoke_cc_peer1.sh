@@ -62,6 +62,7 @@ CC_CHANNEL_ID="mychannelid"
 IDENTITY="admin"
 
 # 5.  Execute invoke on peer1
+echo "##########################################################################"
 echo "====> 5. Execute invoke on $PEER_NAME - Transfer 10 from A=>B"
 echo "ORG_NAME: $ORG_NAME, PEER_NAME: $PEER_NAME, PEER_IP_ADDRESS: $PEER_IP_ADDRESS , PEER_BASE_PORT: $PEER_BASE_PORT, IDENTITY: $IDENTITY"
 ##############################################################
@@ -87,7 +88,7 @@ export CORE_PEER_EVENTS_ADDRESS=$PEER_IP_ADDRESS:$VAR
 export CORE_PEER_GOSSIP_BOOTSTRAP=$PEER_IP_ADDRESS:7051
 export PEER_LOGS=$FABRIC_CFG_PATH
 ##############################################################
-echo "##########################################################################"
+echo "########################## ENV VARS #######################################"
 echo "CRYPTO_CONFIG_ROOT_FOLDER: $CRYPTO_CONFIG_ROOT_FOLDER"
 echo "CORE_PEER_MSPCONFIGPATH: $CORE_PEER_MSPCONFIGPATH"
 echo "FABRIC_CFG_PATH: $FABRIC_CFG_PATH" 

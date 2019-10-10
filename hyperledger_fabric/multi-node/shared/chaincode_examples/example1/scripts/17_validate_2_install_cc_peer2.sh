@@ -1,5 +1,5 @@
 # Test case #2 for validating the setup
-# Requires: Orderer, acme peer1 & acme peer2 to be available
+# Requires: Orderer, org1 peer1 & org1 peer2 to be available
 # Install the chaincode on peers. Instantiate on one of the peers
 # Now invoke on one peer & query the status on the other peer to 
 # validate consistency of the reported state.
@@ -9,6 +9,9 @@
 # 3. Executes query on peer2
 # 4. Executes invoke on peer1
 # 5. Executes query on peer2
+#
+# NOTE: The peer chaincode subcommand ALLOWS ADMINISTRATORS to perform chaincode 
+# related operations ON A PEER, such as installing, instantiating, invoking, packaging, querying, and upgrading chaincode.
 
 function usage {
     echo "USAGE: "     
@@ -61,8 +64,9 @@ CC_CHANNEL_ID="mychannelid"
 ##############################################################
 IDENTITY="admin"
 
-#  Querying for value of A in peer2"
-echo "====> 5   Querying for value of A in peer2"
+# 2. Install CC
+echo "##########################################################################"
+echo "====> 2 Installing chaincode (may fail if CC/version already there) on $PEER_NAME"
 echo "ORG_NAME: $ORG_NAME, PEER_NAME: $PEER_NAME, PEER_IP_ADDRESS: $PEER_IP_ADDRESS , PEER_BASE_PORT: $PEER_BASE_PORT, IDENTITY: $IDENTITY"
 ##############################################################
 # source  set-env.sh  $ORG_NAME $PEER_NAME $PEER_BASE_PORT $IDENTITY
@@ -87,7 +91,7 @@ export CORE_PEER_EVENTS_ADDRESS=$PEER_IP_ADDRESS:$VAR
 export CORE_PEER_GOSSIP_BOOTSTRAP=$PEER_IP_ADDRESS:7051
 export PEER_LOGS=$FABRIC_CFG_PATH
 ##############################################################
-echo "##########################################################################"
+echo "########################## ENV VARS #######################################"
 echo "CRYPTO_CONFIG_ROOT_FOLDER: $CRYPTO_CONFIG_ROOT_FOLDER"
 echo "CORE_PEER_MSPCONFIGPATH: $CORE_PEER_MSPCONFIGPATH"
 echo "FABRIC_CFG_PATH: $FABRIC_CFG_PATH" 
@@ -106,5 +110,6 @@ echo "CORE_PEER_GOSSIP_BOOTSTRAP: $CORE_PEER_GOSSIP_BOOTSTRAP"
 echo "PEER_LOGS: $PEER_LOGS" 
 echo "##########################################################################"
 ##############################################################
-echo "peer chaincode query -C $CC_CHANNEL_ID -n $CC_NAME  -c '{'Args':['query','a']}'"
-peer chaincode query -C $CC_CHANNEL_ID -n $CC_NAME  -c '{"Args":["query","a"]}'
+echo "peer chaincode install  -n $CC_NAME -p $CC_PATH -v $CC_VERSION"
+peer chaincode install  -n $CC_NAME -p $CC_PATH -v $CC_VERSION
+

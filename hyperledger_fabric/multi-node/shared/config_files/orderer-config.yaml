@@ -20,9 +20,6 @@ General:
     # The genesis block file need to be generated using the configtxgen tool
     GenesisMethod: file
     GenesisFile: ./my_genesis.block
-    # NOTE:
-    # our script 05_generate_genesis.sh copies this file orderer-config.yaml 
-    # to $ORDERER_HOME/orderer.yaml before using it. 
 
     # Ledger Type: The ledger type to provide to the orderer.
     # Two non-production ledger types are provided for test purposes only:
@@ -47,7 +44,7 @@ General:
     # orderer. 
     # LocalMSPDir: ./crypto-config/ordererOrganizations/acme.com/orderers/orderer.acme.com/msp
     #LocalMSPDir: ../../ca/multi-org-ca/client/orderer/orderer/msp
-    # this is information is required when starting the orderer node. (by 10_start_orderer.sh)
+    # this is information is required when starting the orderer node.
     LocalMSPDir: ../ca-client/orderer/orderer-node/msp
 
     # Identity to register the local MSP material with the MSP
@@ -78,12 +75,19 @@ General:
         ClientAuthRequired: false
         ClientRootCAs:
 
+
+
     # Log Level: The level at which to log. This accepts logging specifications
     # per: fabric/docs/Setup/logging-control.md
     # LogLevel: info
 
     # Log Format:  The format string to use when logging.  Especially useful to disable color logging
     # LogFormat: '%{color}%{time:2006-01-02 15:04:05.000 MST} [%{module}] %{shortfunc} -> %{level:.4s} %{id:03x}%{color:reset} %{message}'
+
+
+
+
+
 
 ################################################################################
 #
@@ -102,9 +106,12 @@ FileLedger:
     # The prefix to use when generating a ledger directory in temporary space.
     Prefix: hyperledger-fabric-ordererledger    
 
+
+
 ################################################################################
 #
 #   Debug Configuration
+#
 #   - This controls the debugging options for the orderer
 #
 ################################################################################

@@ -1,0 +1,481 @@
+[global_config]
+  suppress_multiple_term_dialog = True
+[keybindings]
+
+[layouts]
+  [[default]]
+    [[[child1]]]
+      parent = window0
+      profile = default
+      type = Terminal
+    [[[window0]]]
+      parent = ""
+      type = Window
+
+  [[hlf]]
+    [[[child0]]]
+      fullscreen = False
+      last_active_window = True
+      maximised = True
+      order = 0
+      parent = ""
+      position = 1920:24
+      size = 1920, 1056
+      title = hyperledger-tests
+      type = Window
+    [[[child1]]]
+      active_page = 0
+      labels = msp-root-org1, msp-admin-org1, msp-admin-orderer, orderer-node, peer1-org1, peer2-org1
+      last_active_term = d2cbb139-1495-4c96-99f5-a3ff356dd0e6, 912aa1ee-e3e0-4809-a763-fa8c890f0c93, 10a8cf00-ca83-42ac-b5e8-14f314a35500, b70af80a-5c11-40cc-9ca7-4e2e6322c6fd, cf75092a-7cee-4ad7-8439-80b99a4769dd, 1ecedab9-1956-4386-a40e-64cbc6c3647d
+      order = 0
+      parent = child0
+      type = Notebook
+
+
+    [[[child2]]]
+      order = 0
+      parent = child1
+      position = 957
+      ratio = 0.7
+      type = HPaned
+    [[[child3]]]
+      order = 0
+      parent = child2
+      position = 511
+      ratio = 0.5
+      type = VPaned
+    [[[terminal4]]]
+      command = vagrant ssh msp-root-org1 ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 0
+      parent = child3
+      profile = default
+      type = Terminal
+      uuid = d2cbb139-1495-4c96-99f5-a3ff356dd0e6
+      title = terminal-4 [msp-root-org1]
+      group = msp-root-org1
+    [[[terminal5]]]
+      command = vagrant ssh msp-root-org1 ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 1
+      parent = child3
+      profile = default
+      type = Terminal
+      uuid = 1c740e6e-b6b1-46ac-bcbd-06b3c6117112
+      title = terminal-5 [msp-root-org1]
+      group = msp-root-org1
+    [[[terminal6]]]
+      command = vagrant ssh msp-root-org1 ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 1
+      parent = child2
+      profile = default
+      type = Terminal
+      uuid = de3816f1-1bec-4cd6-9bc3-977a5a77c088
+      title = terminal-6 [msp-root-org1]
+      group = msp-root-org1
+
+
+    [[[child7]]]
+      order = 1
+      parent = child1
+      position = 957
+      ratio = 0.7
+      type = HPaned
+    [[[child8]]]
+      order = 0
+      parent = child7
+      position = 511
+      ratio = 0.5
+      type = VPaned
+    [[[terminal9]]]
+      command = vagrant ssh msp-admin-org1 ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 0
+      parent = child8
+      profile = default
+      type = Terminal
+      uuid = 912aa1ee-e3e0-4809-a763-fa8c890f0c93
+      title = terminal-9 [msp-admin-org1]
+      group = msp-admin-org1
+    [[[terminal10]]]
+      command = vagrant ssh msp-admin-org1 ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 1
+      parent = child8
+      profile = default
+      type = Terminal
+      uuid = 0d554ddc-9b71-4150-aee9-737247e54ce5
+      title = terminal-10 [msp-admin-org1]
+      group = msp-admin-org1
+    [[[terminal11]]]
+      command = vagrant ssh msp-admin-org1 ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 1
+      parent = child7
+      profile = default
+      type = Terminal
+      uuid = f2898cbe-2503-480c-ba55-88950051fc4e
+      title = terminal-11 [msp-admin-org1]
+      group = msp-admin-org1
+
+
+    [[[child12]]]
+      order = 2
+      parent = child1
+      position = 957
+      ratio = 0.7
+      type = HPaned
+    [[[child13]]]
+      order = 0
+      parent = child12
+      position = 511
+      ratio = 0.5
+      type = VPaned
+    [[[terminal14]]]
+      command = vagrant ssh msp-admin-orderer ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 0
+      parent = child13
+      profile = default
+      type = Terminal
+      uuid = 6bf622b4-74b8-409e-bde5-e2f0b269d2ef
+      title = terminal-14 [msp-admin-orderer]
+      group = msp-admin-orderer
+    [[[terminal15]]]
+      command = vagrant ssh msp-admin-orderer ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 1
+      parent = child13
+      profile = default
+      type = Terminal
+      uuid = 10a8cf00-ca83-42ac-b5e8-14f314a35500
+      title = terminal-15 [msp-admin-orderer]
+      group = msp-admin-orderer
+    [[[terminal16]]]
+      command = vagrant ssh msp-admin-orderer ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 1
+      parent = child12
+      profile = default
+      type = Terminal
+      uuid = cc205285-6a6c-44df-a5ab-d49db67ffde1
+      title = terminal-16 [msp-admin-orderer]
+      group = msp-admin-orderer
+
+
+    [[[child17]]]
+      order = 3
+      parent = child1
+      position = 957
+      ratio = 0.7
+      type = HPaned
+    [[[child18]]]
+      order = 0
+      parent = child17
+      position = 511
+      ratio = 0.5
+      type = VPaned
+    [[[terminal19]]]
+      command = vagrant ssh orderer-node ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 0
+      parent = child18
+      profile = default
+      type = Terminal
+      uuid = 524a6e8b-c1dc-49da-b147-61452e7bdacd
+      title = terminal-19 [orderer-node]
+      group = orderer-node
+    [[[terminal20]]]
+      command = vagrant ssh orderer-node ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 1
+      parent = child18
+      profile = default
+      type = Terminal
+      uuid = b70af80a-5c11-40cc-9ca7-4e2e6322c6fd
+      title = terminal-20 [orderer-node]
+      group = orderer-node
+    [[[terminal21]]]
+      command = vagrant ssh orderer-node ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 1
+      parent = child17
+      profile = default
+      type = Terminal
+      uuid = 111c6064-0f81-440e-ba83-215e48abf4c7
+      title = terminal-21 [orderer-node]
+      group = orderer-node
+
+
+    [[[child22]]]
+      order = 4
+      parent = child1
+      position = 957
+      ratio = 0.7
+      type = HPaned
+    [[[child23]]]
+      order = 0
+      parent = child22
+      position = 511
+      ratio = 0.5
+      type = VPaned
+    [[[terminal24]]]
+      command = vagrant ssh peer1-org1 ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 0
+      parent = child23
+      profile = default
+      type = Terminal
+      uuid = 612806a7-9ede-4e06-8e38-300b3a486ef0
+      title = terminal-24 [peer1-org1]
+      group = peer1-org1
+    [[[terminal25]]]
+      command = vagrant ssh peer1-org1 ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 1
+      parent = child23
+      profile = default
+      type = Terminal
+      uuid = cf75092a-7cee-4ad7-8439-80b99a4769dd
+      title = terminal-25 [peer1-org1]
+      group = peer1-org1
+    [[[terminal26]]]
+      command = vagrant ssh peer1-org1 ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 1
+      parent = child22
+      profile = default
+      type = Terminal
+      uuid = 9dd67b49-e319-46df-ad7d-4816b081b58e
+      title = terminal-26 [peer1-org1]
+      group = peer1-org1
+
+
+    [[[child27]]]
+      order = 5
+      parent = child1
+      position = 957
+      ratio = 0.7
+      type = HPaned
+    [[[child28]]]
+      order = 0
+      parent = child27
+      position = 511
+      ratio = 0.5
+      type = VPaned
+    [[[terminal29]]]
+      command = vagrant ssh peer2-org1 ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 0
+      parent = child28
+      profile = default
+      type = Terminal
+      uuid = 1ecedab9-1956-4386-a40e-64cbc6c3647d
+      title = terminal-29 [peer2-org1]
+      group = peer2-org1
+    [[[terminal30]]]
+      command = vagrant ssh peer2-org1 ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 1
+      parent = child28
+      profile = default
+      type = Terminal
+      uuid = a028beb7-cc10-4ae5-8cb6-fe5720463884
+      title = terminal-30 [peer2-org1]
+      group = peer2-org1
+    [[[terminal31]]]
+      command = vagrant ssh peer2-org1 ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 1
+      parent = child27
+      profile = default
+      type = Terminal
+      uuid = 04c0a931-acef-48e5-89bd-72a91f61ed20
+      title = terminal-31 [peer2-org1]
+      group = peer2-org1
+
+  [[simple_hlf]]
+    [[[child0]]]
+      fullscreen = False
+      last_active_window = True
+      maximised = True
+      order = 0
+      parent = ""
+      position = 1920:24
+      size = 1920, 1056
+      title = hyperledger-tests
+      type = Window
+    [[[child1]]]
+      active_page = 0
+      labels = msp-root-org1, msp-admin-org1, msp-admin-orderer, orderer-node, peer1-org1, peer2-org1
+      last_active_term = d2cbb139-1495-4c96-99f5-a3ff356dd0e6, 912aa1ee-e3e0-4809-a763-fa8c890f0c93, 10a8cf00-ca83-42ac-b5e8-14f314a35500, b70af80a-5c11-40cc-9ca7-4e2e6322c6fd, cf75092a-7cee-4ad7-8439-80b99a4769dd, 1ecedab9-1956-4386-a40e-64cbc6c3647d
+      order = 0
+      parent = child0
+      type = Notebook
+
+    [[[child2]]]
+      order = 0
+      parent = child1
+      position = 957
+      ratio = 0.7
+      type = VPaned
+    [[[terminal3]]]
+      command = vagrant ssh msp-root-org1 ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 0
+      parent = child2
+      profile = default
+      type = Terminal
+      uuid = d2cbb139-1495-4c96-99f5-a3ff356dd0e6
+      title = terminal-3 [msp-root-org1]
+      group = hyperledger-post-install
+    [[[terminal4]]]
+      command = vagrant ssh msp-root-org1 ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 1
+      parent = child2
+      profile = default
+      type = Terminal
+      uuid = 1c740e6e-b6b1-46ac-bcbd-06b3c6117112
+      title = terminal-4 [msp-root-org1]
+
+    [[[child5]]]
+      order = 1
+      parent = child1
+      position = 957
+      ratio = 0.7
+      type = VPaned
+
+    [[[terminal6]]]
+      command = vagrant ssh msp-admin-org1 ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 0
+      parent = child5
+      profile = default
+      type = Terminal
+      uuid = 912aa1ee-e3e0-4809-a763-fa8c890f0c93
+      title = terminal-6 [msp-admin-org1]
+      group = hyperledger-post-install
+    [[[terminal7]]]
+      command = vagrant ssh msp-admin-org1 ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 1
+      parent = child5
+      profile = default
+      type = Terminal
+      uuid = 0d554ddc-9b71-4150-aee9-737247e54ce5
+      title = terminal-7 [msp-admin-org1]
+
+    [[[child8]]]
+      order = 2
+      parent = child1
+      position = 957
+      ratio = 0.7
+      type = VPaned
+    [[[terminal9]]]
+      command = vagrant ssh msp-admin-orderer ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 0
+      parent = child8
+      profile = default
+      type = Terminal
+      uuid = 6bf622b4-74b8-409e-bde5-e2f0b269d2ef
+      title = terminal-9 [msp-admin-orderer]
+      group = hyperledger-post-install
+    [[[terminal10]]]
+      command = vagrant ssh msp-admin-orderer ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 1
+      parent = child8
+      profile = default
+      type = Terminal
+      uuid = 10a8cf00-ca83-42ac-b5e8-14f314a35500
+      title = terminal-10 [msp-admin-orderer]
+
+    [[[child11]]]
+      order = 3
+      parent = child1
+      position = 957
+      ratio = 0.7
+      type = VPaned
+    [[[terminal12]]]
+      command = vagrant ssh orderer-node ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 0
+      parent = child11
+      profile = default
+      type = Terminal
+      uuid = 524a6e8b-c1dc-49da-b147-61452e7bdacd
+      title = terminal-12 [orderer-node]
+      group = hyperledger-post-install
+    [[[terminal13]]]
+      command = vagrant ssh orderer-node ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 1
+      parent = child11
+      profile = default
+      type = Terminal
+      uuid = b70af80a-5c11-40cc-9ca7-4e2e6322c6fd
+      title = terminal-13 [orderer-node]
+
+    [[[child14]]]
+      order = 4
+      parent = child1
+      position = 957
+      ratio = 0.7
+      type = VPaned
+    [[[terminal15]]]
+      command = vagrant ssh peer1-org1 ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 0
+      parent = child14
+      profile = default
+      type = Terminal
+      uuid = 612806a7-9ede-4e06-8e38-300b3a486ef0
+      title = terminal-15 [peer1-org1]
+      group = hyperledger-post-install
+    [[[terminal16]]]
+      command = vagrant ssh peer1-org1 ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 1
+      parent = child14
+      profile = default
+      type = Terminal
+      uuid = cf75092a-7cee-4ad7-8439-80b99a4769dd
+      title = terminal-16 [peer1-org1]
+
+    [[[child17]]]
+      order = 5
+      parent = child1
+      position = 957
+      ratio = 0.7
+      type = VPaned
+    [[[terminal18]]]
+      command = vagrant ssh peer2-org1 ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 0
+      parent = child17
+      profile = default
+      type = Terminal
+      uuid = 1ecedab9-1956-4386-a40e-64cbc6c3647d
+      title = terminal-18 [peer2-org1]
+      group = hyperledger-post-install
+    [[[terminal19]]]
+      command = vagrant ssh peer2-org1 ; bash
+      directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
+      order = 1
+      parent = child17
+      profile = default
+      type = Terminal
+      uuid = a028beb7-cc10-4ae5-8cb6-fe5720463884
+      title = terminal-19 [peer2-org1]
+
+
+[plugins]
+[profiles]
+  [[default]]
+    background_image = None
+    custom_command = zsh
+    foreground_color = "#00ff00"
+    scrollback_infinite = True

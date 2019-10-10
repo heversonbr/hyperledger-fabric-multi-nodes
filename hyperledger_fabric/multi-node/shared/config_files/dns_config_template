@@ -2,6 +2,8 @@
 192.168.1.11   msp-admin-org1
 192.168.1.12   msp-admin-org2
 192.168.1.13   msp-admin-orderer
-192.168.1.14   ordering-0
+192.168.1.14   orderer-node
 192.168.1.15   peer1-org1
+192.168.1.16   peer1-org2
 192.168.1.17   peer2-org1
+192.168.1.18   peer2-org2

@@ -1,8 +1,8 @@
 # Copyright IBM Corp. All Rights Reserved.
 #
 # SPDX-License-Identifier: Apache-2.0
-# O
-
+#
+# v1.4
 
 ###############################################################################
 #
@@ -40,7 +40,7 @@ peer:
 
     # Whether the Peer should programmatically determine its address
     # This case is useful for docker containers.
-    addressAutoDetect: false
+    addressAutoDetect: true
 
     # Setting for runtime.GOMAXPROCS(n). If n < 1, it does not change the
     # current setting
@@ -80,6 +80,10 @@ peer:
         # Important: The endpoints here have to be endpoints of peers in the same
         # organization, because the peer would refuse connecting to these endpoints
         # unless they are in the same organization as the peer.
+        # is used to bootstrap gossip within an organization. If you are using gossip, 
+        # you will typically configure all the peers in your org to point to an initial set of 
+        # peers for bootstrap (you can specific a space-separated list of peers).
+        #        
         bootstrap: 192.168.1.15:7051
 
         # NOTE: orgLeader and useLeaderElection parameters are mutual exclusive.
@@ -99,6 +103,9 @@ peer:
         # with ordering service and disseminate block across peers in
         # its own organization
         orgLeader: false
+
+        # Interval for membershipTracker polling
+        membershipTrackerInterval: 5s
 
         # Overrides the endpoint that the peer publishes to peers
         # in its organization. For peers in foreign organizations
@@ -184,34 +191,16 @@ peer:
             # This helps a newly joined peer catch up to current
             # blockchain height quicker.
             btlPullMargin: 10
-
-    # EventHub related configuration
-    events:
-        # The address that the Event service will be enabled on the peer
-        address: 192.168.1.17:7053
-
-        # total number of events that could be buffered without blocking send
-        buffersize: 100
-
-        # timeout configures how long to block when attempting to add an event to a full buffer:
-        #   when timeout < 0 then discard the event and continue
-        #   when timeout = 0 then block until event is added to the buffer
-        #   when timeout > 0 then block and discard the event if the timeout expires
-        timeout: 10ms
-
-        # timewindow is the acceptable difference between the peer's current
-        # time and the client's time as specified in a registration event
-        timewindow: 15m
-
-        # Keepalive settings for peer server and clients
-        keepalive:
-            # MinInterval is the minimum permitted time in seconds which clients
-            # can send keepalive pings.  If clients send pings more frequently,
-            # the events server will disconnect them
-            minInterval: 60s
-
-        # the timeout to send events over the GRPC stream to clients
-        sendTimeout: 60s
+            # the process of reconciliation is done in an endless loop, while in each iteration reconciler tries to
+            # pull from the other peers the most recent missing blocks with a maximum batch size limitation.
+            # reconcileBatchSize determines the maximum batch size of missing private data that will be reconciled in a
+            # single iteration.
+            reconcileBatchSize: 10
+            # reconcileSleepInterval determines the time reconciler sleeps from end of an iteration until the beginning
+            # of the next reconciliation iteration.
+            reconcileSleepInterval: 1m
+            # reconciliationEnabled is a flag that indicates whether private data reconciliation is enable or not.
+            reconciliationEnabled: true
 
     # TLS Settings
     # Note that peer-chaincode connections through chaincodeListenAddress is
@@ -328,7 +317,7 @@ peer:
         listenAddress: 0.0.0.0:6060
 
     # The admin service is used for administrative operations such as
-    # control over log module severity, etc.
+    # control over logger levels, etc.
     # Only peer administrators can use the service.
     adminService:
         # The interface and port on which the admin server will listen on.
@@ -415,6 +404,51 @@ peer:
 #    VM section
 #
 ###############################################################################
+vm:
+
+    # Endpoint of the vm management system.  For docker can be one of the following in general
+    # unix:///var/run/docker.sock
+    # http://localhost:2375
+    # https://localhost:2376
+    endpoint: unix:///var/run/docker.sock
+
+    # settings for docker vms
+    docker:
+        tls:
+            enabled: false
+            ca:
+                file: docker/ca.crt
+            cert:
+                file: docker/tls.crt
+            key:
+                file: docker/tls.key
+
+        # Enables/disables the standard out/err from chaincode containers for
+        # debugging purposes
+        attachStdout: false
+
+        # Parameters on creating docker container.
+        # Container may be efficiently created using ipam & dns-server for cluster
+        # NetworkMode - sets the networking mode for the container. Supported
+        # standard values are: `host`(default),`bridge`,`ipvlan`,`none`.
+        # Dns - a list of DNS servers for the container to use.
+        # Note:  `Privileged` `Binds` `Links` and `PortBindings` properties of
+        # Docker Host Config are not supported and will not be used if set.
+        # LogConfig - sets the logging driver (Type) and related options
+        # (Config) for Docker. For more info,
+        # https://docs.docker.com/engine/admin/logging/overview/
+        # Note: Set LogConfig using Environment Variables is not supported.
+        hostConfig:
+            NetworkMode: host
+            Dns:
+               # - 192.168.0.1
+            LogConfig:
+                Type: json-file
+                Config:
+                    max-size: "50m"
+                    max-file: "5"
+            Memory: 2147483648
+
 ###############################################################################
 #
 #    Chaincode section
@@ -455,8 +489,7 @@ chaincode:
         # tools added for java shim layer packaging.
         # This image is packed with shim layer libraries that are necessary
         # for Java chaincode runtime.
-        Dockerfile:  |
-            from $(DOCKER_NS)/fabric-javaenv:$(ARCH)-1.1.0
+        runtime: $(DOCKER_NS)/fabric-javaenv:$(ARCH)-$(PROJECT_VERSION)
 
     node:
         # need node.js engine at runtime, currently available in baseimage
@@ -492,23 +525,22 @@ chaincode:
     # system chaincodes whitelist. To add system chaincode "myscc" to the
     # whitelist, add "myscc: enable" to the list below, and register in
     # chaincode/importsysccs.go
+    # QSCC (Query System Chaincode) for ledger and Fabric-related queries
+    # CSCC (Configuration System Chaincode) which helps regulate access control
+    # LSCC (Lifecycle System Chaincode) which defines the rules for the channel
+    # ESCC (Endorsement System Chaincode) for endorsing transactions
+    # VSCC (Validation System Chaincode) for validating transactions
     system:
         cscc: enable
         lscc: enable
         escc: enable
         vscc: enable
         qscc: enable
-            # QSCC (Query System Chaincode) for ledger and Fabric-related queries
-            # CSCC (Configuration System Chaincode) which helps regulate access control
-            # LSCC (Lifecycle System Chaincode) which defines the rules for the channel
-            # ESCC (Endorsement System Chaincode) for endorsing transactions
-            # VSCC (Validation System Chaincode) for validating transactions
-    # System chaincode plugins: in addition to being imported and compiled
-    # into fabric through core/chaincode/importsysccs.go, system chaincodes
-    # can also be loaded as shared objects compiled as Go plugins.
+
+    # System chaincode plugins:
+    # System chaincodes can be loaded as shared objects compiled as Go plugins.
     # See examples/plugins/scc for an example.
-    # Like regular system chaincodes, plugins must also be white listed in the
-    # chaincode.system section above.
+    # Plugins must be white listed in the chaincode.system section above.
     systemPlugins:
       # example configuration:
       # - enabled: true
@@ -521,7 +553,7 @@ chaincode:
     logging:
       # Default level for all loggers within the chaincode container
       level:  info
-      # Override default level for the 'shim' module
+      # Override default level for the 'shim' logger
       shim:   warning
       # Format for the chaincode container logs
       format: '%{color}%{time:2006-01-02 15:04:05.000 MST} [%{module}] %{shortfunc} -> %{level:.4s} %{id:03x}%{color:reset} %{message}'
@@ -541,6 +573,8 @@ ledger:
     # goleveldb - default state database stored in goleveldb.
     # CouchDB - store state database in CouchDB
     stateDatabase: goleveldb
+    # Limit on the number of records to return per query
+    totalQueryLimit: 100000
     couchDBConfig:
        # It is recommended to run CouchDB on the same server as the peer, and
        # not map the CouchDB container port to a server port in docker-compose.
@@ -557,11 +591,14 @@ ledger:
        # Number of retries for CouchDB errors
        maxRetries: 3
        # Number of retries for CouchDB errors during peer startup
-       maxRetriesOnStartup: 10
+       maxRetriesOnStartup: 12
        # CouchDB request timeout (unit: duration, e.g. 20s)
        requestTimeout: 35s
-       # Limit on the number of records to return per query
-       queryLimit: 10000
+       # Limit on the number of records per each CouchDB query
+       # Note that chaincode queries are only bound by totalQueryLimit.
+       # Internally the chaincode may execute multiple CouchDB queries,
+       # each of size internalQueryLimit.
+       internalQueryLimit: 1000
        # Limit on the number of records per CouchDB bulk update batch
        maxBatchUpdateSize: 1000
        # Warm indexes after every N blocks.
@@ -572,6 +609,10 @@ ledger:
        # Increasing the value may improve write efficiency of peer and CouchDB,
        # but may degrade query response time.
        warmIndexesAfterNBlocks: 1
+       # Create the _global_changes system database
+       # This is optional.  Creating the global changes database will require
+       # additional system resources to track changes and maintain the database
+       createGlobalChangesDB: false
 
   history:
     # enableHistoryDatabase - options are true or false
@@ -582,90 +623,53 @@ ledger:
 
 ###############################################################################
 #
-#    Metrics section
+#    Operations section
 #
+###############################################################################
+operations:
+    # host and port for the operations server
+    # listenAddress: 127.0.0.1:9443
+
+    # TLS configuration for the operations endpoint
+    tls:
+        # TLS enabled
+        enabled: false
+
+        # path to PEM encoded server certificate for the operations server
+        cert:
+            file:
+
+        # path to PEM encoded server key for the operations server
+        key:
+            file:
+
+        # require client certificate authentication to access all resources
+        clientAuthRequired: false
+
+        # paths to PEM encoded ca certificates to trust for client authentication
+        clientRootCAs:
+            files: []
+
+###############################################################################
+#
+#    Metrics section
 #
 ###############################################################################
 metrics:
-        # enable or disable metrics server
-        enabled: false
+    # metrics provider is one of statsd, prometheus, or disabled
+    provider: disabled
 
-        # when enable metrics server, must specific metrics reporter type
-        # currently supported type: "statsd","prom"
-        reporter: statsd
+    # statsd configuration
+    statsd:
+        # network type: tcp or udp
+        network: udp
 
-        # determines frequency of report metrics(unit: second)
-        interval: 1s
+        # statsd server address
+        # address: 127.0.0.1:8125
 
-        statsdReporter:
+        # the interval at which locally cached counters and gauges are pushed
+        # to statsd; timings are pushed immediately
+        writeInterval: 10s
 
-              # statsd server address to connect
-              address: 0.0.0.0:8125
-
-              # determines frequency of push metrics to statsd server(unit: second)
-              flushInterval: 2s
-
-              # max size bytes for each push metrics request
-              # intranet recommend 1432 and internet recommend 512
-              flushBytes: 1432
-
-        promReporter:
-
-              # prometheus http server listen address for pull metrics
-              listenAddress: 0.0.0.0:8080
-
-
-# This section removed in v1.4
-###############################################################################
-#
-#    LOGGING section
-#
-###############################################################################
-# logging:
-
-#     # Default logging levels are specified here.
-
-#     # Valid logging levels are case-insensitive strings chosen from
-
-#     #     CRITICAL | ERROR | WARNING | NOTICE | INFO | DEBUG
-
-#     # The overall default logging level can be specified in various ways,
-#     # listed below from strongest to weakest:
-#     #
-#     # 1. The --logging-level=<level> command line option overrides all other
-#     #    default specifications.
-#     #
-#     # 2. The environment variable CORE_LOGGING_LEVEL otherwise applies to
-#     #    all peer commands if defined as a non-empty string.
-#     #
-#     # 3. The value of `level` that directly follows in this file.
-#     #
-#     # If no overall default level is provided via any of the above methods,
-#     # the peer will default to INFO (the value of defaultLevel in
-#     # common/flogging/logging.go)
-
-#     # Default for all modules running within the scope of a peer.
-#     # Note: this value is only used when --logging-level or CORE_LOGGING_LEVEL
-#     #       are not set
-#     level:       debug
-
-#     # The overall default values mentioned above can be overridden for the
-#     # specific components listed in the override section below.
-
-#     # Override levels for various peer modules. These levels will be
-#     # applied once the peer has completely started. They are applied at this
-#     # time in order to be sure every logger has been registered with the
-#     # logging package.
-#     # Note: the modules listed below are the only acceptable modules at this
-#     #       time.
-#     cauthdsl:   warning
-#     gossip:     warning
-#     grpc:       error
-#     ledger:     info
-#     msp:        warning
-#     policies:   warning
-#     peer:
-#         gossip: warning
-
-#     # Message format for the peer logs
-#     format: '%{color}%{time:2006-01-02 15:04:05.000 MST} [%{module}] %{shortfunc} -> %{level:.4s} %{id:03x}%{color:reset} %{message}'
+        # prefix is prepended to all emitted statsd metrics
+        prefix:

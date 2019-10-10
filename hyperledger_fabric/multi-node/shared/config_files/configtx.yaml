@@ -115,13 +115,13 @@ Application: &ApplicationDefaults
    lscc/GetChaincodeData: /Channel/Application/Readers
 
    # ACL Policy for lscc's "getchaincodes" function
-   #    lscc/GetInstantiatedChaincodes: /Channel/Application/Readers
+   #lscc/GetInstantiatedChaincodes: /Channel/Application/Readers
    lscc/GetInstantiatedChaincodes: /Channel/Application/StrictAdminPolicy
 
    #---Query System Chaincode (qscc) function to policy mapping for access control---#
 
    # ACL policy for qscc's "GetChainInfo" function
-   # qscc/GetChainInfo: /Channel/Application/Readers
+   #qscc/GetChainInfo: /Channel/Application/Readers
    qscc/GetChainInfo: /Channel/Application/StrictAdminPolicy
 
    # ACL policy for qscc's "GetBlockByNumber" function
@@ -174,10 +174,11 @@ Application: &ApplicationDefaults
    Admins:
        Type: ImplicitMeta
        Rule: "MAJORITY Admins"
-
    StrictAdminPolicy:
        Type: ImplicitMeta
        Rule: "ANY Admins"
+
+ # policy created as an example to add/ or change a default policy:  
  # Organizations is the list of orgs which are defined as participants on
  # the application side of the network
  Organizations:
