@@ -5,6 +5,7 @@
 
 echo "-----------------------------------------------------------------------------------------"
 echo "Installing CA-server..."
+echo "-----------------------------------------------------------------------------------------"
 echo "USER: $USER whoami: `whoami` id -un: `id -un` FABRIC_USER: $FABRIC_USER  HOME: $HOME  LOGNAME: $LOGNAME" 
 test -f "/bin/bash" && echo "This system has a bash shell"
 echo "-----------------------------------------------------------------------------------------"
@@ -36,6 +37,6 @@ sudo chown -R ubuntu:ubuntu $HYPERLEDGER_HOME/bin
 # (original) sudo cp $GOPATH/bin/*    $PWD/../bin
 # sudo cp $GOPATH/bin/*  $HYPERLEDGER_HOME/bin
 ### sudo rm $GOPATH/bin/* 
-
+echo "-----------------------------------------------------------------------------------------"
 echo "CA-server Done."
 echo "-----------------------------------------------------------------------------------------"

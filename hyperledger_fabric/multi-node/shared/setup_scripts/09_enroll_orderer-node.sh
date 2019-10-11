@@ -121,7 +121,7 @@ echo "###################################"
 echo "# Setting up admincerts"
 echo "###################################"
 
-cho "DEBUG-ONLY: $FABRIC_CA_CLIENT_HOME == $CA_CLIENT_FOLDER ???"
+echo "DEBUG-ONLY: $FABRIC_CA_CLIENT_HOME == $CA_CLIENT_FOLDER ???"
 if [ ! -d  $FABRIC_CA_CLIENT_HOME/msp/admincerts ]; then 
     echo "Creating $FABRIC_CA_CLIENT_HOME/msp/admincerts"
     mkdir -p $FABRIC_CA_CLIENT_HOME/msp/admincerts

@@ -4,14 +4,13 @@
 .  /home/ubuntu/hyperledger_ws/install/fabric.env.sh
 
 echo "-----------------------------------------------------------------------------------------"
-echo "Installing PEER specific software..."
+echo "Sets up GO libraries for fabric-peer and chaincode "
+echo "-----------------------------------------------------------------------------------------"
 echo "USER: $USER whoami: `whoami` id -un: `id -un` FABRIC_USER: $FABRIC_USER  HOME: $HOME  LOGNAME: $LOGNAME" 
 test -f "/bin/bash" && echo "This system has a bash shell"
 echo "-----------------------------------------------------------------------------------------"
 
 # Sets up GO libraries for fabric-peer and chaincode 
-
-
 if [ $HOME = "/root" ]; then
     echo $HOME
     export HOME="/home/$FABRIC_USER"
@@ -28,7 +27,6 @@ else
     go get github.com/hyperledger/fabric/protos/peer
     #sudo cp $GOPATH/bin/*  /usr/local/bin
     #sudo cp $GOPATH/bin/*  $HYPERLEDGER_HOME/bin
-    
 fi
 
 sudo chown -R ubuntu:ubuntu $HYPERLEDGER_HOME/go
@@ -39,6 +37,6 @@ sudo chown -R ubuntu:ubuntu $HYPERLEDGER_HOME/go
 # (original) sudo cp $GOPATH/bin/*    $PWD/../bin
 # sudo cp $GOPATH/bin/*  $HYPERLEDGER_HOME/bin
 ### sudo rm $GOPATH/bin/* 
-
-echo "PEER Done."
+echo "-----------------------------------------------------------------------------------------"
+echo "Done."
 echo "-----------------------------------------------------------------------------------------"

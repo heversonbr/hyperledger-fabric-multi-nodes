@@ -1,7 +1,9 @@
 #!/bin/bash
 
 # Starts the CA server
-
+echo "-----------------------------------------------------------------------------------------"
+echo "Starting CA-Server"
+echo "-----------------------------------------------------------------------------------------"
 killall fabric-ca-server 2> /dev/null
 echo "checking $FABRIC_CA_SERVER_HOME/$FABRIC_CA_SERVER_CONFIG_FILE"
 

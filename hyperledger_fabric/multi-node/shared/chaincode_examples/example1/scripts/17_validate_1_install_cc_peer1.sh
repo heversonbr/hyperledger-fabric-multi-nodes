@@ -57,9 +57,7 @@ fi
 
 ##############################################################
 CC_CONSTRUCTOR='{"Args":["init","a","100","b","200"]}'
-CC_NAME="gocc"
-#CC_PATH="../src/"                                                                                                                                             │        └── [Oct 10  9:05]  keystore                                           
-#CC_PATH="../../chaincode_examples/example1/src/"                                                                                                              │                                                                               
+CC_NAME="gocc" 
 CC_PATH="example1/"
 CC_VERSION="1.0"
 CC_CHANNEL_ID="mychannelid"
@@ -117,6 +115,6 @@ echo "CORE_PEER_EVENTS_ADDRESS: $CORE_PEER_EVENTS_ADDRESS"
 echo "CORE_PEER_GOSSIP_BOOTSTRAP: $CORE_PEER_GOSSIP_BOOTSTRAP"
 echo "PEER_LOGS: $PEER_LOGS" 
 echo "##########################################################################"
-##############################################################
+
 echo "peer chaincode install  -n $CC_NAME -p $CC_PATH -v $CC_VERSION"
 peer chaincode install  -n $CC_NAME -p $CC_PATH -v $CC_VERSION

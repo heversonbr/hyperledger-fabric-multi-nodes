@@ -1,21 +1,35 @@
 #!/bin/bash
 
 
+confirm()
+{
+    read -r -p "${1} [y/N] " response
+    case "$response" in
+        [yY][eE][sS]|[yY]) 
+            true
+            ;;
+        *)
+            false
+            ;;
+    esac
+}
+
 killprocess(){
 
     MYPROC=$1
     echo "Checking for $MYPROC process to kill:"
-    ps -ef | grep $MYPROC  | grep -v grep | grep -v ssh |  awk {'print $2'}
+    ps -ef | grep $MYPROC  | grep -v grep | grep -v ssh | grep -v tmux | awk {'print $2'}
     MYPID=`ps -ef | grep $MYPROC  | grep -v grep | awk {'print $2'}`
     if [ -z $MYPID ]; then
         echo "process $MYPROC not found!"
     else
-        echo "Found $MYPROC process at id: $MYPID. Killing it."
-        sudo kill -9 $MYPID 
-        # 2nd check: to be sure. 
-        sudo killall $MYPROC 
-        echo "checking with: ps -ef | grep $MYPROC..."
-        ps -ef | grep $MYPROC
+        if confirm "Found $MYPROC process at id: $MYPID. Kill it?"; then
+            sudo kill -9 $MYPID 
+            # 2nd check: to be sure. 
+            # sudo killall $MYPROC 
+            echo "checking again with: ps -ef | grep $MYPROC  | grep -v grep | grep -v ssh | grep -v tmux | awk"
+            ps -ef | grep $MYPROC  | grep -v grep | grep -v ssh | grep -v tmux
+        fi
     fi
     echo "-----------------------------------------------------------"
 }

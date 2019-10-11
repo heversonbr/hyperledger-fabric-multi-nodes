@@ -54,7 +54,6 @@ fi
 ##############################################################
 CC_CONSTRUCTOR='{"Args":["init","a","100","b","200"]}'
 CC_NAME="gocc"
-CC_PATH="../src/"
 CC_VERSION="1.0"
 CC_CHANNEL_ID="mychannelid"
 

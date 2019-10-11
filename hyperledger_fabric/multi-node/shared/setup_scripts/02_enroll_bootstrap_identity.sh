@@ -11,6 +11,10 @@ ADMIN_PASS=pw
 
 SUBDIR=caserver/admin
 
+echo "-----------------------------------------------------------------------------------------"
+echo "Enrolling bootstrap Identity"
+echo "-----------------------------------------------------------------------------------------"
+
 echo "current FABRIC_CA_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME"
 export FABRIC_CA_CLIENT_HOME=$BASE_FABRIC_CA_CLIENT_HOME/$SUBDIR
 echo "now FABRIC_CA_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME"

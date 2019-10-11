@@ -17,24 +17,25 @@ FABRIC_GIT_REPO=https://github.com/hyperledger/fabric-samples.git
 
 URL_FABRIC="https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/${ARCH}-${FABRIC_VERSION}/${BINARY_FILE}"
 URL_FABRIC_CA="https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric-ca/hyperledger-fabric-ca/${ARCH}-${CA_VERSION}/${CA_BINARY_FILE}"
-
-
-echo "----------------------------------------------" 
+echo "-----------------------------------------------------------------------------------------"
+echo "Bootstraping Fabric components..."
+echo "-----------------------------------------------------------------------------------------"
 echo "installing for user: $FABRIC_USER"
 echo "fabric_home: $HYPERLEDGER_HOME"
 echo $GOROOT
 echo $GOPATH
 echo $PATH 
-echo "----------------------------------------------" 
+echo "-----------------------------------------------------------------------------------------"
 
 getSamples() {
-        echo "--------------------------------- DEBUG: getSamples-------------------------------------------"
+    echo "-----------------------------------------------------------------------------------------"
+    echo "--------------------------------- DEBUG: getSamples--------------------------------------"
     pwd
     echo "USER: $USER whoami: `whoami` id -un: `id -un` FABRIC_USER: $FABRIC_USER  HOME: $HOME  LOGNAME: $LOGNAME" 
     cd $HYPERLEDGER_HOME
     pwd
     test -f "/bin/bash" && echo "This system has a bash shell"
-    echo "----------------------------------------------------------------------------"
+    echo "-----------------------------------------------------------------------------------------"
 
     # clone (if needed) hyperledger/fabric-samples and checkout corresponding
     # version to the binaries and docker images to be downloaded
@@ -62,22 +63,22 @@ getSamples() {
         fi
     fi
     sudo chown -R ubuntu:ubuntu $HYPERLEDGER_HOME/fabric-samples
-    echo "----------------------------------------------------------------------------"
+    echo "-----------------------------------------------------------------------------------------"
 }
 
 getBinaries(){
     #TODO: add a flag to determine when 'ca-fabric client' should be installed (ca-nodes) or not (no-msp nodes) 
-    echo "--------------------------------- DEBUG: getBinaries-------------------------------------------"
+    echo "--------------------------------- DEBUG: getBinaries-------------------------------------"
+
     pwd
     echo "USER: $USER whoami: `whoami` id -un: `id -un` FABRIC_USER: $FABRIC_USER  HOME: $HOME  LOGNAME: $LOGNAME" 
     cd $HYPERLEDGER_HOME
     pwd
     test -f "/bin/bash" && echo "This system has a bash shell"
-    echo "----------------------------------------------------------------------------"
+    echo "-----------------------------------------------------------------------------------------"
     echo "===> [install_03_bootstrap.sh (getBinaries)] : Downloading version ${FABRIC_VERSION} platform specific fabric binaries"
     echo "===> [install_03_bootstrap.sh (getBinaries)] : Downloading fabric from: " ${URL_FABRIC}
-
-    echo "----------------------------------------------------------------------------"
+    echo "-----------------------------------------------------------------------------------------"
     curl ${URL_FABRIC} | tar xz || rc1=$?
     echo $rc1
     if [ ! -z "$rc" ]; then
@@ -85,7 +86,7 @@ getBinaries(){
     else
       echo "==> Done"
     fi
-    echo "moving config dir created by getbinaries to config_files only for backup "
+    echo "moving config directory created by getBinaries to config_files only for backup "
     sudo mkdir -p config_files/fabric-config/
     cp $HYPERLEDGER_HOME/config/* $HYPERLEDGER_HOME/config_files/fabric-config/
     sudo chown -R ubuntu:ubuntu  $HYPERLEDGER_HOME/config_files/fabric-config
@@ -93,7 +94,7 @@ getBinaries(){
     
     #TODO: maybe remove this later. maybe we dont need it as all config files are treated at config.
 
-    echo "----------------------------------------------------------------------------"
+    echo "-----------------------------------------------------------------------------------------"
     echo "===> [install_03_bootstrap.sh (getBinaries)] : Downloading version ${CA_VERSION} platform specific fabric-ca-client binary"
     echo "===> [install_03_bootstrap.sh (getBinaries)] : Downloading fabric-ca from: " ${URL_FABRIC_CA}
 
@@ -112,13 +113,13 @@ getBinaries(){
 
 
 getAllImages() {
-    echo "--------------------------------- DEBUG: getAllImages-------------------------------------------"
+    echo "--------------------------------- DEBUG: getAllImages------------------------------------"
     pwd
     echo "USER: $USER whoami: `whoami` id -un: `id -un` FABRIC_USER: $FABRIC_USER  HOME: $HOME  LOGNAME: $LOGNAME" 
     cd $HYPERLEDGER_HOME
     pwd
-    test -f "/bin/bash" && echo "This system has a bash shell"
-    echo "----------------------------------------------------------------------------"
+    test -f "/bin/bash" && echo "bash ok! "
+    echo "-----------------------------------------------------------------------------------------"
     which docker >& /dev/null
     if [ "$?" == 1 ]; then
         echo "==> Docker not installed! "
@@ -127,7 +128,7 @@ getAllImages() {
     # pulls docker images from fabric and chaincode repositories
     # for IMAGES in peer orderer ccenv tools baseos nodeenv javaenv; do
     for IMAGES in peer orderer ccenv tools nodeenv javaenv; do
-        echo "----------------------------------------------" 
+        echo "-----------------------------------------------------------------------------------------"
         echo "==> FABRIC IMAGE: $IMAGES"
         echo "PULLING: docker pull hyperledger/fabric-$IMAGES:$FABRIC_VERSION"
         docker pull "hyperledger/fabric-$IMAGES:$FABRIC_VERSION"
@@ -139,7 +140,7 @@ getAllImages() {
     docker pull hyperledger/fabric-baseos:0.4.15
 
     for IMAGES in couchdb kafka zookeeper; do
-        echo "----------------------------------------------" 
+        echo "-----------------------------------------------------------------------------------------"
         echo "==> THIRDPARTY DOCKER IMAGE: $IMAGES"
         echo "PULLING: docker pull hyperledger/fabric-$IMAGES:$THIRDPARTY_IMAGE_VERSION"
         docker pull "hyperledger/fabric-$IMAGES:$THIRDPARTY_IMAGE_VERSION"
@@ -150,22 +151,22 @@ getAllImages() {
     echo "==> FABRIC CA (server and client) IMAGE: NOT PULLING CA-IMAGES: check bootstrap (line 132) if needed! "
     #docker "pull hyperledger/fabric-ca:$CA_VERSION"
     #docker "tag hyperledger/fabric-ca:$CA_VERSION" "hyperledger/fabric-ca"
-    echo "----------------------------------------------"
+    echo "-----------------------------------------------------------------------------------------"
     echo "===> IMPORTANT: Listing hyperledger docker images"
     docker images 
     docker ps 
-    echo "----------------------------------------------"
+    echo "-----------------------------------------------------------------------------------------"
 }
 
 
 cd $HYPERLEDGER_HOME
-echo "----------------------------------------------" 
+echo "-----------------------------------------------------------------------------------------"
 echo "bootstrap : Installing Hyperledger Fabric binaries"
 getBinaries
-echo "----------------------------------------------" 
+echo "-----------------------------------------------------------------------------------------"
 echo "bootstrap : Installing Hyperledger Fabric docker images"
 getAllImages
-echo "----------------------------------------------" 
+echo "-----------------------------------------------------------------------------------------"
 echo "bootstrap : Installing hyperledger/fabric-samples repo"
 getSamples
-echo "----------------------------------------------" 
+echo "-----------------------------------------------------------------------------------------"

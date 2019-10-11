@@ -10,15 +10,15 @@
 # source all environment variables
 .  /home/ubuntu/hyperledger_ws/install/fabric.env.sh
 
-echo "----------------------------------------------" 
+echo "-----------------------------------------------------------------------------------------"
 echo "Installing Fabric Pre-requirements" 
+echo "-----------------------------------------------------------------------------------------"
 echo "installing for user: $FABRIC_USER"
 echo "fabric_home: $HYPERLEDGER_HOME"
 echo $GOROOT
 echo $GOPATH
 echo $PATH 
-echo "----------------------------------------------" 
-
+echo "-----------------------------------------------------------------------------------------"
 
 # check if environment variables were added into .bashrc , update .bashrc if not! \
 grep "source $HYPERLEDGER_HOME/install/fabric.env.sh" /home/$FABRIC_USER/.bashrc
@@ -45,8 +45,8 @@ else
     echo "cd \$HYPERLEDGER_HOME" | sudo tee -a /home/$FABRIC_USER/.bashrc
 fi
 
-echo "----------------------------------------------" 
-#----------------------------------------------------------------------------------------------------------
+echo "-----------------------------------------------------------------------------------------"
+
 # PRE-REQS HYPERLEDGER
 # Check ubuntu version
 echo "Checking ubuntu version..."
@@ -67,15 +67,16 @@ else
     exit 1
 fi
 
-echo "----------------------------------------------" 
-# Updating package lists
+echo "-----------------------------------------------------------------------------------------"
+echo "Updating package lists"
+echo "-----------------------------------------------------------------------------------------"
 sudo apt-get -qq update
 
-echo "----------------------------------------------"
+echo "-----------------------------------------------------------------------------------------"
 # Curl: Install packages to allow apt to use a repository over HTTPS
 sudo apt-get -qq install -y apt-transport-https ca-certificates curl wget gnupg-agent software-properties-common
 
-echo "----------------------------------------------"
+echo "-----------------------------------------------------------------------------------------"
 # NOTE: check if I really need compose for multinode deployment.
 # testing without compose, new type of instalation from etienne's course documentation
 #echo "Install the current stable release of Docker Compose..."
@@ -83,8 +84,9 @@ echo "----------------------------------------------"
 #echo "Apply executable permissions to the binary..."
 #sudo chmod +x /usr/local/bin/docker-compose
 
-echo "----------------------------------------------" 
+echo "-----------------------------------------------------------------------------------------"
 echo "Installing Golang"
+echo "-----------------------------------------------------------------------------------------"
 # download the archive
 wget -q  https://dl.google.com/go/go1.12.2.linux-amd64.tar.gz || res=$?
 if [ ! -z "$res" ]; then
@@ -120,23 +122,26 @@ fi
 # the export above was removed because it is now done by the file fabric.env.sh sourced in the begining of this file 
 # ----------------------------------------------
 
-echo "----------------------------------------------" 
-echo "Install Node.js:  requested for developement only..." 
+echo "-----------------------------------------------------------------------------------------"
+echo "Downloading Node.js:  requested for developement only..." 
 # Versions other than the 8.x series are not supported at this time
 curl -sSL https://deb.nodesource.com/setup_8.x | sudo -E bash -  || res=$?
 if [ ! -z "$res" ]; then
     echo "==> ERROR: There was an error downloading Golang"
     exit 1;
 fi
-echo "----------------------------------------------" 
+echo "-----------------------------------------------------------------------------------------"
+echo "Installing Node.js and nmp"
+echo "-----------------------------------------------------------------------------------------"
 sudo apt-get -qq install -y nodejs
 # installing Node.js will also install NPM, confirm the version of NPM installed:
 sudo npm install npm@5.6.0 -g
-echo "----------------------------------------------" 
+echo "-----------------------------------------------------------------------------------------"
 echo "Installing Python"
+echo "-----------------------------------------------------------------------------------------"
 # The Fabric Node.js SDK requires Python 2.7 in order for npm install operations to complete successfully.
 sudo apt-get -qq  install -y python
 
 sudo apt-get install -y tree 
-echo "----------------------------------------------" 
+echo "-----------------------------------------------------------------------------------------"
 echo "prereqs install Done!"
