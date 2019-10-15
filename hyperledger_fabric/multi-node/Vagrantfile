@@ -104,7 +104,7 @@ cluster = [
 ssh_config = []
 ssh_entry = { :hostname => "", :username => "" , :ipadd => "", :keyfile => "" }
 
-# data structs for updating the resolv.conf file 
+# data structs for updating the /etc/hosts file 
 dns_config = []
 dns_entry = { :hostname => "", :ipadd => "" }
 
@@ -128,15 +128,17 @@ $setSSHDNSconfig = <<-SCRIPT
         echo "Warning: /etc/hosts does not exist"
     fi
     echo "-------------------------------------------"
-    mkdir -p /home/ubuntu/hyperledger_ws/install/logs
-    chown -R ubuntu:ubuntu /home/ubuntu/hyperledger_ws/install/logs
+    echo "Setting terminal layouts."
+    mkdir -p /home/ubuntu/.byobu/
+    cp /home/ubuntu/hyperledger_ws/install/windows.tmux.hlf  /home/ubuntu/.byobu/windows.tmux.hlf
     echo "-------------------------------------------"
 SCRIPT
 
 $installDocker = <<-SCRIPT
     echo "-------------------------------------------"
     echo "Installing Docker at node `hostname`"
-    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/install_01_docker.sh  2> /home/ubuntu/hyperledger_ws/install/logs/docker_install_errors.log'
+    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/install_01_docker.sh  
+    
     
     echo "-------------------------------------------"
 SCRIPT
@@ -144,32 +146,28 @@ SCRIPT
 $installprereqs = <<-SCRIPT
     echo "-------------------------------------------"
     echo "Installing FABRIC prereqs at node `hostname`"
-    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/install_02_prereqs.sh  2> /home/ubuntu/hyperledger_ws/install/logs/prereqs_install_errors.log'
-
+    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/install_02_prereqs.sh 
     echo "-------------------------------------------"
 SCRIPT
 
 $checkprereqs = <<-SCRIPT
     echo "-------------------------------------------"
     echo "Checking FABRIC prereqs at node `hostname`"
-    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/check_prereqs.sh >  2> /home/ubuntu/hyperledger_ws/install/logs/check_prereqs_errors.log'
-   
+    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/check_prereqs.sh >  
     echo "-------------------------------------------"
 SCRIPT
 
 $bootstrapBinaries = <<-SCRIPT
     echo "-------------------------------------------"
     echo "Bootstraping Fabric binaries at node `hostname`"
-    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/install_03_bootstrap.sh  2> /home/ubuntu/hyperledger_ws/install/logs/bootstrap_install_errors.log'
-  
+    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/install_03_bootstrap.sh 
     echo "-------------------------------------------"
 SCRIPT
 
 $installMSPserver = <<-SCRIPT
     echo "-------------------------------------------"
     echo "Installing CA (client/server) at node `hostname`"
-    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/install_04_ca_server.sh 2> /home/ubuntu/hyperledger_ws/install/logs/caserver_install_errors.log'
-  
+    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/install_04_ca_server.sh 
     echo "-------------------------------------------"
 SCRIPT
 
@@ -178,8 +176,7 @@ SCRIPT
 $prepareChaincodeGo = <<-SCRIPT
     echo "-------------------------------------------"
     echo "Installing CA (client/server) at node `hostname`"
-    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/install_05_chaincode_go.sh 2> /home/ubuntu/hyperledger_ws/install/logs/chaincode_go_install_errors.log'
- 
+    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/install_05_chaincode_go.sh
     echo "-------------------------------------------"
 SCRIPT
 
@@ -222,10 +219,10 @@ Vagrant.configure("2") do |config|
                 override.vm.synced_folder './shared', '/home/ubuntu/hyperledger_ws/', type: 'rsync'  #   rsync and none as types present some bugs.
                 # note that: the os.user_data script will run before the inline script below
                 # echo '127.0.0.1 #{opts[:name]}' | tee -a /etc/hosts
-                # os.user_data = """#!/bin/bash
-                #    echo '127.0.0.1 localhost' | tee -a /etc/hosts
-                #    echo 'nameserver 8.8.8.8'  | tee -a /etc/resolv.conf
-                # """
+                os.user_data = """#!/bin/bash
+                    echo '127.0.0.1 localhost' | tee -a /etc/hosts
+                    echo 'nameserver 8.8.8.8'  | tee -a /etc/resolv.conf
+                """
             end
             
             ## for all:
@@ -233,9 +230,10 @@ Vagrant.configure("2") do |config|
             #node.vm.provision "shell", inline: $installDocker
             #node.vm.provision "shell", inline: $installprereqs
             #node.vm.provision "shell", inline: $checkprereqs
-            #node.vm.provision "shell", inline: $bootstrapBinaries
+            ##there is an issue when we download the images using vagrant (must be related to the root vs ubuntu user. tbc)
+            ##node.vm.provision "shell", inline: $bootstrapBinaries
             
-            # for msp server only
+            ## for msp server only
             #if opts[:type] == "caserver"
             #    node.vm.provision "shell", inline: $installMSPserver
             #else    

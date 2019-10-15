@@ -136,10 +136,11 @@ getAllImages() {
         docker tag "hyperledger/fabric-$IMAGES:$FABRIC_VERSION" "hyperledger/fabric-$IMAGES"
 
     done
-    # there is a problem with the baseos image pulling. im doing manually and temporarily here: to be sure that is coming.
-    docker pull hyperledger/fabric-baseos:0.4.15
-
-    for IMAGES in couchdb kafka zookeeper; do
+    
+    ## there is a problem with the baseos image pulling. im doing manually and temporarily here: to be sure that is coming.
+    #docker pull hyperledger/fabric-baseos:0.4.15
+    #for IMAGES in couchdb kafka zookeeper; do
+    for IMAGES in couchdb baseos; do 
         echo "-----------------------------------------------------------------------------------------"
         echo "==> THIRDPARTY DOCKER IMAGE: $IMAGES"
         echo "PULLING: docker pull hyperledger/fabric-$IMAGES:$THIRDPARTY_IMAGE_VERSION"
@@ -154,7 +155,7 @@ getAllImages() {
     echo "-----------------------------------------------------------------------------------------"
     echo "===> IMPORTANT: Listing hyperledger docker images"
     docker images 
-    docker ps 
+    docker ps -a 
     echo "-----------------------------------------------------------------------------------------"
 }
 

@@ -5,11 +5,14 @@
 
 In this document we show how to proceed to deploy a simple Blockchain
 infrastructure composed of multiple nodes.
-The goal of this study is: _i_) better understand how to deploy Hyperledger
-Fabric in a more realistic environments (i.e., composed of multiple machines).
-_ii_) make a step forward from the environment targeted by the Hyperledger official
-documentation, which is based on a single node with multiple containers, hiding
-many important details of process of deploying and using the Hyperledger framework.
+The goal of this study is: _i_) better understand the deployment of Hyperledger
+Fabric in realistic environments (i.e., composed of multiple machines).
+_ii_) make a step forward from the environment targeted by the official Hyperledger
+documentation which is based only on a single node with multiple containers.
+We argue that this approch hides many important details of process of deploying
+and using the Hyperledger framework.
+We propose here a procedure and a series of step-by-step scripts that make it easy
+to deploy and use Hyperledger Fabric
 
 == Target environment
 
@@ -22,19 +25,67 @@ Note that, we use in this example a single node as ordering service in order to
 make it easier. In a subsequent document we will improve it with a multi-node
 ordering service.
 
-== Setting up nodes
+:TODO: put a figure here to represent the environment
+
+
+== Download scripts
+
+We have created a series of scripts to make the whole process of deploying and using
+the Hyperledger Blockchain easier. Our goal is not only facilitate the process of
+deploying Hyperledger but also to make it easier to understand every step of the
+full process.
+
+To download the scripts follow the *_link_* [[link]].
+
+:TODO: make a link or something to download the scripts.
+
+Download the files within a directory of your choice,
+lets call this directory your 'base_local_dir'.
+Your 'base_local_dir' will have the following structure.
+
+```
+.
+├── shared
+│   ├── chaincode_examples
+│   │   └── example1
+│   │       ├── scripts
+│   │       └── src
+│   ├── config_files
+│   ├── install
+│   └── setup_scripts
+└── src_vagrant
+│
+└── Vagrantfile
+```
+
+The `shared` directory is the directory shared between your local machine and
+the hosts (virtual machines) to be used as hyperledger nodes.
+We discuss this directory in details later <<shared_vagrant_dir,here>>.
+The `src_vagrant` directory has the sources for our vagrant deployment.
+Currently, it has two different versions of the `Vagrantfile`, one for Openstack
+and another for Virtualbox deployments. We must copy the content of one of this
+files into the `Vagrantfile` at the root of you 'base_local_dir', according to the
+deployment of your choice. By default we use Openstack deployment.
+
+
+== How to use the scripts to deploy Hyperledger
+
+If you have successfully downloaded the scripts as described above now you are
+able to start using them. Lets start by briefly describing how we use vagrant
+to deploy our hosts.
 
 [[conf-overview]]
-=== Configuration overview
+=== Host configuration
 
-We use https://www.vagrantup.com/[Vagrant] to make it easy to deploy many virtual
-machines at same time with specific configurations.
-The vagrant file (Vagrantfile) is where VM's configuration is stored.
-Our Vagrant uses an openstack plugin (https://github.com/ggiamarchi/vagrant-openstack-provider)
+We use https://www.vagrantup.com/[vagrant] to deploy the virtual machines at same
+time with a specific configuration. If you do not have vagrant installed in your
+local machine yet, please take the time to do that now.
+The vagrant file (`Vagrantfile`) is where these configurations are stored.
+We use the openstack plugin (https://github.com/ggiamarchi/vagrant-openstack-provider)
 to deploy these machines in our Openstack cluster.
 
-In the Vagrantfile each host is defined as an entry in the data structure
-called *_cluster_*. Each entry has the following representing a single host.
+In the `Vagrantfile`, each host is defined as an entry in a data structure
+called *_cluster_*. Each entry (host) in *_cluster_* has the following structure.
 
 [source, ruby]
 ----
@@ -49,35 +100,136 @@ called *_cluster_*. Each entry has the following representing a single host.
     :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
 }
 ----
+With `name` informing the hostname to be deployed, `username` the default user to
+be created in that host, `type` the type of node according to the Hyperledger
+architecture (e.g., peer, orderer, msp-admin, msp-root, etc.)
+If you want to take a look in the full `Vagrantfile` and the detailed configuration
+of all the hosts, check the  <<appendix:vagrantfile, Appendix>>.
 
-If you want to take a look in the full Vagrantfile and the detailed configuration
-of all the hosts, check the  <<appendix:vagrantfile, Appendix>>
+=== Deploy all nodes (VMs)
 
-We have created a series of scripts to make the whole process easy,
-without avoiding the reader to understand every single step of the the full process. Our scripts can be found here:
+Use the e *vagrant up* command in order to deploy our machines.
+Note that, this operation takes few minutes, depending on the number of hosts to
+deploy. Thus, execute the command as show below and go for a coffee.
 
-:TODO: make a link or something to download the scripts.
+[source, bash]
+----
+$ vagrant up
+----
+
+When the deployment finishes, you can check the status of each deployed virtual machine.
+
+[source, bash]
+----
+$ vagrant status
+Current machine states:
+name                      state    provider
+--------------------------------------------
+msp-root-org1             active (openstack)
+msp-admin-org1            active (openstack)
+msp-admin-orderer         active (openstack)
+orderer-node              active (openstack)
+peer1-org1                active (openstack)
+peer2-org1                active (openstack)
+----
+
+[[shared_vagrant_dir]]
+Vagrant creates the hosts defined in the `Vagrantfile` and sets a ssh configuration
+`~/.ssh/config` at each node with entries to all the other nodes
+as well as `/etc/hosts` and `/etc/resolv.conf` files.
+At the end of the process, vagrant will create a directory called `~/hyperledger_ws`
+(i.e., hyperledger workspace) at each host which is our HYPERLEDGER_HOME directory.
+The directory has the following structure and content.
+
+[source, bash]
+----
+~/hyperledger_ws$ tree -dL 1
+.
+├── install
+├── setup_scripts
+├── config_files
+└── chaincode_example
+----
+
+- *install*: directory that contains the scripts used to install Hyperledger Fabric
+software in the hosts and create the base configuration for each.
+
+- *setup_scripts*: directory that contains the scripts used to set up Hyperledger
+environment and its configuration.
+
+- *config_files*: directory that contains template files used to configure Hyperledger
+environment.
+
+- *chaincode_examples*: directory that contains the chaincode example used to validate
+the installation and configuration.
 
 
-=== Main files and directories
 
-- Vagrantfile:
-
-- install: contains the scripts that are automatically run during the *vagrant up*
-execution and create the base configuration for hosts.
-
-- setup_scripts: contains the scripts used to set up the hyperledger environment,
-after the base configuration at the hosts.
-
-- config_files: contains the configuration templates used to create our hyperledger
-infra-structure.
-
-== Installing Hyperledger Fabric
+=== Installing Hyperledger Fabric
 
 
-== Setting up and configuring the Blockchain
+In order to ease the installation process we provide two different terminal
+layouts that will be used during the installation and configuration processes.
+One layout configuration file must be used with the terminal emulator _terminator_
+and the other wiith _byobu_.
 
-== Testing the installation
+==== Preparing Terminator layout
+
+We use the terminator to perform some repetitive  tasks that are required in all
+the hosts.
+The reason is that terminator has a very good broadcast feature.
+Therefore, to install some software on at all the hosts we have provided a configuration
+file called `./install/terminator_config` which will allow us to run scripts in
+one terminal screen connected to one machine and broadcast this commands to the others.
+
+First, install terminator into your local machine, if you do not have it.
+[source, bash]
+----
+$ sudo apt-get install terminator
+----
+
+Then, copy our configuration file to the `~/.terminator/` directory in your home.
+[source, bash]
+----
+$ cp ./install/terminator_config  ~/.terminator/
+----
+
+Finally invoke the terminator layout as follows:
+
+[source, bash]
+----
+$ terminator -l simple_hlf
+----
+
+
+As as result  you must have a terminator layout as the one shows below.
+
+image::img/terminator.png[]
+
+
+=== Setting up Hyperledger configuration
+
+
+
+=== Testing the installation
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 == Using the scripts
@@ -87,44 +239,17 @@ infra-structure.
 The very first action is to put all the nodes up with the base configuration by
 running the *vagrant up* command.
 
-[source, bash]
-----
-$ vagrant up
-----
 
-Check the status
 
-[source, bash]
-----
-$ vagrant status
-Current machine states:
 
-ca-admin                  active (openstack)
-org1-msp-1                active (openstack)
-org2-msp-2                active (openstack)
-orderer                   active (openstack)
-----
 
-Vagrant creates all the hosts defined at the Vagrantfile. Besides the creation
-of virtual machines vagrant executes a series of scripts stored in the directory
-*install*. At the end of the process, Vagrant will create a directory called
- ~/hyperledger_ws at each host which is the *HYPERLEDGER_HOME* directory and
- the directory has the following structure:
 
-[source, bash]
-----
-$ pwd
-/home/ubuntu/hyperledger_ws
 
-$ ls
-bin
-config
-config_files
-fabric-samples
-go
-install
-setup_scripts
-----
+
+
+
+
+
 
 === Setting up nodes configuration
 
@@ -578,7 +703,7 @@ Name: orderer-admin, Type: client, Affiliation: orderer, Max Enrollments: 2, Att
 
 
 
-== Appendix A: Configuration Files
+== Appendix A - Configuration files
 
 [[appendix:vagrantfile]]
 === Vagrantfile
