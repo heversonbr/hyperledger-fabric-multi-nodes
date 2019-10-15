@@ -164,37 +164,42 @@ environment.
 the installation and configuration.
 
 
-
-=== Installing Hyperledger Fabric
-
+=== Installing Hyperledger Fabric software
 
 In order to ease the installation process we provide two different terminal
 layouts that will be used during the installation and configuration processes.
-One layout configuration file must be used with the terminal emulator _terminator_
-and the other wiith _byobu_.
+The first layout configuration file (`terminator_config`) must be used with the
+terminal emulator called _terminator_ that must be installed in your local host,
+and the second (windows.tmux.hlf) will be used with _byobu_ from a ssh connection
+between your local host and one of the virtual machines created by vagrant.
+In order to install the Fabric software on the hosts we will use the first
+terminal layout based on terminator.
 
 ==== Preparing Terminator layout
 
-We use the terminator to perform some repetitive  tasks that are required in all
+We use the `terminator` to perform some repetitive  tasks that are required in all
 the hosts.
-The reason is that terminator has a very good broadcast feature.
+The reason is that `terminator` has a very good broadcast feature.
 Therefore, to install some software on at all the hosts we have provided a configuration
 file called `./install/terminator_config` which will allow us to run scripts in
 one terminal screen connected to one machine and broadcast this commands to the others.
 
-First, install terminator into your local machine, if you do not have it.
+First, install `terminator` into your local machine, if you do not have it.
+If you already have `terminator` installed please skip this step.
 [source, bash]
 ----
 $ sudo apt-get install terminator
 ----
 
-Then, copy our configuration file to the `~/.terminator/` directory in your home.
+Then, copy our configuration file to `~/.config/terminator/config` in your home
+directory.
+
 [source, bash]
 ----
-$ cp ./install/terminator_config  ~/.terminator/
+$ cp $HYPERLEDGER_HOME/install/terminator_config  ~/.config/terminator/config
 ----
 
-Finally invoke the terminator layout as follows:
+Finally invoke the terminator layout to install Hyperledger Fabric as follows:
 
 [source, bash]
 ----
@@ -202,9 +207,15 @@ $ terminator -l simple_hlf
 ----
 
 
-As as result  you must have a terminator layout as the one shows below.
+As as result terminator  will open a specific layout with multiple tabs.
+If everything goes well each tab will be connected through ssh to one of the
+Hyperledger hosts deployed by vagrant, as the one shown below.
 
 image::img/terminator.png[]
+
+
+==== Installing Fabric
+
 
 
 === Setting up Hyperledger configuration
