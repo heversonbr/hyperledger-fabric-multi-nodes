@@ -3,7 +3,7 @@
 require 'vagrant-openstack-provider'
 #os.networks = 'd085327f-2cea-4e14-8784-764ee72b92f4'  # id network hbr_net_test2  (hyper)
 #os.networks = '2a7f5866-ded3-45ea-b263-5826a997de2a'  # id network hbr_net_test1  (k8s)
-#os.networks = '0ed56125-8083-4fd8-9c46-4e4e29ce50f6'  # id network hbr_net_test3  (gluster)  
+#os.networks = '0ed56125-8083-4fd8-9c46-4e4e29ce50f6'  # id network hbr_net_test3  (gluster)
 #types for hyperledger:   MSP(CA) , peer , endorser-peer , orderer-node
 
 cluster = [
@@ -15,7 +15,7 @@ cluster = [
         :flavor => "j1.small",
         :netid => "d085327f-2cea-4e14-8784-764ee72b92f4",
         :netadd => "192.168.1.10",
-        :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"  
+        :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
     },
     {
         :name => "msp-admin-org1",
@@ -104,7 +104,7 @@ cluster = [
 ssh_config = []
 ssh_entry = { :hostname => "", :username => "" , :ipadd => "", :keyfile => "" }
 
-# data structs for updating the /etc/hosts file 
+# data structs for updating the /etc/hosts file
 dns_config = []
 dns_entry = { :hostname => "", :ipadd => "" }
 
@@ -113,7 +113,7 @@ dns_entry = { :hostname => "", :ipadd => "" }
 $setSSHDNSconfig = <<-SCRIPT
     echo "-------------------------------------------"
     echo "allNodes script started"
-    # setup ~/.ssh/config file at all the nodes to allow connection among them. 
+    # setup ~/.ssh/config file at all the nodes to allow connection among them.
     # (after deployment only the floating IP of the first vm is required to connect)
     echo "Setting ~/.ssh/config"
     mv /home/ubuntu/hyperledger_ws/config_files/ssh_config_template /home/ubuntu/.ssh/config
@@ -137,37 +137,37 @@ SCRIPT
 $installDocker = <<-SCRIPT
     echo "-------------------------------------------"
     echo "Installing Docker at node `hostname`"
-    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/install_01_docker.sh  
-    
-    
+    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/install_01_docker.sh
+
+
     echo "-------------------------------------------"
 SCRIPT
 
 $installprereqs = <<-SCRIPT
     echo "-------------------------------------------"
     echo "Installing FABRIC prereqs at node `hostname`"
-    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/install_02_prereqs.sh 
+    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/install_02_prereqs.sh
     echo "-------------------------------------------"
 SCRIPT
 
 $checkprereqs = <<-SCRIPT
     echo "-------------------------------------------"
     echo "Checking FABRIC prereqs at node `hostname`"
-    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/check_prereqs.sh >  
+    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/check_prereqs.sh >
     echo "-------------------------------------------"
 SCRIPT
 
 $bootstrapBinaries = <<-SCRIPT
     echo "-------------------------------------------"
     echo "Bootstraping Fabric binaries at node `hostname`"
-    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/install_03_bootstrap.sh 
+    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/install_03_bootstrap.sh
     echo "-------------------------------------------"
 SCRIPT
 
 $installMSPserver = <<-SCRIPT
     echo "-------------------------------------------"
     echo "Installing CA (client/server) at node `hostname`"
-    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/install_04_ca_server.sh 
+    sudo -u ubuntu bash -c 'sh /home/ubuntu/hyperledger_ws/install/install_04_ca_server.sh
     echo "-------------------------------------------"
 SCRIPT
 
@@ -201,30 +201,29 @@ Vagrant.configure("2") do |config|
         os.tenant_name = 'hbr_test'
         os.security_groups = ['default']
         os.availability_zone = 'nova'
-        os.region = 'regionOne'  
+        os.region = 'regionOne'
         os.keypair_name = 'openstack_cloudlab_bcom'
-        
+
     end
 
     cluster.each do |opts|
-        config.vm.define opts[:name] do |node| 
+        config.vm.define opts[:name] do |node|
             node.vm.provider :openstack do |os, override|
                 os.server_name = opts[:name]
                 os.image = opts[:box]
                 os.flavor = opts[:flavor]
                 os.networks = [{ id: opts[:netid], address: opts[:netadd] }]
                 os.floating_ip_pool = 'ext_net'
-                
+
                 override.vm.synced_folder '.', '/vagrant', disabled: true  # this share is created by default. Specify the synchronization method between the host and the remote VM. Default value is "rsync". If your OpenStack image does not include rsync, you must set to "none".
                 override.vm.synced_folder './shared', '/home/ubuntu/hyperledger_ws/', type: 'rsync'  #   rsync and none as types present some bugs.
                 # note that: the os.user_data script will run before the inline script below
                 # echo '127.0.0.1 #{opts[:name]}' | tee -a /etc/hosts
                 os.user_data = """#!/bin/bash
-                    echo '127.0.0.1 localhost' | tee -a /etc/hosts
                     echo 'nameserver 8.8.8.8'  | tee -a /etc/resolv.conf
                 """
             end
-            
+
             ## for all:
             node.vm.provision "shell", inline: $setSSHDNSconfig
             #node.vm.provision "shell", inline: $installDocker
@@ -232,11 +231,11 @@ Vagrant.configure("2") do |config|
             #node.vm.provision "shell", inline: $checkprereqs
             ##there is an issue when we download the images using vagrant (must be related to the root vs ubuntu user. tbc)
             ##node.vm.provision "shell", inline: $bootstrapBinaries
-            
+
             ## for msp server only
             #if opts[:type] == "caserver"
             #    node.vm.provision "shell", inline: $installMSPserver
-            #else    
+            #else
             #    node.vm.provision "shell", inline: $prepareChaincodeGo
             #end
 
@@ -244,11 +243,11 @@ Vagrant.configure("2") do |config|
 
         # Genenrate a ssh config file based onf the information from each host
         #    the idea is to have all hostnames entries in the ~/.ssh/config
-        #    and share the config with all the hosts, This will allow to remove 
+        #    and share the config with all the hosts, This will allow to remove
         #    all the floating IPs allocated for each host by the openstack plugin (default behavior).
-	    #    Therefore, it allows to consume less IPs in our openstack cluster while the machines are UP and RUNNING. 
+	    #    Therefore, it allows to consume less IPs in our openstack cluster while the machines are UP and RUNNING.
         #    Solution: Creates an array called 'ssh_config' where entries are added at each loop in the hosts configuration
-        #TODO: add StrictHostKeyChecking no into the ssh config file to avoid confirming 'yes' whenever we make a ssh ! 
+        #TODO: add StrictHostKeyChecking no into the ssh config file to avoid confirming 'yes' whenever we make a ssh !
         new_ssh_entry = Hash.new()
         new_ssh_entry[:hostname] = opts[:name]
         new_ssh_entry[:username] = opts[:username]
@@ -274,4 +273,4 @@ Vagrant.configure("2") do |config|
     end
 
 
-end 
+end

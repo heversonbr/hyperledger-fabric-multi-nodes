@@ -6,15 +6,15 @@
 echo "-----------------------------------------------------------------------------------------"
 echo "Sets up GO libraries for fabric-peer and chaincode "
 echo "-----------------------------------------------------------------------------------------"
-echo "USER: $USER whoami: `whoami` id -un: `id -un` FABRIC_USER: $FABRIC_USER  HOME: $HOME  LOGNAME: $LOGNAME" 
+echo "USER: $USER whoami: `whoami` id -un: `id -un` FABRIC_USER: $FABRIC_USER  HOME: $HOME  LOGNAME: $LOGNAME"
 test -f "/bin/bash" && echo "This system has a bash shell"
 echo "-----------------------------------------------------------------------------------------"
 
-# Sets up GO libraries for fabric-peer and chaincode 
+# Sets up GO libraries for fabric-peer and chaincode
 if [ $HOME = "/root" ]; then
     echo $HOME
     export HOME="/home/$FABRIC_USER"
-    echo "[install_05_peer.sh] USER: $USER whoami: `whoami` id -un: `id -un` FABRIC_USER: $FABRIC_USER  HOME: $HOME  LOGNAME: $LOGNAME" 
+    echo "USER: $USER whoami: `whoami` id -un: `id -un` FABRIC_USER: $FABRIC_USER  HOME: $HOME  LOGNAME: $LOGNAME"
     go get github.com/hyperledger/fabric/core/chaincode/shim
     go get github.com/hyperledger/fabric/protos/peer
     #sudo cp $GOPATH/bin/*  /usr/local/bin
@@ -22,7 +22,7 @@ if [ $HOME = "/root" ]; then
     export HOME="/root"
 else
     echo $HOME
-    echo "[install_05_peer.sh] USER: $USER whoami: `whoami` id -un: `id -un` FABRIC_USER: $FABRIC_USER  HOME: $HOME  LOGNAME: $LOGNAME" 
+    echo "USER: $USER whoami: `whoami` id -un: `id -un` FABRIC_USER: $FABRIC_USER  HOME: $HOME  LOGNAME: $LOGNAME"
     go get github.com/hyperledger/fabric/core/chaincode/shim
     go get github.com/hyperledger/fabric/protos/peer
     #sudo cp $GOPATH/bin/*  /usr/local/bin
@@ -36,7 +36,7 @@ sudo chown -R ubuntu:ubuntu $HYPERLEDGER_HOME/go
 # go get -u https://github.com/hyperledger/fabric-ca/tree/release-1.4/cmd
 # (original) sudo cp $GOPATH/bin/*    $PWD/../bin
 # sudo cp $GOPATH/bin/*  $HYPERLEDGER_HOME/bin
-### sudo rm $GOPATH/bin/* 
+### sudo rm $GOPATH/bin/*
 echo "-----------------------------------------------------------------------------------------"
 echo "Done."
 echo "-----------------------------------------------------------------------------------------"

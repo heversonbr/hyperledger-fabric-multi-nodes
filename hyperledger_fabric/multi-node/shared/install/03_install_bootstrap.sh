@@ -24,14 +24,14 @@ echo "installing for user: $FABRIC_USER"
 echo "fabric_home: $HYPERLEDGER_HOME"
 echo $GOROOT
 echo $GOPATH
-echo $PATH 
+echo $PATH
 echo "-----------------------------------------------------------------------------------------"
 
 getSamples() {
     echo "-----------------------------------------------------------------------------------------"
     echo "--------------------------------- DEBUG: getSamples--------------------------------------"
     pwd
-    echo "USER: $USER whoami: `whoami` id -un: `id -un` FABRIC_USER: $FABRIC_USER  HOME: $HOME  LOGNAME: $LOGNAME" 
+    echo "USER: $USER whoami: `whoami` id -un: `id -un` FABRIC_USER: $FABRIC_USER  HOME: $HOME  LOGNAME: $LOGNAME"
     cd $HYPERLEDGER_HOME
     pwd
     test -f "/bin/bash" && echo "This system has a bash shell"
@@ -52,13 +52,13 @@ getSamples() {
             echo "running from /root"
             export HOME="/home/$FABRIC_USER"
             git clone -q -b master $FABRIC_GIT_REPO $HYPERLEDGER_HOME/fabric-samples
-            cd  $HYPERLEDGER_HOME/fabric-samples 
+            cd  $HYPERLEDGER_HOME/fabric-samples
             git checkout v${FABRIC_VERSION}
             export HOME="/root"
         else
             echo "running from $HOME"
             git clone -q -b master $FABRIC_GIT_REPO $HYPERLEDGER_HOME/fabric-samples
-            cd  $HYPERLEDGER_HOME/fabric-samples 
+            cd  $HYPERLEDGER_HOME/fabric-samples
             git checkout v${FABRIC_VERSION}
         fi
     fi
@@ -67,11 +67,11 @@ getSamples() {
 }
 
 getBinaries(){
-    #TODO: add a flag to determine when 'ca-fabric client' should be installed (ca-nodes) or not (no-msp nodes) 
+    #TODO: add a flag to determine when 'ca-fabric client' should be installed (ca-nodes) or not (no-msp nodes)
     echo "--------------------------------- DEBUG: getBinaries-------------------------------------"
 
     pwd
-    echo "USER: $USER whoami: `whoami` id -un: `id -un` FABRIC_USER: $FABRIC_USER  HOME: $HOME  LOGNAME: $LOGNAME" 
+    echo "USER: $USER whoami: `whoami` id -un: `id -un` FABRIC_USER: $FABRIC_USER  HOME: $HOME  LOGNAME: $LOGNAME"
     cd $HYPERLEDGER_HOME
     pwd
     test -f "/bin/bash" && echo "This system has a bash shell"
@@ -88,10 +88,11 @@ getBinaries(){
     fi
     echo "moving config directory created by getBinaries to config_files only for backup "
     sudo mkdir -p config_files/fabric-config/
-    cp $HYPERLEDGER_HOME/config/* $HYPERLEDGER_HOME/config_files/fabric-config/
     sudo chown -R ubuntu:ubuntu  $HYPERLEDGER_HOME/config_files/fabric-config
+    cp $HYPERLEDGER_HOME/config/* $HYPERLEDGER_HOME/config_files/fabric-config/
+
     sudo rm -Rf $HYPERLEDGER_HOME/config/
-    
+
     #TODO: maybe remove this later. maybe we dont need it as all config files are treated at config.
 
     echo "-----------------------------------------------------------------------------------------"
@@ -107,7 +108,7 @@ getBinaries(){
     fi
 
     sudo chown -R ubuntu:ubuntu  $HYPERLEDGER_HOME/bin
-    
+
 
 }
 
@@ -115,7 +116,7 @@ getBinaries(){
 getAllImages() {
     echo "--------------------------------- DEBUG: getAllImages------------------------------------"
     pwd
-    echo "USER: $USER whoami: `whoami` id -un: `id -un` FABRIC_USER: $FABRIC_USER  HOME: $HOME  LOGNAME: $LOGNAME" 
+    echo "USER: $USER whoami: `whoami` id -un: `id -un` FABRIC_USER: $FABRIC_USER  HOME: $HOME  LOGNAME: $LOGNAME"
     cd $HYPERLEDGER_HOME
     pwd
     test -f "/bin/bash" && echo "bash ok! "
@@ -126,8 +127,9 @@ getAllImages() {
         exit 1;
     fi
     # pulls docker images from fabric and chaincode repositories
+    # according to  (https://jira.hyperledger.org/browse/FAB-16812)  nodeenv is not used in 1.4 as well as baseos.
     # for IMAGES in peer orderer ccenv tools baseos nodeenv javaenv; do
-    for IMAGES in peer orderer ccenv tools nodeenv javaenv; do
+    for IMAGES in peer orderer ccenv tools javaenv; do
         echo "-----------------------------------------------------------------------------------------"
         echo "==> FABRIC IMAGE: $IMAGES"
         echo "PULLING: docker pull hyperledger/fabric-$IMAGES:$FABRIC_VERSION"
@@ -136,11 +138,10 @@ getAllImages() {
         docker tag "hyperledger/fabric-$IMAGES:$FABRIC_VERSION" "hyperledger/fabric-$IMAGES"
 
     done
-    
     ## there is a problem with the baseos image pulling. im doing manually and temporarily here: to be sure that is coming.
     #docker pull hyperledger/fabric-baseos:0.4.15
     #for IMAGES in couchdb kafka zookeeper; do
-    for IMAGES in couchdb baseos; do 
+    for IMAGES in couchdb baseos; do
         echo "-----------------------------------------------------------------------------------------"
         echo "==> THIRDPARTY DOCKER IMAGE: $IMAGES"
         echo "PULLING: docker pull hyperledger/fabric-$IMAGES:$THIRDPARTY_IMAGE_VERSION"
@@ -154,8 +155,8 @@ getAllImages() {
     #docker "tag hyperledger/fabric-ca:$CA_VERSION" "hyperledger/fabric-ca"
     echo "-----------------------------------------------------------------------------------------"
     echo "===> IMPORTANT: Listing hyperledger docker images"
-    docker images 
-    docker ps -a 
+    docker images
+    docker ps -a
     echo "-----------------------------------------------------------------------------------------"
 }
 

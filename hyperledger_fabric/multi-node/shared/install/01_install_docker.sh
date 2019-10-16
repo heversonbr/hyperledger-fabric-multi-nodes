@@ -13,11 +13,9 @@ echo "installing with user: $FABRIC_USER"
 grep "source $HYPERLEDGER_HOME/install/fabric.env.sh" /home/$FABRIC_USER/.bashrc
 
 status=$?
-if [ $status -eq 0 ]; then 
-    echo "found"
-    echo "source $HYPERLEDGER_HOME/install/fabric.env.sh already in /home/$FABRIC_USER/.bashrc. Doing nothing!" 
-else 
-    echo "not found"
+if [ $status -eq 0 ]; then
+    echo "source $HYPERLEDGER_HOME/install/fabric.env.sh already in /home/$FABRIC_USER/.bashrc. Doing nothing!"
+else
     echo "source $HYPERLEDGER_HOME/install/fabric.env.sh" | sudo tee -a /home/$FABRIC_USER/.bashrc
 fi
 
@@ -37,13 +35,13 @@ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu  $(lsb_release -cs) stable"
 
 # Update the apt package index
-sudo apt-get update  
+sudo apt-get update
 
 echo "-----------------------------------------------------------------------------------------"
 # to install latest:
 # sudo apt-get install -y docker-ce docker-ce-cli containerd.io
-# or to install specific version: 
-# original from docker web-site (it does not work for specific version of docker-cli) 
+# or to install specific version:
+# original from docker web-site (it does not work for specific version of docker-cli)
 # DOCKER_VERSION_STRING=`apt-cache madison docker-ce | grep $DOCKER_VERSION | head -1 | awk '{print $3}'`
 # sudo apt-get install docker-ce=<$DOCKER_VERSION_STRING> docker-ce-cli=<$DOCKER_VERSION_STRING> containerd.io
 # sudo apt-get install -y docker-ce=$(apt-cache madison docker-ce | grep 18.06 | head -1 | awk '{print $3}')

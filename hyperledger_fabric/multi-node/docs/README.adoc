@@ -1,4 +1,4 @@
-= Deploying Hyperledger Fabric on multiple nodes
+= Deploy and use Hyperledger Fabric on multiple nodes - a simple path.
 
 
 == Introdution
@@ -72,7 +72,7 @@ deployment of your choice. By default we use Openstack deployment.
 
 If you have successfully downloaded the scripts as described above now you are
 able to start using them. Lets start by briefly describing how we use vagrant
-to deploy our hosts.
+to deploy Hyperledger hosts.
 
 [[conf-overview]]
 === Host configuration
@@ -133,17 +133,30 @@ peer1-org1                active (openstack)
 peer2-org1                active (openstack)
 ----
 
+In order to check the deployment connect to one of the hosts (e.g., msp-root-org1)
+from your local machine using any terminal.
+
+[source, bash]
+----
+$ vagrant ssh msp-root-org1
+----
+
 [[shared_vagrant_dir]]
 Vagrant creates the hosts defined in the `Vagrantfile` and sets a ssh configuration
 `~/.ssh/config` at each node with entries to all the other nodes
 as well as `/etc/hosts` and `/etc/resolv.conf` files.
-At the end of the process, vagrant will create a directory called `~/hyperledger_ws`
-(i.e., hyperledger workspace) at each host which is our HYPERLEDGER_HOME directory.
+These files are dynamically created during the vagrant deployment thanks to some
+ruby code that we have previously added to it.
+Vagrant also creates a directory called `~/hyperledger_ws`
+(i.e., hyperledger workspace) at the home directory of each host, which we refer
+to as HYPERLEDGER_HOME directory.
 The directory has the following structure and content.
 
 [source, bash]
 ----
-~/hyperledger_ws$ tree -dL 1
+$ cd hyperledger_ws/
+
+~/hyperledger_ws$ tree -dL  1
 .
 ├── install
 ├── setup_scripts
@@ -163,6 +176,7 @@ environment.
 - *chaincode_examples*: directory that contains the chaincode example used to validate
 the installation and configuration.
 
+After checking these directories, logout (exit) back to your local host.
 
 === Installing Hyperledger Fabric software
 
@@ -175,14 +189,20 @@ between your local host and one of the virtual machines created by vagrant.
 In order to install the Fabric software on the hosts we will use the first
 terminal layout based on terminator.
 
-==== Preparing Terminator layout
+====== Using Terminator layouts
 
-We use the `terminator` to perform some repetitive  tasks that are required in all
-the hosts.
+We use the `terminator` to perform some repetitive tasks that are required to
+install Hyperledger fabric on all hosts.
 The reason is that `terminator` has a very good broadcast feature.
-Therefore, to install some software on at all the hosts we have provided a configuration
-file called `./install/terminator_config` which will allow us to run scripts in
-one terminal screen connected to one machine and broadcast this commands to the others.
+Therefore, to install all the required software at once on hosts we provide
+a layout configuration file called `./install/terminator_config` which allows to
+run scripts in one terminal screen connected to one machine and broadcast this
+commands to the others. Note that, there are other more advanced ways of doing that,
+for instance by using https://www.ansible.com[ansible] tool. We have chosen at this
+point not to use ansible in order to avoid a stack of configuration tools that would
+hide important details of the configuration. We recall that on of our goals is to
+make it clear to the reader the configuration and utilization of Hyperledger
+Fabric.
 
 First, install `terminator` into your local machine, if you do not have it.
 If you already have `terminator` installed please skip this step.
@@ -196,7 +216,7 @@ directory.
 
 [source, bash]
 ----
-$ cp $HYPERLEDGER_HOME/install/terminator_config  ~/.config/terminator/config
+$ cp .shared/install/terminator_config  ~/.config/terminator/config
 ----
 
 Finally invoke the terminator layout to install Hyperledger Fabric as follows:
@@ -206,15 +226,171 @@ Finally invoke the terminator layout to install Hyperledger Fabric as follows:
 $ terminator -l simple_hlf
 ----
 
-
-As as result terminator  will open a specific layout with multiple tabs.
+As as result terminator  will open a terminal with a specific layout using multiple
+tabs.
 If everything goes well each tab will be connected through ssh to one of the
-Hyperledger hosts deployed by vagrant, as the one shown below.
+Hyperledger hosts deployed by vagrant, as shown below.
 
 image::img/terminator.png[]
 
+NOTE: Please, be sure that any command (e.g., ls) executed in the first tab (msp-root-org1)
+is broadcast to all the other hosts.
+If not, check if the option `Broadcast default` is set to `Group` in `terminator`
+preferences. If everything goes well with the broadcast, go to the next section.
+
+
 
 ==== Installing Fabric
+
+In this section we show how to get all the required software installed at all the
+hosts at once by using the `terminator` layout shown in the previous section.
+Our procedure presents the all the steps required to install Hyperledger Fabric
+using our installation scripts.
+
+Go to the first tab (i.e., host msp-root-org1) in your `terminator` environment
+and take a look on the installation scripts.
+
+[source, bash]
+----
+$ cd hyperledger_ws/install
+$ ls
+    01_install_docker.sh
+    02_install_prereqs.sh
+    03_install_bootstrap.sh
+    04_install_ca_server.sh
+    05_setup_go_libs_for_peers_chaincodes.sh
+    broadcast_cmd.sh
+    check_prereqs.sh
+    fabric.env.sh
+    setup_byobu.sh
+    terminator_config
+    windows.tmux.hlf
+----
+
+Note that, the scripts are named according to the order of execution (from 01_*.sh
+to 05_*.sh) and their function in the installation process (e.g., install_docker, install_ca_sever).
+
+Please, run the scripts one-by-one from the 'install' directory at each node as
+follows.
+
+
+===== Install docker
+
+In order to install docker run the script as follows.
+
+[[docker_install]]
+[source, bash]
+----
+$ ./01_install_docker.sh
+----
+
+You can also check a full log of docker installation in the section
+<<appendix:installdocker, Appendix B: Installation logs>>.
+
+When finished, logout from all hosts and reconnect again with the same `terminator`
+layout again. Then check the installation as shown below.
+
+
+[source, bash]
+----
+$ docker ps
+CONTAINER ID    IMAGE   COMMAND    CREATED   STATUS    PORTS   NAMES
+
+$ docker --version
+Docker version 19.03.3, build a872fc2
+
+$ docker info
+----
+
+===== Install fabric requirements
+
+In order to install Hyperledger Fabric requirements run the script as follows.
+
+[[req_install]]
+[source, bash]
+----
+$ ./02_install_prereqs.sh
+----
+
+You can check a full log of fabric requirements installation in the section
+<<appendix:req_install, Appendix B: Installation logs>>.
+
+When finished, logout from all hosts and reconnect again with the same `terminator`
+layout again. Note that, when logging back you will be (from now on) redirected
+automatically to the $HYPERLEDGER_HOME directory (i.e., ~/hyperledger_ws).
+
+You can now check if all the base requirements were install by using the script
+shown below.
+
+[[req_check]]
+[source, bash]
+----
+$~/hyperledger_ws/install$ ./check_prereqs.sh
+
+----
+
+
+NOTE: Be sure that all requirements are correctly installed on each host.
+
+You can check the output log of the check in the section
+<<appendix:req_check, Appendix B: Installation logs>>.
+
+===== Install bootstrap binaries and images
+
+In order to install the binaries and required images please run the script as follows.
+
+[[bootstrap_install]]
+[source, bash]
+----
+$ ./03_install_bootstrap.sh
+----
+
+You can check a full log of binaries and images installation in the section
+<<appendix:fabric-bootstrap, Appendix B: Installation logs>>.
+
+
+===== install Go libraries for peer and chaincode
+
+Run the script as shown below in order to install the GO libraries for peers and
+chaincode.
+
+[[go_lib_install]]
+[source, bash]
+----
+$ ./04_setup_go_libs_for_peers_chaincodes.sh
+----
+Check a full log of Go libraries installation in the section
+<<appendix:fabric-go-lib, Appendix B: Installation logs>>.
+
+When finished, logout from all hosts.
+
+
+===== Install CA-Root host
+
+Finally the last step of the installation is to install the certification authority
+root server at the host which is in charge of this service.
+In our case, the host `msp-root-org1`.
+Thus, connect through ssh on this host using the command `*vagrant ssh msp-root-org1*` from
+your local machine and run the following script.
+After connected, run the script shown below from the `install` directory.
+
+[[ca_root_install]]
+[source, bash]
+----
+$ ./05_install_ca_server.sh
+----
+
+Check a full log of the CA-server installation in the section
+<<appendix:fabric-ca-root, Appendix B: Installation logs>>.
+
+
+NOTE: If all the previous steps went well, now you are ready to start configuring your
+Hyperledger Fabric as we will discuss in the next section.
+
+
+
+
+
 
 
 
@@ -222,7 +398,7 @@ image::img/terminator.png[]
 
 
 
-=== Testing the installation
+=== Using Hyperledger Fabric to deploy smart-contracts
 
 
 
@@ -239,33 +415,16 @@ image::img/terminator.png[]
 
 
 
+
+
+== break here
 
 
 
 
 == Using the scripts
 
-=== Putting all the nodes up
 
-The very first action is to put all the nodes up with the base configuration by
-running the *vagrant up* command.
-
-
-
-
-
-
-
-
-
-
-
-
-
-=== Setting up nodes configuration
-
-In our environment we want to emulate a realistic scenario. Therefore, different
-hosts were created and each host has a distinguish role.
 
 ==== Setting Certification authority
 
@@ -837,7 +996,7 @@ $setSSHDNSconfig = <<-SCRIPT
     # (after deployment only the floating IP of the first vm is required to connect)
     echo "Setting ~/.ssh/config"
     mv /home/ubuntu/hyperledger_ws/config_files/ssh_config_template /home/ubuntu/.ssh/config
-    mv /home/ubuntu/hyperledger_ws/install/openstack_cloudlab_bcom.key /home/ubuntu/.ssh/openstack_cloudlab_bcom.key
+    mv /home/ubuntu/hyperledger_ws/install/openstack_cloudlab_bcom.key    /home/ubuntu/.ssh/openstack_cloudlab_bcom.key
     chown ubuntu:ubuntu /home/ubuntu/.ssh/config /home/ubuntu/.ssh/openstack_cloudlab_bcom.key
     echo "-------------------------------------------"
     echo "Setting /etc/hosts"
@@ -848,9 +1007,10 @@ $setSSHDNSconfig = <<-SCRIPT
         echo "Warning: /etc/hosts does not exist"
     fi
     echo "-------------------------------------------"
-    mkdir -p /home/ubuntu/hyperledger_ws/install/logs
-    chown -R ubuntu:ubuntu /home/ubuntu/hyperledger_ws/install/logs
-    echo "-------------------------------------------"
+        echo "Setting terminal layouts."
+        mkdir -p /home/ubuntu/.byobu/
+        cp /home/ubuntu/hyperledger_ws/install/windows.tmux.hlf /home/ubuntu/.byobu/windows.tmux.hlf
+        echo "-------------------------------------------"
 SCRIPT
 
 
@@ -881,7 +1041,11 @@ Vagrant.configure("2") do |config|
                 os.networks = [{ id: opts[:netid], address: opts[:netadd] }]
                 os.floating_ip_pool = 'ext_net'
                 override.vm.synced_folder '.', '/vagrant', disabled: true  # this
-                override.vm.synced_folder './shared', '/home/ubuntu/hyperledger_ws/', type: 'rsync'  #   rsync and none as types present some bugs
+                override.vm.synced_folder './shared', '/home/ubuntu/hyperledger_ws/', type: 'rsync'
+                # Sets resolv.conf
+                os.user_data = """#!/bin/bash
+                    echo 'nameserver 8.8.8.8'  | tee -a /etc/resolv.conf
+                """
             end
             ## for all:
             node.vm.provision "shell", inline: $setSSHDNSconfig
@@ -913,3 +1077,640 @@ end
 ----
 
 <<conf-overview, [back]>>
+
+
+
+== Appendix B: Installation logs
+
+
+=== Docker install output log
+
+[[appendix:installdocker]]
+[source, bash]
+----
+$ ./01_install_docker.sh
+--------------------------------------------------------------------------------
+  Installing docker...
+--------------------------------------------------------------------------------
+installing with user: ubuntu
+
+source /home/ubuntu/hyperledger_ws/install/fabric.env.sh
+Hit:1 http://nova.clouds.archive.ubuntu.com/ubuntu xenial InRelease
+Get:2 http://nova.clouds.archive.ubuntu.com/ubuntu xenial-updates InRelease [109 kB]
+Get:3 http://security.ubuntu.com/ubuntu xenial-security InRelease [109 kB]
+Get:4 http://nova.clouds.archive.ubuntu.com/ubuntu xenial-backports InRelease [107 kB]
+Get:5 http://nova.clouds.archive.ubuntu.com/ubuntu xenial-updates/main Sources [341 kB]
+Get:6 http://nova.clouds.archive.ubuntu.com/ubuntu xenial-updates/main amd64 Packages [1046 kB]
+Get:7 http://nova.clouds.archive.ubuntu.com/ubuntu xenial-updates/universe amd64 Packages [767 kB]
+Fetched 2479 kB in 1s (1915 kB/s)
+Reading package lists... Done
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+curl is already the newest version (7.47.0-1ubuntu2.14).
+The following additional packages will be installed:
+  libassuan0 libnpth0 pinentry-curses python3-software-properties
+Suggested packages:
+  pinentry-doc
+The following NEW packages will be installed:
+  gnupg-agent libassuan0 libnpth0 pinentry-curses
+The following packages will be upgraded:
+  apt-transport-https ca-certificates python3-software-properties software-properties-common
+4 upgraded, 4 newly installed, 0 to remove and 115 not upgraded.
+Need to get 537 kB of archives.
+After this operation, 1202 kB of additional disk space will be used.
+Get:1 http://nova.clouds.archive.ubuntu.com/ubuntu xenial-updates/main amd64 apt-transport-https amd64 1.2.32 [26.5 kB]
+Get:2 http://nova.clouds.archive.ubuntu.com/ubuntu xenial-updates/main amd64 ca-certificates all 20170717~16.04.2 [167 kB]
+Get:3 http://nova.clouds.archive.ubuntu.com/ubuntu xenial/main amd64 libassuan0 amd64 2.4.2-2 [34.6 kB]
+Get:4 http://nova.clouds.archive.ubuntu.com/ubuntu xenial/main amd64 pinentry-curses amd64 0.9.7-3 [31.2 kB]
+Get:5 http://nova.clouds.archive.ubuntu.com/ubuntu xenial/main amd64 libnpth0 amd64 1.2-3 [7998 B]
+Get:6 http://nova.clouds.archive.ubuntu.com/ubuntu xenial-updates/main amd64 gnupg-agent amd64 2.1.11-6ubuntu2.1 [240 kB]
+Get:7 http://nova.clouds.archive.ubuntu.com/ubuntu xenial-updates/main amd64 software-properties-common all 0.96.20.9 [9452 B]
+Get:8 http://nova.clouds.archive.ubuntu.com/ubuntu xenial-updates/main amd64 python3-software-properties all 0.96.20.9 [20.1 kB]
+Fetched 537 kB in 0s (590 kB/s)
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+	LANGUAGE = (unset),
+	LC_ALL = (unset),
+	LC_TIME = "fr_FR.UTF-8",
+	LC_MONETARY = "fr_FR.UTF-8",
+	LC_ADDRESS = "fr_FR.UTF-8",
+	LC_TELEPHONE = "fr_FR.UTF-8",
+	LC_NAME = "fr_FR.UTF-8",
+	LC_MEASUREMENT = "fr_FR.UTF-8",
+	LC_IDENTIFICATION = "fr_FR.UTF-8",
+	LC_NUMERIC = "fr_FR.UTF-8",
+	LC_PAPER = "fr_FR.UTF-8",
+	LANG = "en_US.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to a fallback locale ("en_US.UTF-8").
+locale: Cannot set LC_ALL to default locale: No such file or directory
+Preconfiguring packages ...
+(Reading database ... 82018 files and directories currently installed.)
+Preparing to unpack .../apt-transport-https_1.2.32_amd64.deb ...
+Unpacking apt-transport-https (1.2.32) over (1.2.29ubuntu0.1) ...
+Preparing to unpack .../ca-certificates_20170717~16.04.2_all.deb ...
+Unpacking ca-certificates (20170717~16.04.2) over (20170717~16.04.1) ...
+Selecting previously unselected package libassuan0:amd64.
+Preparing to unpack .../libassuan0_2.4.2-2_amd64.deb ...
+Unpacking libassuan0:amd64 (2.4.2-2) ...
+Selecting previously unselected package pinentry-curses.
+Preparing to unpack .../pinentry-curses_0.9.7-3_amd64.deb ...
+Unpacking pinentry-curses (0.9.7-3) ...
+Selecting previously unselected package libnpth0:amd64.
+Preparing to unpack .../libnpth0_1.2-3_amd64.deb ...
+Unpacking libnpth0:amd64 (1.2-3) ...
+Selecting previously unselected package gnupg-agent.
+Preparing to unpack .../gnupg-agent_2.1.11-6ubuntu2.1_amd64.deb ...
+Unpacking gnupg-agent (2.1.11-6ubuntu2.1) ...
+Preparing to unpack .../software-properties-common_0.96.20.9_all.deb ...
+Unpacking software-properties-common (0.96.20.9) over (0.96.20.7) ...
+Preparing to unpack .../python3-software-properties_0.96.20.9_all.deb ...
+Unpacking python3-software-properties (0.96.20.9) over (0.96.20.7) ...
+Processing triggers for man-db (2.7.5-1) ...
+Processing triggers for libc-bin (2.23-0ubuntu10) ...
+Processing triggers for dbus (1.10.6-1ubuntu3.4) ...
+Setting up apt-transport-https (1.2.32) ...
+Setting up ca-certificates (20170717~16.04.2) ...
+locale: Cannot set LC_ALL to default locale: No such file or directory
+Setting up libassuan0:amd64 (2.4.2-2) ...
+Setting up pinentry-curses (0.9.7-3) ...
+Setting up libnpth0:amd64 (1.2-3) ...
+Setting up gnupg-agent (2.1.11-6ubuntu2.1) ...
+Setting up python3-software-properties (0.96.20.9) ...
+Setting up software-properties-common (0.96.20.9) ...
+Processing triggers for ca-certificates (20170717~16.04.2) ...
+Updating certificates in /etc/ssl/certs...
+0 added, 0 removed; done.
+Running hooks in /etc/ca-certificates/update.d...
+done.
+Processing triggers for libc-bin (2.23-0ubuntu10) ...
+OK
+Hit:1 http://security.ubuntu.com/ubuntu xenial-security InRelease
+Hit:2 http://nova.clouds.archive.ubuntu.com/ubuntu xenial InRelease
+Get:3 https://download.docker.com/linux/ubuntu xenial InRelease [66.2 kB]
+Hit:4 http://nova.clouds.archive.ubuntu.com/ubuntu xenial-updates InRelease
+Get:5 https://download.docker.com/linux/ubuntu xenial/stable amd64 Packages [11.2 kB]
+Hit:6 http://nova.clouds.archive.ubuntu.com/ubuntu xenial-backports InRelease
+Fetched 77.4 kB in 0s (103 kB/s)
+Reading package lists... Done
+--------------------------------------------------------------------------------
+installing latest version of Docker
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+The following additional packages will be installed:
+  aufs-tools cgroupfs-mount libltdl7 pigz
+Suggested packages:
+The following NEW packages will be installed:
+  aufs-tools cgroupfs-mount containerd.io docker-ce docker-ce-cli libltdl7 pigz
+0 upgraded, 7 newly installed, 0 to remove and 115 not upgraded.
+Need to get 85.1 MB of archives.
+After this operation, 384 MB of additional disk space will be used.
+Get:1 http://nova.clouds.archive.ubuntu.com/ubuntu xenial/universe amd64 pigz amd64 2.3.1-2 [61.1 kB]
+Get:2 https://download.docker.com/linux/ubuntu xenial/stable amd64 containerd.io amd64 1.2.10-2 [19.8 MB]
+Get:3 http://nova.clouds.archive.ubuntu.com/ubuntu xenial/universe amd64 aufs-tools amd64 1:3.2+20130722-1.1ubuntu1 [92.9 kB]
+Get:4 https://download.docker.com/linux/ubuntu xenial/stable amd64 docker-ce-cli amd64 5:19.03.3~3-0~ubuntu-xenial [42.3 MB]
+Get:5 http://nova.clouds.archive.ubuntu.com/ubuntu xenial/universe amd64 cgroupfs-mount all 1.2 [4970 B]
+Get:6 http://nova.clouds.archive.ubuntu.com/ubuntu xenial/main amd64 libltdl7 amd64 2.4.6-0.1 [38.3 kB]
+Get:7 https://download.docker.com/linux/ubuntu xenial/stable amd64 docker-ce amd64 5:19.03.3~3-0~ubuntu-xenial [22.8 MB]
+Fetched 85.1 MB in 6s (14.0 MB/s)
+Selecting previously unselected package pigz.
+(Reading database ... 82057 files and directories currently installed.)
+Preparing to unpack .../pigz_2.3.1-2_amd64.deb ...
+Unpacking pigz (2.3.1-2) ...
+Selecting previously unselected package aufs-tools.
+Preparing to unpack .../aufs-tools_1%3a3.2+20130722-1.1ubuntu1_amd64.deb ...
+Unpacking aufs-tools (1:3.2+20130722-1.1ubuntu1) ...
+Selecting previously unselected package cgroupfs-mount.
+Preparing to unpack .../cgroupfs-mount_1.2_all.deb ...
+Unpacking cgroupfs-mount (1.2) ...
+Selecting previously unselected package containerd.io.
+Preparing to unpack .../containerd.io_1.2.10-2_amd64.deb ...
+Unpacking containerd.io (1.2.10-2) ...
+Selecting previously unselected package docker-ce-cli.
+Preparing to unpack .../docker-ce-cli_5%3a19.03.3~3-0~ubuntu-xenial_amd64.deb ...
+Unpacking docker-ce-cli (5:19.03.3~3-0~ubuntu-xenial) ...
+Selecting previously unselected package docker-ce.
+Preparing to unpack .../docker-ce_5%3a19.03.3~3-0~ubuntu-xenial_amd64.deb ...
+Unpacking docker-ce (5:19.03.3~3-0~ubuntu-xenial) ...
+Selecting previously unselected package libltdl7:amd64.
+Preparing to unpack .../libltdl7_2.4.6-0.1_amd64.deb ...
+Unpacking libltdl7:amd64 (2.4.6-0.1) ...
+Processing triggers for man-db (2.7.5-1) ...
+Processing triggers for libc-bin (2.23-0ubuntu10) ...
+Processing triggers for ureadahead (0.100.0-19) ...
+Processing triggers for systemd (229-4ubuntu21.21) ...
+Setting up pigz (2.3.1-2) ...
+Setting up aufs-tools (1:3.2+20130722-1.1ubuntu1) ...
+Setting up cgroupfs-mount (1.2) ...
+Setting up containerd.io (1.2.10-2) ...
+Setting up docker-ce-cli (5:19.03.3~3-0~ubuntu-xenial) ...
+Setting up docker-ce (5:19.03.3~3-0~ubuntu-xenial) ...
+Setting up libltdl7:amd64 (2.4.6-0.1) ...
+Processing triggers for libc-bin (2.23-0ubuntu10) ...
+Processing triggers for systemd (229-4ubuntu21.21) ...
+Processing triggers for ureadahead (0.100.0-19) ...
+--------------------------------------------------------------------------------
+setting docker to run as non-root
+Adding user ubuntu to group docker
+END of Docker installation -----------------------------------------------------
+
+----
+
+
+<<docker_install, [back]>>
+
+
+
+=== Fabric requirements install output log
+
+[[appendix:req_install]]
+[source, bash]
+----
+$ ./02_install_prereqs.sh
+--------------------------------------------------------------------------------
+Installing Fabric Pre-requirements
+--------------------------------------------------------------------------------
+installing for user: ubuntu
+fabric_home: /home/ubuntu/hyperledger_ws
+/usr/local/go
+/home/ubuntu/hyperledger_ws/go
+/home/ubuntu/bin:/home/ubuntu/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/local/go/bin:/home/ubuntu/hyperledger_ws/go/bin:/home/ubuntu/hyperledger_ws/bin:/usr/local/go/bin:/home/ubuntu/hyperledger_ws/go/bin:/home/ubuntu/hyperledger_ws/bin
+-----------------------------------------------------------------------------------------
+source /home/ubuntu/hyperledger_ws/install/fabric.env.sh
+source /home/ubuntu/hyperledger_ws/install/fabric.env.sh already in /home/ubuntu/.bashrc. Doing nothing!
+cd $HYPERLEDGER_HOME
+--------------------------------------------------------------------------------
+Checking ubuntu version...
+Installing prereqs for Ubuntu xenial
+--------------------------------------------------------------------------------
+Updating package lists
+--------------------------------------------------------------------------------
+Installing Golang
+--------------------------------------------------------------------------------
+==> Download finished. uncompressing.
+===> decompressing go1.12.2.linux-amd64.tar.gz
+===> removing go1.12.2.linux-amd64.tar.gz
+--------------------------------------------------------------------------------
+Downloading Node.js:  requested for developement only...
+## Installing the NodeSource Node.js 8.x LTS Carbon repo...
+## Populating apt-get cache...
+
++ apt-get update
+Hit:1 http://nova.clouds.archive.ubuntu.com/ubuntu xenial InRelease
+Get:2 http://security.ubuntu.com/ubuntu xenial-security InRelease [109 kB]
+Hit:3 http://nova.clouds.archive.ubuntu.com/ubuntu xenial-updates InRelease
+Get:4 http://nova.clouds.archive.ubuntu.com/ubuntu xenial-backports InRelease [107 kB]
+Hit:5 https://download.docker.com/linux/ubuntu xenial InRelease
+Fetched 216 kB in 2s (98.6 kB/s)
+Reading package lists... Done
+
+## Confirming "xenial" is supported...
++ curl -sLf -o /dev/null 'https://deb.nodesource.com/node_8.x/dists/xenial/Release'
+
+## Adding the NodeSource signing key to your keyring...
++ curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
+OK
+
+## Creating apt sources list file for the NodeSource Node.js 8.x LTS Carbon repo...
++ echo 'deb https://deb.nodesource.com/node_8.x xenial main' > /etc/apt/sources.list.d/nodesource.list
++ echo 'deb-src https://deb.nodesource.com/node_8.x xenial main' >> /etc/apt/sources.list.d/nodesource.list
+
+## Running `apt-get update` for you...
++ apt-get update
+Hit:1 http://nova.clouds.archive.ubuntu.com/ubuntu xenial InRelease
+Get:2 http://security.ubuntu.com/ubuntu xenial-security InRelease [109 kB]
+Hit:3 http://nova.clouds.archive.ubuntu.com/ubuntu xenial-updates InRelease
+Get:4 http://nova.clouds.archive.ubuntu.com/ubuntu xenial-backports InRelease [107 kB]
+Get:5 https://deb.nodesource.com/node_8.x xenial InRelease [4619 B]
+Hit:6 https://download.docker.com/linux/ubuntu xenial InRelease
+Get:7 https://deb.nodesource.com/node_8.x xenial/main Sources [761 B]
+Get:8 https://deb.nodesource.com/node_8.x xenial/main amd64 Packages [1008 B]
+Fetched 222 kB in 0s (310 kB/s)
+Reading package lists... Done
+
+## Run `sudo apt-get install -y nodejs` to install Node.js 8.x LTS Carbon and npm
+## You may also need development tools to build native addons:
+     sudo apt-get install gcc g++ make
+## To install the Yarn package manager, run:
+     curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+     echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+     sudo apt-get update && sudo apt-get install yarn
+
+--------------------------------------------------------------------------------
+Installing Node.js and nmp
+--------------------------------------------------------------------------------
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+	LANGUAGE = (unset),
+	LC_ALL = (unset),
+	LC_TIME = "fr_FR.UTF-8",
+	LC_MONETARY = "fr_FR.UTF-8",
+	LC_ADDRESS = "fr_FR.UTF-8",
+	LC_TELEPHONE = "fr_FR.UTF-8",
+	LC_NAME = "fr_FR.UTF-8",
+	LC_MEASUREMENT = "fr_FR.UTF-8",
+	LC_IDENTIFICATION = "fr_FR.UTF-8",
+	LC_NUMERIC = "fr_FR.UTF-8",
+	LC_PAPER = "fr_FR.UTF-8",
+	LANG = "en_US.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to a fallback locale ("en_US.UTF-8").
+locale: Cannot set LC_ALL to default locale: No such file or directory
+Selecting previously unselected package libpython2.7-minimal:amd64.
+(Reading database ... 82362 files and directories currently installed.)
+Preparing to unpack .../libpython2.7-minimal_2.7.12-1ubuntu0~16.04.9_amd64.deb ...
+Unpacking libpython2.7-minimal:amd64 (2.7.12-1ubuntu0~16.04.9) ...
+Selecting previously unselected package python2.7-minimal.
+Preparing to unpack .../python2.7-minimal_2.7.12-1ubuntu0~16.04.9_amd64.deb ...
+Unpacking python2.7-minimal (2.7.12-1ubuntu0~16.04.9) ...
+Selecting previously unselected package python-minimal.
+Preparing to unpack .../python-minimal_2.7.12-1~16.04_amd64.deb ...
+Unpacking python-minimal (2.7.12-1~16.04) ...
+Selecting previously unselected package libpython2.7-stdlib:amd64.
+Preparing to unpack .../libpython2.7-stdlib_2.7.12-1ubuntu0~16.04.9_amd64.deb ...
+Unpacking libpython2.7-stdlib:amd64 (2.7.12-1ubuntu0~16.04.9) ...
+Selecting previously unselected package python2.7.
+Preparing to unpack .../python2.7_2.7.12-1ubuntu0~16.04.9_amd64.deb ...
+Unpacking python2.7 (2.7.12-1ubuntu0~16.04.9) ...
+Selecting previously unselected package libpython-stdlib:amd64.
+Preparing to unpack .../libpython-stdlib_2.7.12-1~16.04_amd64.deb ...
+Unpacking libpython-stdlib:amd64 (2.7.12-1~16.04) ...
+Processing triggers for man-db (2.7.5-1) ...
+Processing triggers for mime-support (3.59ubuntu1) ...
+Setting up libpython2.7-minimal:amd64 (2.7.12-1ubuntu0~16.04.9) ...
+Setting up python2.7-minimal (2.7.12-1ubuntu0~16.04.9) ...
+Linking and byte-compiling packages for runtime python2.7...
+Setting up python-minimal (2.7.12-1~16.04) ...
+Selecting previously unselected package python.
+(Reading database ... 83108 files and directories currently installed.)
+Preparing to unpack .../python_2.7.12-1~16.04_amd64.deb ...
+Unpacking python (2.7.12-1~16.04) ...
+Selecting previously unselected package nodejs.
+Preparing to unpack .../nodejs_8.16.2-1nodesource1_amd64.deb ...
+Unpacking nodejs (8.16.2-1nodesource1) ...
+Processing triggers for man-db (2.7.5-1) ...
+Setting up libpython2.7-stdlib:amd64 (2.7.12-1ubuntu0~16.04.9) ...
+Setting up python2.7 (2.7.12-1ubuntu0~16.04.9) ...
+Setting up libpython-stdlib:amd64 (2.7.12-1~16.04) ...
+Setting up python (2.7.12-1~16.04) ...
+Setting up nodejs (8.16.2-1nodesource1) ...
+/usr/bin/npm -> /usr/lib/node_modules/npm/bin/npm-cli.js
+/usr/bin/npx -> /usr/lib/node_modules/npm/bin/npx-cli.js
++ npm@5.6.0
+added 363 packages from 147 contributors, removed 274 packages and updated 43 packages in 16.721s
+
+--------------------------------------------------------------------------------
+Installing Python
+--------------------------------------------------------------------------------
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+tree is already the newest version (1.7.0-3).
+0 upgraded, 0 newly installed, 0 to remove and 115 not upgraded.
+--------------------------------------------------------------------------------
+Prereqs install Done!
+
+----
+<<req_install, [back]>>
+
+
+=== Check requirements output log
+
+[[appendix:req_check]]
+[source, bash]
+----
+~/hyperledger_ws/install$ ./check_prereqs.sh
+--------------------------------------------
+Checking prereqs with user: ubuntu
+--------------------------------------------
+installing for user: ubuntu
+fabric_home: /home/ubuntu/hyperledger_ws
+/usr/local/go
+/home/ubuntu/hyperledger_ws/go
+/home/ubuntu/bin:/home/ubuntu/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/local/go/bin:/home/ubuntu/hyperledger_ws/go/bin:/home/ubuntu/hyperledger_ws/bin:/usr/local/go/bin:/home/ubuntu/hyperledger_ws/go/bin:/home/ubuntu/hyperledger_ws/bin
+---------------------------------------------
+curl:
+curl 7.47.0 (x86_64-pc-linux-gnu) libcurl/7.47.0 GnuTLS/3.4.10 zlib/1.2.8 libidn/1.32 librtmp/2.3
+--------------------------------------------
+golang:
+go version go1.12.2 linux/amd64
+--------------------------------------------
+node.js:
+v8.16.2
+--------------------------------------------
+Python:
+Python 2.7.12
+--------------------------------------------
+npm:
+5.6.0
+
+----
+<<req_check, [back]>>
+
+
+
+
+=== Bootstrap binaries and images output log
+
+[[appendix:fabric-bootstrap]]
+[source, bash]
+----
+~/hyperledger_ws/install$ ./03_install_bootstrap.sh
+--------------------------------------------------------------------------------
+Bootstraping Fabric components...
+--------------------------------------------------------------------------------
+installing for user: ubuntu
+fabric_home: /home/ubuntu/hyperledger_ws
+/usr/local/go
+/home/ubuntu/hyperledger_ws/go
+/home/ubuntu/bin:/home/ubuntu/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/local/go/bin:/home/ubuntu/hyperledger_ws/go/bin:/home/ubuntu/hyperledger_ws/bin:/usr/local/go/bin:/home/ubuntu/hyperledger_ws/go/bin:/home/ubuntu/hyperledger_ws/bin
+--------------------------------------------------------------------------------
+bootstrap : Installing Hyperledger Fabric binaries
+--------------------------------------------------------------------------------
+===> [install_03_bootstrap.sh (getBinaries)] : Downloading version 1.4.0 platform specific fabric binaries
+===> [install_03_bootstrap.sh (getBinaries)] : Downloading fabric from:  https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/linux-amd64-1.4.0/hyperledger-fabric-linux-amd64-1.4.0.tar.gz
+--------------------------------------------------------------------------------
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+100 50.9M  100 50.9M    0     0  2580k      0  0:00:20  0:00:20 --:--:-- 3724k
+==> Done
+
+moving config directory created by getBinaries to config_files only for backup
+-----------------------------------------------------------------------------------------
+===> [install_03_bootstrap.sh (getBinaries)] : Downloading version 1.4.0 platform specific fabric-ca-client binary
+===> [install_03_bootstrap.sh (getBinaries)] : Downloading fabric-ca from:  https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric-ca/hyperledger-fabric-ca/linux-amd64-1.4.0/hyperledger-fabric-ca-linux-amd64-1.4.0.tar.gz
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+100 5979k  100 5979k    0     0   488k      0  0:00:12  0:00:12 --:--:-- 1050k
+==> Done
+--------------------------------------------------------------------------------
+==> FABRIC IMAGE: peer
+PULLING: docker pull hyperledger/fabric-peer:1.4.0
+1.4.0: Pulling from hyperledger/fabric-peer
+3b37166ec614: Pull complete
+504facff238f: Pull complete
+ebbcacd28e10: Pull complete
+c7fb3351ecad: Pull complete
+2e3debadcbf7: Pull complete
+fc435e46e32e: Pull complete
+a4922bafdce8: Pull complete
+7d9964965066: Pull complete
+625153a09c48: Pull complete
+291344806a10: Pull complete
+Digest: sha256:9707c97f787de1d4d6dd60994d6b8ea2e5cc28b0f42e6849df3fb41c64b41372
+Status: Downloaded newer image for hyperledger/fabric-peer:1.4.0
+docker.io/hyperledger/fabric-peer:1.4.0
+TAGGING: docker tag hyperledger/fabric-peer:1.4.0 hyperledger/fabric-peer
+--------------------------------------------------------------------------------
+==> FABRIC IMAGE: orderer
+PULLING: docker pull hyperledger/fabric-orderer:1.4.0
+1.4.0: Pulling from hyperledger/fabric-orderer
+1aa1f5822ea4: Pull complete
+f3adcb95411e: Pull complete
+Digest: sha256:644265186b4887c7d9dcb91895124ccead3c0125c2c4f9eadc421dc9555d7495
+Status: Downloaded newer image for hyperledger/fabric-orderer:1.4.0
+docker.io/hyperledger/fabric-orderer:1.4.0
+TAGGING: docker tag hyperledger/fabric-orderer:1.4.0 hyperledger/fabric-orderer
+--------------------------------------------------------------------------------
+==> FABRIC IMAGE: ccenv
+PULLING: docker pull hyperledger/fabric-ccenv:1.4.0
+1.4.0: Pulling from hyperledger/fabric-ccenv
+14675a1189ca: Pull complete
+33f930d7053e: Pull complete
+7aa21e006739: Pull complete
+806ba27e29bb: Pull complete
+0292b0ff822a: Pull complete
+5d4ce0f5fd82: Pull complete
+3bde20c14104: Pull complete
+Digest: sha256:6d797cac9fd39d4c9964fbcf02e47137ce8ae321af60832c41d511f0c7ed4d3e
+Status: Downloaded newer image for hyperledger/fabric-ccenv:1.4.0
+docker.io/hyperledger/fabric-ccenv:1.4.0
+TAGGING: docker tag hyperledger/fabric-ccenv:1.4.0 hyperledger/fabric-ccenv
+--------------------------------------------------------------------------------
+==> FABRIC IMAGE: tools
+PULLING: docker pull hyperledger/fabric-tools:1.4.0
+1.4.0: Pulling from hyperledger/fabric-tools
+72b2b3c78600: Pull complete
+f36a6f470154: Pull complete
+19fc6d1044df: Pull complete
+Digest: sha256:aee256916d0cb938d8023fa32ed2745991d32cfe79018e360f1720707ebfbdb5
+Status: Downloaded newer image for hyperledger/fabric-tools:1.4.0
+docker.io/hyperledger/fabric-tools:1.4.0
+TAGGING: docker tag hyperledger/fabric-tools:1.4.0 hyperledger/fabric-tools
+--------------------------------------------------------------------------------
+==> FABRIC IMAGE: javaenv
+PULLING: docker pull hyperledger/fabric-javaenv:1.4.0
+1.4.0: Pulling from hyperledger/fabric-javaenv
+af7eebe5d909: Pull complete
+c0ad74369a8f: Pull complete
+e36a0232c697: Pull complete
+c44da90e9317: Pull complete
+91686ed50f7f: Pull complete
+1bc0e6d0fb0f: Pull complete
+db373eca3e52: Pull complete
+942e34fe9650: Pull complete
+e49b8e9d853d: Pull complete
+094ba7d3af94: Pull complete
+4bf56bdf76e0: Pull complete
+138eeaa643a0: Pull complete
+2b405cbef2dc: Pull complete
+386086ff2840: Pull complete
+32bb4435cb82: Pull complete
+3280cfa711dc: Pull complete
+6b14cff5081c: Pull complete
+04743de5a814: Pull complete
+5360864ccda4: Pull complete
+2fd4fc8d8137: Pull complete
+bd0e3b20a1bb: Pull complete
+a298ecbfeab2: Pull complete
+c7b9277c5a65: Pull complete
+201919c3a1fe: Pull complete
+539bfc561087: Pull complete
+4e779849c7ea: Pull complete
+3a7304a5b624: Pull complete
+Digest: sha256:f392f0c568e515b3e14c9afce14340ba18bc456cfd831ffcb4f72db58dbbcc34
+Status: Downloaded newer image for hyperledger/fabric-javaenv:1.4.0
+docker.io/hyperledger/fabric-javaenv:1.4.0
+TAGGING: docker tag hyperledger/fabric-javaenv:1.4.0 hyperledger/fabric-javaenv
+--------------------------------------------------------------------------------
+==> THIRDPARTY DOCKER IMAGE: couchdb
+PULLING: docker pull hyperledger/fabric-couchdb:0.4.15
+0.4.15: Pulling from hyperledger/fabric-couchdb
+34667c7e4631: Pull complete
+d18d76a881a4: Pull complete
+119c7358fbfc: Pull complete
+2aaf13f3eff0: Pull complete
+3f89de4cf84b: Pull complete
+24194f819972: Pull complete
+78e4eabd31a5: Pull complete
+c7652b6bde40: Pull complete
+b4646dd65c45: Pull complete
+5e6defad8a30: Pull complete
+7695bf5d0b9d: Pull complete
+6d9d46f66bc3: Pull complete
+4912f1b4990a: Pull complete
+f3b174a93eea: Pull complete
+3763a939777a: Pull complete
+f293593adbb6: Pull complete
+1ae53ace804f: Pull complete
+d4aa6d764b18: Pull complete
+d747b2b30e48: Pull complete
+52cbd2253fea: Pull complete
+Digest: sha256:f6c724592abf9c2b35d2f4cd6a7afcde9c1052cfed61560b20ef9e2e927d1790
+Status: Downloaded newer image for hyperledger/fabric-couchdb:0.4.15
+docker.io/hyperledger/fabric-couchdb:0.4.15
+TAGGING: docker tag hyperledger/fabric-couchdb:0.4.15 hyperledger/fabric-couchdb
+--------------------------------------------------------------------------------
+==> THIRDPARTY DOCKER IMAGE: baseos
+PULLING: docker pull hyperledger/fabric-baseos:0.4.15
+0.4.15: Pulling from hyperledger/fabric-baseos
+24194f819972: Already exists
+Digest: sha256:b0f1d255d13e2e8b30c33aa3e8da524c2587107ea6fb7561e37c9441129e9ef1
+Status: Downloaded newer image for hyperledger/fabric-baseos:0.4.15
+docker.io/hyperledger/fabric-baseos:0.4.15
+TAGGING: docker tag hyperledger/fabric-baseos:0.4.15 hyperledger/fabric-baseos
+--------------------------------------------------------------------------------
+===> IMPORTANT: Listing hyperledger docker images
+REPOSITORY                   TAG      IMAGE ID        CREATED         SIZE
+hyperledger/fabric-couchdb   0.4.15   8de128a55539    7 months ago    1.5GB
+hyperledger/fabric-couchdb   latest   8de128a55539    7 months ago    1.5GB
+hyperledger/fabric-baseos    0.4.15   9d6ec11c60ff    7 months ago    145MB
+hyperledger/fabric-baseos    latest   9d6ec11c60ff    7 months ago    145MB
+hyperledger/fabric-javaenv   1.4.0    3d91b3bf7118    9 months ago    1.75GB
+hyperledger/fabric-javaenv   latest   3d91b3bf7118    9 months ago    1.75GB
+hyperledger/fabric-tools     1.4.0    0a44f4261a55    9 months ago    1.56GB
+hyperledger/fabric-tools     latest   0a44f4261a55    9 months ago    1.56GB
+hyperledger/fabric-ccenv     1.4.0    5b31d55f5f3a    9 months ago    1.43GB
+hyperledger/fabric-ccenv     latest   5b31d55f5f3a    9 months ago    1.43GB
+hyperledger/fabric-orderer   1.4.0    54f372205580    9 months ago    150MB
+hyperledger/fabric-orderer   latest   54f372205580    9 months ago    150MB
+hyperledger/fabric-peer      1.4.0    304fac59b501    9 months ago    157MB
+hyperledger/fabric-peer      latest   304fac59b501    9 months ago    157MB
+
+--------------------------------------------------------------------------------
+bootstrap : Installing hyperledger/fabric-samples repo
+--------------------------------------------------------------------------------
+===> [install_03_bootstrap.sh (getSamples)] : Cloning hyperledger/fabric-samples
+repo and checkout v1.4.0
+running from /home/ubuntu
+
+Note: checking out 'v1.4.0'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at bb39b6e... [FAB-13570] Align fabric-samples with 1.4.0 release
+--------------------------------------------------------------------------------
+
+----
+<<bootstrap_install, [back]>>
+
+
+=== Go libraries peer/chaincode install output log
+
+[[appendix:fabric-go-lib]]
+[source, bash]
+----
+~/hyperledger_ws/install$ ./04_setup_go_libs_for_peers_chaincodes.sh
+--------------------------------------------------------------------
+Sets up GO libraries for fabric-peer and chaincode
+--------------------------------------------------------------------
+USER: ubuntu whoami: ubuntu id -un: ubuntu FABRIC_USER: ubuntu  HOME: /home/ubuntu  LOGNAME: ubuntu
+--------------------------------------------------------------------
+Done.
+--------------------------------------------------------------------
+----
+<<go_lib_install, [back]>>
+
+
+
+=== CA-Root install output log
+
+[[appendix:fabric-ca-root]]
+[source, bash]
+----
+./05_install_ca_server.sh
+-----------------------------------------------------------------------------------------
+Installing CA-server...
+-----------------------------------------------------------------------------------------
+USER: ubuntu whoami: ubuntu id -un: ubuntu FABRIC_USER: ubuntu  HOME: /home/ubuntu  LOGNAME: ubuntu
+This system has a bash shell
+-----------------------------------------------------------------------------------------
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+The following additional packages will be installed:
+  autotools-dev binutils cpp cpp-5 gcc gcc-5 gcc-5-base libasan2 libatomic1 libc-dev-bin libc6 libc6-dev libcc1-0 libcilkrts5 libgcc-5-dev libgomp1 libisl15 libitm1 liblsan0 libmpc3 libmpx0 libquadmath0 libstdc++6 libtsan0 libubsan0
+  linux-libc-dev manpages-dev
+The following NEW packages will be installed:
+  autotools-dev binutils cpp cpp-5 gcc gcc-5 libasan2 libatomic1 libc-dev-bin libc6-dev libcc1-0 libcilkrts5 libgcc-5-dev libgomp1 libisl15 libitm1 liblsan0 libltdl-dev libmpc3 libmpx0 libquadmath0 libtool libtsan0 libubsan0
+  linux-libc-dev manpages-dev
+
+3 upgraded, 26 newly installed, 0 to remove and 203 not upgraded.
+Need to get 30.7 MB of archives.
+....
+Fetched 30.7 MB in 5s (5567 kB/s)
+
+Preconfiguring packages ...
+Unpacking ...
+Processing ...
+Processing ...
+...
+...
+(many packages)
+...
+...
+-----------------------------------------------------------------------------------------
+[install_05_ca_server.sh] USER: ubuntu whoami: ubuntu id -un: ubuntu FABRIC_USER: ubuntu  HOME: /home/ubuntu  LOGNAME: ubuntu
+-----------------------------------------------------------------------------------------
+CA-server Done.
+-----------------------------------------------------------------------------------------
+
+----
+<<ca_root_install, [back]>>

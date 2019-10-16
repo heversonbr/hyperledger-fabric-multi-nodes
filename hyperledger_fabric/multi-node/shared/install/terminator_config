@@ -329,7 +329,7 @@
       type = Terminal
       uuid = d2cbb139-1495-4c96-99f5-a3ff356dd0e6
       title = terminal-3 [msp-root-org1]
-      group = hyperledger-post-install
+      group = hyperledger-fabric-install
     [[[terminal4]]]
       command = vagrant ssh msp-root-org1 ; bash
       directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
@@ -356,7 +356,7 @@
       type = Terminal
       uuid = 912aa1ee-e3e0-4809-a763-fa8c890f0c93
       title = terminal-6 [msp-admin-org1]
-      group = hyperledger-post-install
+      group = hyperledger-fabric-install
     [[[terminal7]]]
       command = vagrant ssh msp-admin-org1 ; bash
       directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
@@ -382,7 +382,7 @@
       type = Terminal
       uuid = 6bf622b4-74b8-409e-bde5-e2f0b269d2ef
       title = terminal-9 [msp-admin-orderer]
-      group = hyperledger-post-install
+      group = hyperledger-fabric-install
     [[[terminal10]]]
       command = vagrant ssh msp-admin-orderer ; bash
       directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
@@ -408,7 +408,7 @@
       type = Terminal
       uuid = 524a6e8b-c1dc-49da-b147-61452e7bdacd
       title = terminal-12 [orderer-node]
-      group = hyperledger-post-install
+      group = hyperledger-fabric-install
     [[[terminal13]]]
       command = vagrant ssh orderer-node ; bash
       directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
@@ -434,7 +434,7 @@
       type = Terminal
       uuid = 612806a7-9ede-4e06-8e38-300b3a486ef0
       title = terminal-15 [peer1-org1]
-      group = hyperledger-post-install
+      group = hyperledger-fabric-install
     [[[terminal16]]]
       command = vagrant ssh peer1-org1 ; bash
       directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
@@ -460,7 +460,7 @@
       type = Terminal
       uuid = 1ecedab9-1956-4386-a40e-64cbc6c3647d
       title = terminal-18 [peer2-org1]
-      group = hyperledger-post-install
+      group = hyperledger-fabric-install
     [[[terminal19]]]
       command = vagrant ssh peer2-org1 ; bash
       directory = /home/rheverson/workspace/vagrant/vagrant_hyperledger/hyperledger_fabric/multi-node
