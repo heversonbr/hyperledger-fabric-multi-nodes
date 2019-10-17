@@ -21,13 +21,13 @@ package main
 //to be modified as well with the new ID of chaincode_example02.
 //chaincode_example05 show's how chaincode ID can be passed in as a parameter instead of
 //hard-coding.
-// 
+//
 
-/*  the link "github.com/hyperledger/fabric/core/chaincode/shim"  mentioned in the 
-	original example does not corresponds to a gitbug link.
-	I found this one instead: github.com/hyperledger/fabric/tree/release-1.4/core/chaincode/shim
-	same for "github.com/hyperledger/fabric/protos/peer"
-	i've found:  https://github.com/hyperledger/fabric/tree/release-1.4/protos/peer
+/*  the link "github.com/hyperledger/fabric/core/chaincode/shim"  mentioned in the
+original example does not corresponds to a gitbug link.
+I found this one instead: github.com/hyperledger/fabric/tree/release-1.4/core/chaincode/shim
+same for "github.com/hyperledger/fabric/protos/peer"
+i've found:  https://github.com/hyperledger/fabric/tree/release-1.4/protos/peer
 */
 
 import (
@@ -35,7 +35,7 @@ import (
 	"strconv"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	
+
 	pb "github.com/hyperledger/fabric/protos/peer"
 )
 
@@ -44,7 +44,7 @@ type SimpleChaincode struct {
 }
 
 func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
-	
+
 	fmt.Println("ex1 Init")
 	_, args := stub.GetFunctionAndParameters()
 	var A, B string    // Entities
@@ -68,7 +68,10 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
 	}
 	fmt.Printf("Aval = %d, Bval = %d\n", Aval, Bval)
 
-	// Write the state to the ledger
+	// PutState: Write the state to the ledger
+	// PutState puts the specified `key` and `value` into the transaction's
+	// writeset as a data-write proposal. PutState doesn't effect the ledger
+	// until the transaction is validated and successfully committed.
 	err = stub.PutState(A, []byte(strconv.Itoa(Aval)))
 	if err != nil {
 		return shim.Error(err.Error())
@@ -79,13 +82,16 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface) pb.Response {
 		return shim.Error(err.Error())
 	}
 
-	
-
 	return shim.Success(nil)
 }
 
 func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	fmt.Println("ex1 Invoke")
+
+	// GetFunctionAndParameters returns the first argument as the function
+	// name and the rest of the arguments as parameters in a string array.
+	// Only use GetFunctionAndParameters if the client passes arguments intended
+	// to be used as strings.
 	function, args := stub.GetFunctionAndParameters()
 	if function == "invoke" {
 		// Make payment of X units from A to B
@@ -115,8 +121,13 @@ func (t *SimpleChaincode) invoke(stub shim.ChaincodeStubInterface, args []string
 	A = args[0]
 	B = args[1]
 
-	// Get the state from the ledger
-	// TODO: will be nice to have a GetAllState call to ledger
+	// GetState retrieves the value for a given key from the ledger
+	// GetState returns the value of the specified `key` from the
+	// ledger. Note that GetState doesn't read data from the writeset, which
+	// has not been committed to the ledger. In other words, GetState doesn't
+	// consider data modified by PutState that has not been committed.
+	// If the key does not exist in the state database, (nil, nil) is returned.
+	// Get the state of A from the ledger
 	Avalbytes, err := stub.GetState(A)
 	if err != nil {
 		return shim.Error("Failed to get state")
@@ -126,6 +137,7 @@ func (t *SimpleChaincode) invoke(stub shim.ChaincodeStubInterface, args []string
 	}
 	Aval, _ = strconv.Atoi(string(Avalbytes))
 
+	// Get the state of B from the ledger
 	Bvalbytes, err := stub.GetState(B)
 	if err != nil {
 		return shim.Error("Failed to get state")

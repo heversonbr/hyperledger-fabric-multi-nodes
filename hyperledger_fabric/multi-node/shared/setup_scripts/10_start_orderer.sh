@@ -18,16 +18,19 @@ cd $FABRIC_CFG_PATH
 if [ ! -f $FABRIC_CFG_PATH/configtx.yaml ]; then 
     echo "$FABRIC_CFG_PATH/configtx.yaml not found. copying from $BASE_CONFIG_FILES"
     cp $BASE_CONFIG_FILES/configtx.yaml $FABRIC_CFG_PATH/
+    ls -al $FABRIC_CFG_PATH/configtx.yaml
 fi 
 
 if [ ! -f $FABRIC_CFG_PATH/orderer.yaml ]; then 
     echo "$FABRIC_CFG_PATH/orderer.yaml not found. copying from $BASE_CONFIG_FILES"
    cp $BASE_CONFIG_FILES/orderer-config.yaml $FABRIC_CFG_PATH/orderer.yaml
+   ls -al $FABRIC_CFG_PATH/orderer.yaml
 fi 
 
 if [ ! -f $FABRIC_CFG_PATH/core.yaml ]; then 
     echo "$FABRIC_CFG_PATH/core.yaml not found. copying from $BASE_CONFIG_FILES"
     cp $BASE_CONFIG_FILES/core-orderer-node.yaml $FABRIC_CFG_PATH/core.yaml
+    ls -al $FABRIC_CFG_PATH/core.yaml
 fi 
 
 # check for genesis block

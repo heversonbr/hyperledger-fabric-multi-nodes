@@ -1,0 +1,9 @@
+== Configuring Hyperledger Blockchain
+
+
+Before continuing make sure that the terminator broadcast is set to off.
+From now one, you will run the commands at each individual node.
+
+
+include::config_msp.adoc[]
+include::config_blockchain.adoc[]

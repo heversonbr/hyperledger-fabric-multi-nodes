@@ -1,0 +1,106 @@
+== Host deployment
+
+
+[[conf-overview]]
+=== Overview
+
+We use https://www.vagrantup.com/[vagrant] to deploy the virtual machines at same
+time with a specific configuration. If you do not have vagrant installed in your
+local machine yet, please take the time to do that now.
+The vagrant file (`Vagrantfile`) is where these configurations are stored.
+We use the openstack plugin (https://github.com/ggiamarchi/vagrant-openstack-provider)
+to deploy these machines in our Openstack cluster.
+
+In the `Vagrantfile`, each host is defined as an entry in a data structure
+called *_cluster_*. Each entry (host) in *_cluster_* has the following structure.
+
+[source, ruby]
+----
+{
+    :name => "msp-root-org1",
+    :username => "ubuntu",
+    :type => "ca-server",
+    :box => "ubuntu1604_img",
+    :flavor => "j1.medium",
+    :netid => "d085327f-2cea-4e14-8784-764ee72b92f4",
+    :netadd => "192.168.1.10",
+    :privkeyfile => "~/.ssh/openstack_cloudlab_bcom.key"
+}
+----
+With `name` informing the hostname to be deployed, `username` the default user to
+be created in that host, `type` the type of node according to the Hyperledger
+architecture (e.g., peer, orderer, msp-admin, msp-root, etc.)
+If you want to take a look in the full `Vagrantfile` and the detailed configuration
+of all the hosts, check the  <<appendix:vagrantfile, Appendix>>.
+
+==== Deploy all nodes (VMs)
+
+Use the e *vagrant up* command in order to deploy our machines.
+Note that, this operation takes few minutes, depending on the number of hosts to
+deploy. Thus, execute the command as show below and go for a coffee.
+
+[source, bash]
+----
+$ vagrant up
+----
+
+When the deployment finishes, you can check the status of each deployed virtual machine.
+
+[source, bash]
+----
+$ vagrant status
+Current machine states:
+name                      state    provider
+--------------------------------------------
+msp-root-org1             active (openstack)
+msp-admin-org1            active (openstack)
+msp-admin-orderer         active (openstack)
+orderer-node              active (openstack)
+peer1-org1                active (openstack)
+peer2-org1                active (openstack)
+----
+
+In order to check the deployment connect to one of the hosts (e.g., msp-root-org1)
+from your local machine using any terminal.
+
+[source, bash]
+----
+$ vagrant ssh msp-root-org1
+----
+
+[[shared_vagrant_dir]]
+Vagrant creates the hosts defined in the `Vagrantfile` and sets a ssh configuration
+`~/.ssh/config` at each node with entries to all the other nodes
+as well as `/etc/hosts` and `/etc/resolv.conf` files.
+These files are dynamically created during the vagrant deployment thanks to some
+ruby code that we have previously added to it.
+Vagrant also creates a directory called `~/hyperledger_ws`
+(i.e., hyperledger workspace) at the home directory of each host, which we refer
+to as HYPERLEDGER_HOME directory.
+The directory has the following structure and content.
+
+[source, bash]
+----
+$ cd hyperledger_ws/
+
+~/hyperledger_ws$ tree -dL  1
+.
+├── install
+├── setup_scripts
+├── config_files
+└── chaincode_example
+----
+
+- *install*: directory that contains the scripts used to install Hyperledger Fabric
+software in the hosts and create the base configuration for each.
+
+- *setup_scripts*: directory that contains the scripts used to set up Hyperledger
+environment and its configuration.
+
+- *config_files*: directory that contains template files used to configure Hyperledger
+environment.
+
+- *chaincode_examples*: directory that contains the chaincode example used to validate
+the installation and configuration.
+
+After checking these directories, logout (exit) back to your local host.

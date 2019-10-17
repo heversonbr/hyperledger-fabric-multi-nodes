@@ -1,0 +1,37 @@
+== Appendix D: MSP configuration files
+
+:TODO: check the name of scripts and outputs in the table to see if they are still up to date.
+
+
+.Summary of files and directories created to by each script to satisfy MSP requirements.
+
+[width="100%",cols="25,25,25,25",options="header"]
+|=========================================================
+|script/host-path  | ca-admin/ca-server | ca-admin/ca-client | org-msp/ca-client
+
+| start-ca-server.sh | /home/ubuntu/hyperledger_ws/ca-server/fabric-ca-server-config.yaml   | |
+| | ca-server/ca-cert.pem (*CA certificate*)| |
+| | ca-server/IssuerPublicKey (*Issuer pub key*)| |
+| | ca-server/msp/keystore/IssuerSecretKey (*Issuer priv key*)| |
+| | ca-server/IssuerRevocationPublicKey  | |
+| | ca-server/msp/keystore/IssuerRevocationPrivateKey | |
+
+| enroll_bootstrap_identity.sh |  |  |
+| | | ca-client/caserver/admin/msp/signcerts/cert.pem
+(*client certificate*)  |
+| | | ca-client/caserver/admin/msp/cacerts/192-168-1-10-7054.pem (*ca-root certificate*)   |
+| | | ca-client/caserver/admin/msp/IssuerPublicKey (*Issuer public key*) |
+| | | ca-client/caserver/admin/msp/IssuerRevocationPublicKey (*Issuer revocation public key*) |
+
+| register_admin.sh | n/a | n/a | n/a
+
+| enroll_admin.sh 'acme' | | | /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/signcerts/cert.pem (*client certificate*)
+| | | |  /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/cacerts/192-168-1-10-7054.pem (*root CA certificate*)
+| | | | /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/IssuerPublicKey (*Issuer public key*)
+| | | | /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/IssuerRevocationPublicKey  (*Issuer revocation public key*)
+
+| ./setup_admin_certs.sh acme ca-admin | | | creates /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/admincerts
+| | | |  scp ca-admin:/home/ubuntu/hyperledger_ws/ca-client/caserver/admin/msp/signcerts/* /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/admincerts
+| | | | scp ca-admin:/home/ubuntu/hyperledger_ws/ca-server/ca-cert.pem /home/ubuntu/hyperledger_ws/ca-client/acme/admin/../msp/cacerts
+
+|=========================================================
