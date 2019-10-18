@@ -44,6 +44,7 @@ NOTE: check the variable FABRIC_CFG_PATH before. it must be : /home/ubuntu/hyper
 You can use the command `configtxgen -inspectBlock /home/ubuntu/hyperledger_ws/fabric/my_genesis.block`
 to verify if the genesis block was well generated.
 
+[[channel-tx_create]]
 .3. Generate the transaction to create the channel.
 
 [source, bash]
@@ -90,7 +91,7 @@ Password: pw
 
 .2. Enroll orderer
 
-Go to the host `orderer-node` and enroll the node , similarly as we did for the
+Go to the host `orderer-node` and enroll the node, similarly as we did for the
 adminstrator before. Use the following script from the `setup_scripts` directory.
 
 
@@ -181,6 +182,11 @@ You can check  the full log of the orderer node starting at section
 
 
 ==== Create the channel
+
+In order to create submit the channel for its instantiation we have previously
+<<channel-tx_create, generated the transaction>>  to create our channel.
+The next step, in order to really create the channel in Hyperledger is to sign
+and submit this transaction to be executed.
 
 11_sign_channel-tx.sh
 [source, bash]
