@@ -1,0 +1,699 @@
+=== Configure the Hyperledger Blockchain
+
+==== Generate the genesis block and channel transaction
+
+Go to `msp-admin-orderer` node. From the `setup_scripts` directory run the following commands.
+
+.1. Recover the public certificates to sign
+[source, bash]
+----
+$ ./05_get_org-pub-certs.sh org1
+=> Using ORG_NAME: org1
+=> Using ORG_HOSTNAME: msp-admin-org1
+Getting admin certs with SCP
+scp -r msp-admin-org1:/home/ubuntu/hyperledger_ws/ca-client/org1/msp/  /home/ubuntu/hyperledger_ws/ca-client/org1/msp
+cert.pem   100%  997     1.0KB/s   00:00
+ca-cert.pem
+----
+
+.2. Generate the genesis block.
+
+[source, bash]
+----
+$ ./06_generate_genesis-block.sh
+
+orderer folder does not exist, creating it
+################################################
+using FABRIC_CFG_PATH : /home/ubuntu/hyperledger_ws/fabric
+################################################
+================ Writing the Genesis Block ================
+2019-10-17 15:43:18.686 UTC [common.tools.configtxgen] main -> INFO 001 Loading configuration
+2019-10-17 15:43:18.721 UTC [common.tools.configtxgen.localconfig] completeInitialization -> INFO 002 orderer type: solo
+2019-10-17 15:43:18.721 UTC [common.tools.configtxgen.localconfig] Load -> INFO 003 Loaded configuration: /home/ubuntu/hyperledger_ws/fabric/configtx.yaml
+2019-10-17 15:43:18.753 UTC [common.tools.configtxgen.localconfig] completeInitialization -> INFO 004 orderer type: solo
+2019-10-17 15:43:18.753 UTC [common.tools.configtxgen.localconfig] LoadTopLevel -> INFO 005 Loaded configuration: /home/ubuntu/hyperledger_ws/fabric/configtx.yaml
+2019-10-17 15:43:18.756 UTC [common.tools.configtxgen] doOutputBlock -> INFO 006 Generating genesis block
+2019-10-17 15:43:18.756 UTC [common.tools.configtxgen] doOutputBlock -> INFO 007 Writing genesis block
+#########################################################################################
+you can use ' configtxgen -inspectBlock /home/ubuntu/hyperledger_ws/fabric/my_genesis.block ' to verifiy the generated block
+NOTE: check the variable FABRIC_CFG_PATH before. it must be : /home/ubuntu/hyperledger_ws/fabric
+#########################################################################################
+
+----
+
+You can use the command `configtxgen -inspectBlock /home/ubuntu/hyperledger_ws/fabric/my_genesis.block`
+to verify if the genesis block was well generated.
+
+[[channel-tx_create]]
+.3. Generate the transaction to create the channel.
+
+[source, bash]
+----
+$ ./07_generate_channel-tx.sh
+
+================ Writing $CHANNELID ================
+2019-10-17 15:46:20.366 UTC [common.tools.configtxgen] main -> INFO 001 Loading configuration
+2019-10-17 15:46:20.400 UTC [common.tools.configtxgen.localconfig] Load -> INFO 002 Loaded configuration: /home/ubuntu/hyperledger_ws/fabric/configtx.yaml
+2019-10-17 15:46:20.438 UTC [common.tools.configtxgen.localconfig] completeInitialization -> INFO 003 orderer type: solo
+2019-10-17 15:46:20.439 UTC [common.tools.configtxgen.localconfig] LoadTopLevel -> INFO 004 Loaded configuration: /home/ubuntu/hyperledger_ws/fabric/configtx.yaml
+2019-10-17 15:46:20.439 UTC [common.tools.configtxgen] doOutputChannelCreateTx -> INFO 005 Generating new channel configtx
+2019-10-17 15:46:20.441 UTC [common.tools.configtxgen] doOutputChannelCreateTx -> INFO 006 Writing new channel tx
+you can use ' configtxgen -inspectChannelCreateTx  /home/ubuntu/hyperledger_ws/fabric/my-channel.tx ' to verifiy the generated channel
+======= Done. Launch by executing orderer ======
+
+----
+
+==== Register enroll and start orderer service
+
+Still in the `msp-admin-orderer` node run the following command to register the
+orderer node. Pay attention to the arguments.
+
+.1. Register orderer node
+[source, bash]
+----
+$ ./08_register_orderer-node.sh orderer-node
+
+Switching PEER_NAME for Org =
+PEER_PW=pw
+ORG_NAME=orderer
+my FABRIC_CA_CLIENT_HOME:
+now FABRIC_CA_CLIENT_HOME: /home/ubuntu/hyperledger_ws/ca-client/orderer/admin
+##################################################
+# Registering orderer identity with orderer-admin
+##################################################
+FABRIC_CA_CLIENT_HOME=/home/ubuntu/hyperledger_ws/ca-client/orderer/admin
+Registering :=> fabric-ca-client register --id.type orderer --id.name orderer --id.secret pw --id.affiliation orderer
+2019/10/17 15:50:11 [INFO] Configuration file location: /home/ubuntu/hyperledger_ws/ca-client/orderer/admin/fabric-ca-client-config.yaml
+Password: pw
+======Completed: Step 1 : Registered orderer (can be done only once)====
+----
+
+
+.2. Enroll orderer
+
+Go to the host `orderer-node` and enroll the node, similarly as we did for the
+adminstrator before. Use the following script from the `setup_scripts` directory.
+
+
+[source, bash]
+----
+$ ./09_enroll_orderer-node.sh orderer-node
+Switching ORDERER_NAME to orderer-node
+ORDERER_PW=pw
+ORG_NAME=orderer
+CA_ORG_ADMIN_HOSTNAME=msp-admin-orderer
+##############################################################
+ADMIN_CLIENT_HOME: /home/ubuntu/hyperledger_ws/ca-client/orderer/admin
+##############################################################
+changing identity to [orderer-node]
+my FABRIC_CA_CLIENT_HOME:
+now FABRIC_CA_CLIENT_HOME: /home/ubuntu/hyperledger_ws/ca-client/orderer/orderer-node
+/home/ubuntu/hyperledger_ws/ca-client/orderer/orderer-node/fabric-ca-client-config.yaml not found in /home/ubuntu/hyperledger_ws/ca-client/orderer/orderer-node/
+creating : mkdir -p /home/ubuntu/hyperledger_ws/ca-client/orderer/orderer-node
+Copy Yaml from: /home/ubuntu/hyperledger_ws/config_files/fabric-ca-client-config-orderer-node.yaml
+cp /home/ubuntu/hyperledger_ws/config_files/fabric-ca-client-config-orderer-node.yaml  /home/ubuntu/hyperledger_ws/ca-client/orderer/orderer-node/fabric-ca-client-config.yaml
+checking with: ls /home/ubuntu/hyperledger_ws/ca-client/orderer/orderer-node/fabric-ca-client-config.yaml
+/home/ubuntu/hyperledger_ws/ca-client/orderer/orderer-node/fabric-ca-client-config.yaml
+File /home/ubuntu/hyperledger_ws/ca-client/orderer/orderer-node/fabric-ca-client-config.yaml found.
+======Completed: Step 1 : Copy Check Orderer Client YAML==========
+###################################
+# Enrolling: orderer
+###################################
+enrolling :=> fabric-ca-client enroll -u http://orderer-node:pw@192.168.1.10:7054
+2019/10/17 15:52:38 [INFO] generating key: &{A:ecdsa S:256}
+2019/10/17 15:52:38 [INFO] encoded CSR
+2019/10/17 15:52:38 [INFO] Stored client certificate at /home/ubuntu/hyperledger_ws/ca-client/orderer/orderer-node/msp/signcerts/cert.pem
+2019/10/17 15:52:38 [INFO] Stored root CA certificate at /home/ubuntu/hyperledger_ws/ca-client/orderer/orderer-node/msp/cacerts/192-168-1-10-7054.pem
+2019/10/17 15:52:38 [INFO] Stored Issuer public key at /home/ubuntu/hyperledger_ws/ca-client/orderer/orderer-node/msp/IssuerPublicKey
+2019/10/17 15:52:38 [INFO] Stored Issuer revocation public key at /home/ubuntu/hyperledger_ws/ca-client/orderer/orderer-node/msp/IssuerRevocationPublicKey
+======Completed: Step 2 : Enrolled orderer ========
+###################################
+# Setting up admincerts
+###################################
+DEBUG-ONLY: /home/ubuntu/hyperledger_ws/ca-client/orderer/orderer-node == /home/ubuntu/hyperledger_ws/ca-client/orderer/orderer-node ???
+Creating /home/ubuntu/hyperledger_ws/ca-client/orderer/orderer-node/msp/admincerts
+====> /home/ubuntu/hyperledger_ws/ca-client/orderer/orderer-node/msp/admincerts
+Copying [/home/ubuntu/hyperledger_ws/ca-client/orderer/admin/msp/signcerts] from host [msp-admin-orderer] here at [/home/ubuntu/hyperledger_ws/ca-client/orderer/orderer-node/msp/admincerts]
+Getting orderer-admin certs with SCP
+scp msp-admin-orderer:/home/ubuntu/hyperledger_ws/ca-client/orderer/admin/msp/signcerts/* /home/ubuntu/hyperledger_ws/ca-client/orderer/orderer-node/msp/admincerts
+cert.pem    100% 1017     1.0KB/s   00:00
+Checking with: ls /home/ubuntu/hyperledger_ws/ca-client/orderer/orderer-node/msp/admincerts/
+cert.pem
+File(s) found at /home/ubuntu/hyperledger_ws/ca-client/orderer/orderer-node/msp/admincerts/.
+======Completed: Step 3 : MSP setup for the orderer ========
+----
+
+If the enrollment went well, now you are able to start the orderer node.
+Please run the following.
+
+.3. Start orderer service
+[source, bash]
+----
+$ ./10_start_orderer.sh
+
+FABRIC_CFG_PATH: /home/ubuntu/hyperledger_ws/fabric
+/var/ledgers does not exist, creating it
+/home/ubuntu/hyperledger_ws/fabric does not exist, creating it
+/home/ubuntu/hyperledger_ws/fabric/configtx.yaml not found. copying from /home/ubuntu/hyperledger_ws/config_files
+/home/ubuntu/hyperledger_ws/fabric/orderer.yaml not found. copying from /home/ubuntu/hyperledger_ws/config_files
+/home/ubuntu/hyperledger_ws/fabric/core.yaml not found. copying from /home/ubuntu/hyperledger_ws/config_files
+#######################################################################
+getting GENESIS_BLK_NAME from orderer admin using scp
+scp ubuntu@msp-admin-orderer:/home/ubuntu/hyperledger_ws/fabric/my_genesis.block /home/ubuntu/hyperledger_ws/fabric
+my_genesis.block  100% 8102     7.9KB/s   00:00
+my_genesis.block
+file my_genesis.block found at /home/ubuntu/hyperledger_ws/fabric
+===> Done. Please check logs under /home/ubuntu/hyperledger_ws/fabric/orderer.log
+----
+
+If no errors are reported, check the following log to see details about the orderer
+launching.
+
+[[start_orderer]]
+[source, bash]
+----
+$ less /home/ubuntu/hyperledger_ws/fabric/orderer.log
+----
+
+
+You can check  the full log of the orderer node starting at section
+<<appendix:orderer-node-start, Appendix C: Output logs from Blockchain setup>>.
+
+
+
+==== Create the channel
+
+In order to create submit the channel for its instantiation we have previously
+<<channel-tx_create, generated the transaction>>  to create our channel.
+The next step, in order to really create the channel in Hyperledger is to sign
+and submit this transaction to be executed.
+
+.1. Signing the channel creating transaction.
+
+Go back to the `msp-admin-org1` host and run the following script.
+
+[source, bash]
+----
+$ ./11_sign_channel-tx.sh org1
+FABRIC_CFG_PATH: /home/ubuntu/hyperledger_ws/fabric
+/home/ubuntu/hyperledger_ws/fabric folder does not exist, creating it.
+CHANNEL_TX_FILE: /home/ubuntu/hyperledger_ws/fabric/my-channel.tx
+File /home/ubuntu/hyperledger_ws/fabric/my-channel.tx does not exist locally. (running from OTHER than orderer?)
+Getting CHANNEL_TX_FILE from orderer using scp
+scp ubuntu@msp-admin-orderer:/home/ubuntu/hyperledger_ws/fabric/my-channel.tx /home/ubuntu/hyperledger_ws/fabric/
+my-channel.tx                                                                                                                                                                                                100% 1303     1.3KB/s   00:00
+CRYPTO_CONFIG_ROOT_FOLDER: /home/ubuntu/hyperledger_ws/ca-client
+CORE_PEER_MSPCONFIGPATH: /home/ubuntu/hyperledger_ws/ca-client/org1/admin/msp
+CORE_PEER_LOCALMSPID: Org1MSP
+Switched Identity to: org1   admin
+---------------------------------------
+-rw-r--r-- 1 ubuntu ubuntu 1303 Oct 18 11:43 /home/ubuntu/hyperledger_ws/fabric/my-channel.tx
+---------------------------------------
+running: peer channel signconfigtx -f /home/ubuntu/hyperledger_ws/fabric/my-channel.tx
+2019-10-18 11:43:48.342 UTC [channelCmd] InitCmdFactory -> INFO 001 Endorser and orderer connections initialized
+====> Done. Signed file with identity org1/admin
+====> Check size & timestamp of file /home/ubuntu/hyperledger_ws/fabric/my-channel.tx
+---------------------------------------
+-rw-r--r-- 1 ubuntu ubuntu 3533 Oct 18 11:43 /home/ubuntu/hyperledger_ws/fabric/my-channel.tx
+---------------------------------------
+----
+
+.2. Submit the transaction to the Hyperledger Blockchain to execute
+
+[source, bash]
+----
+$ ./12_submit_create_channel.sh org1 admin
+#######################################################################
+Using identity: admin and org-name: org1
+====> Using orderer: 192.168.1.14:7050
+#######################################################################
+running from the msp-admin-org1
+keeping FABRIC_CFG_PATH=/home/ubuntu/hyperledger_ws/fabric
+Getting CHANNEL_TX_FILE and core.yaml from orderer using scp
+scp ubuntu@msp-admin-orderer:/home/ubuntu/hyperledger_ws/fabric/my-channel.tx /home/ubuntu/hyperledger_ws/fabric/
+my-channel.tx                                                                                                                                                                                                100% 1303     1.3KB/s   00:00
+#######################################################################
+#######################################################################
+CRYPTO_CONFIG_ROOT_FOLDER: /home/ubuntu/hyperledger_ws/ca-client
+CORE_PEER_MSPCONFIGPATH: /home/ubuntu/hyperledger_ws/ca-client/org1/admin/msp
+Switched Identity to: org1   admin
+#######################################################################
+# Submit the channel create transation
+#######################################################################
+running: peer channel create -o 192.168.1.14:7050 -c mychannelid -f /home/ubuntu/hyperledger_ws/fabric/my-channel.tx
+2019-10-18 11:49:07.323 UTC [channelCmd] InitCmdFactory -> INFO 001 Endorser and orderer connections initialized
+2019-10-18 11:49:07.472 UTC [cli.common] readBlock -> INFO 002 Received block: 0
+#######################################################################
+====> Done. Check Orderer logs for any errors !!!
+
+----
+
+
+==== Create, start and join peers to the Blockchains
+
+
+.1. Register peers
+[source, bash]
+----
+$ ./13_peer_register.sh peer1 pw org1
+
+current FABRIC_CA_CLIENT_HOME=
+now FABRIC_CA_CLIENT_HOME=
+#####################################################
+# Registering peer peer1 with org1-admin
+#####################################################
+using FABRIC_CA_CLIENT_HOME=/home/ubuntu/hyperledger_ws/ca-client/org1/admin to register:
+fabric-ca-client register --id.type peer --id.name peer1 --id.secret pw --id.affiliation org1
+2019/10/18 14:44:19 [INFO] Configuration file location: /home/ubuntu/hyperledger_ws/ca-client/org1/admin/fabric-ca-client-config.yaml
+Password: pw
+======Completed: Step 1 : Registered peer (can be done only once)====
+
+
+$ ./13_peer_register.sh peer2 pw org1
+
+current FABRIC_CA_CLIENT_HOME=
+now FABRIC_CA_CLIENT_HOME=
+#####################################################
+# Registering peer peer2 with org1-admin
+#####################################################
+using FABRIC_CA_CLIENT_HOME=/home/ubuntu/hyperledger_ws/ca-client/org1/admin to register:
+fabric-ca-client register --id.type peer --id.name peer2 --id.secret pw --id.affiliation org1
+2019/10/18 14:44:22 [INFO] Configuration file location: /home/ubuntu/hyperledger_ws/ca-client/org1/admin/fabric-ca-client-config.yaml
+Password: pw
+======Completed: Step 1 : Registered peer (can be done only once)====
+----
+
+
+.2. Enroll peers
+
+To to each peer and run the following.
+
+.2.1. peer1 org1:
+[source, bash]
+----
+$ ./14_peer_enroll.sh peer1 pw org1 msp-admin-org1
+
+###############################################
+ADMIN_CLIENT_HOME= /home/ubuntu/hyperledger_ws/ca-client/org1/admin
+###############################################
+setting identity to peer1
+current FABRIC_CA_CLIENT_HOME=
+now FABRIC_CA_CLIENT_HOME= /home/ubuntu/hyperledger_ws/ca-client/org1/peer1
+/home/ubuntu/hyperledger_ws/ca-client/org1/peer1/fabric-ca-client-config.yaml not found in /home/ubuntu/hyperledger_ws/ca-client/org1/peer1/
+creating : mkdir -p /home/ubuntu/hyperledger_ws/ca-client/org1/peer1
+Copy Yaml: /home/ubuntu/hyperledger_ws/config_files/fabric-ca-client-config-peer1-org1.yaml
+cp /home/ubuntu/hyperledger_ws/config_files/fabric-ca-client-config-peer1-org1.yaml  /home/ubuntu/hyperledger_ws/ca-client/org1/peer1/fabric-ca-client-config.yaml
+checking with: ls /home/ubuntu/hyperledger_ws/ca-client/org1/peer1/fabric-ca-client-config.yaml
+/home/ubuntu/hyperledger_ws/ca-client/org1/peer1/fabric-ca-client-config.yaml
+======Completed: Step 2 : Copy Check Orderer Client YAML==========
+#####################################################
+# Enrolling peer peer1
+#####################################################
+enrolling with: fabric-ca-client enroll -u http://peer1:pw@192.168.1.10:7054
+2019/10/18 14:46:43 [INFO] generating key: &{A:ecdsa S:256}
+2019/10/18 14:46:43 [INFO] encoded CSR
+2019/10/18 14:46:43 [INFO] Stored client certificate at /home/ubuntu/hyperledger_ws/ca-client/org1/peer1/msp/signcerts/cert.pem
+2019/10/18 14:46:43 [INFO] Stored root CA certificate at /home/ubuntu/hyperledger_ws/ca-client/org1/peer1/msp/cacerts/192-168-1-10-7054.pem
+2019/10/18 14:46:43 [INFO] Stored Issuer public key at /home/ubuntu/hyperledger_ws/ca-client/org1/peer1/msp/IssuerPublicKey
+2019/10/18 14:46:43 [INFO] Stored Issuer revocation public key at /home/ubuntu/hyperledger_ws/ca-client/org1/peer1/msp/IssuerRevocationPublicKey
+======Completed: Step 3 : Enrolled peer1 ========
+
+#####################################################
+# Setting up admincerts
+#####################################################
+Creating /home/ubuntu/hyperledger_ws/ca-client/org1/peer1/msp/admincerts
+====> /home/ubuntu/hyperledger_ws/ca-client/org1/peer1/msp/admincerts
+copying [/home/ubuntu/hyperledger_ws/ca-client/org1/admin/msp/signcerts] from host [msp-admin-org1] here at [/home/ubuntu/hyperledger_ws/ca-client/org1/peer1/msp/admincerts]
+Getting admin certs with SCP
+scp msp-admin-org1:/home/ubuntu/hyperledger_ws/ca-client/org1/admin/msp/signcerts/* /home/ubuntu/hyperledger_ws/ca-client/org1/peer1/msp/admincerts
+cert.pem                                                                                                                                                                                                     100%  997     1.0KB/s   00:00
+checking with: ls /home/ubuntu/hyperledger_ws/ca-client/org1/peer1/msp/admincerts/
+cert.pem
+File(s) found at /home/ubuntu/hyperledger_ws/ca-client/org1/peer1/msp/admincerts/.
+======Completed Step: Setting up admincerts ==========
+----
+
+.2.2. peer2 org1:
+[source, bash]
+----
+$ ./14_peer_enroll.sh peer2 pw org1 msp-admin-org1
+
+###############################################
+ADMIN_CLIENT_HOME= /home/ubuntu/hyperledger_ws/ca-client/org1/admin
+###############################################
+setting identity to peer2
+current FABRIC_CA_CLIENT_HOME=
+now FABRIC_CA_CLIENT_HOME= /home/ubuntu/hyperledger_ws/ca-client/org1/peer2
+/home/ubuntu/hyperledger_ws/ca-client/org1/peer2/fabric-ca-client-config.yaml not found in /home/ubuntu/hyperledger_ws/ca-client/org1/peer2/
+creating : mkdir -p /home/ubuntu/hyperledger_ws/ca-client/org1/peer2
+Copy Yaml: /home/ubuntu/hyperledger_ws/config_files/fabric-ca-client-config-peer2-org1.yaml
+cp /home/ubuntu/hyperledger_ws/config_files/fabric-ca-client-config-peer2-org1.yaml  /home/ubuntu/hyperledger_ws/ca-client/org1/peer2/fabric-ca-client-config.yaml
+checking with: ls /home/ubuntu/hyperledger_ws/ca-client/org1/peer2/fabric-ca-client-config.yaml
+/home/ubuntu/hyperledger_ws/ca-client/org1/peer2/fabric-ca-client-config.yaml
+======Completed: Step 2 : Copy Check Orderer Client YAML==========
+#####################################################
+# Enrolling peer peer2
+#####################################################
+enrolling with: fabric-ca-client enroll -u http://peer2:pw@192.168.1.10:7054
+2019/10/18 14:46:49 [INFO] generating key: &{A:ecdsa S:256}
+2019/10/18 14:46:49 [INFO] encoded CSR
+2019/10/18 14:46:50 [INFO] Stored client certificate at /home/ubuntu/hyperledger_ws/ca-client/org1/peer2/msp/signcerts/cert.pem
+2019/10/18 14:46:50 [INFO] Stored root CA certificate at /home/ubuntu/hyperledger_ws/ca-client/org1/peer2/msp/cacerts/192-168-1-10-7054.pem
+2019/10/18 14:46:50 [INFO] Stored Issuer public key at /home/ubuntu/hyperledger_ws/ca-client/org1/peer2/msp/IssuerPublicKey
+2019/10/18 14:46:50 [INFO] Stored Issuer revocation public key at /home/ubuntu/hyperledger_ws/ca-client/org1/peer2/msp/IssuerRevocationPublicKey
+======Completed: Step 3 : Enrolled peer2 ========
+
+#####################################################
+# Setting up admincerts
+#####################################################
+Creating /home/ubuntu/hyperledger_ws/ca-client/org1/peer2/msp/admincerts
+====> /home/ubuntu/hyperledger_ws/ca-client/org1/peer2/msp/admincerts
+copying [/home/ubuntu/hyperledger_ws/ca-client/org1/admin/msp/signcerts] from host [msp-admin-org1] here at [/home/ubuntu/hyperledger_ws/ca-client/org1/peer2/msp/admincerts]
+Getting admin certs with SCP
+scp msp-admin-org1:/home/ubuntu/hyperledger_ws/ca-client/org1/admin/msp/signcerts/* /home/ubuntu/hyperledger_ws/ca-client/org1/peer2/msp/admincerts
+cert.pem                                                                                                                                                                                                     100%  997     1.0KB/s   00:00
+checking with: ls /home/ubuntu/hyperledger_ws/ca-client/org1/peer2/msp/admincerts/
+cert.pem
+File(s) found at /home/ubuntu/hyperledger_ws/ca-client/org1/peer2/msp/admincerts/.
+======Completed Step: Setting up admincerts ==========
+
+----
+
+
+
+.3. Start both peers
+
+.3.1. start peer1
+[source, bash]
+----
+$  ./15_start_peer.sh  org1 peer1 192.168.1.15
+
+Current PEER_NAME:
+Switching PEER_NAME for Org = org1
+Setting PORT_NUMBER_BASE=7050
+Identity=peer1
+##################################
+PEER_NAME: peer1
+IDENTITY: peer1
+CORE_PEER_ID: peer1
+##################################
+########## LIST ENV VARS ################
+FABRIC_CA_SERVER_CONFIG_FILE=fabric-ca-server-config.yaml
+FABRIC_VERSION=1.4.0
+FABRIC_LOGGING_SPEC=INFO
+FABRIC_CA_CLIENT_CONFIG_FILE=fabric-ca-client-config.yaml
+FABRIC_USER=ubuntu
+FABRIC_CA_SERVER_HOME=/home/ubuntu/hyperledger_ws/ca-server
+BASE_FABRIC_CA_CLIENT_HOME=/home/ubuntu/hyperledger_ws/ca-client
+FABRIC_CFG_PATH=/home/ubuntu/hyperledger_ws/fabric/org1/peer1
+FABRIC_CA_SERVER_LOG=/home/ubuntu/hyperledger_ws/ca-server/ca-server.log
+#########################################
+#########################################
+CORE_PEER_CHAINCODELISTENADDRESS=192.168.1.15:7052
+CORE_PEER_LOCALMSPID=Org1MSP
+CORE_PEER_LISTENADDRESS=192.168.1.15:7051
+CORE_PEER_MSPCONFIGPATH=/home/ubuntu/hyperledger_ws/ca-client/org1/peer1/msp
+CORE_PEER_ID=peer1
+CORE_PEER_EVENTS_ADDRESS=192.168.1.15:7053
+CORE_PEER_FILESYSTEM_PATH=/var/ledgers/org1/peer1/ledger
+CORE_PEER_ADDRESS=192.168.1.15:7051
+CORE_PEER_GOSSIP_BOOTSTRAP=192.168.1.15:7051
+#########################################
+################################################################
+CRYPTO_CONFIG_ROOT_FOLDER: /home/ubuntu/hyperledger_ws/ca-client
+CORE_PEER_MSPCONFIGPATH: /home/ubuntu/hyperledger_ws/ca-client/org1/peer1/msp
+FABRIC_CFG_PATH: /home/ubuntu/hyperledger_ws/fabric/org1/peer1
+MSP_ID: Org1
+CORE_PEER_LOCALMSPID: Org1MSP
+NODECHAINCODE: /home/ubuntu/hyperledger_ws/fabric/org1/peer1/nodechaincode
+CORE_PEER_FILESYSTEM_PATH: /var/ledgers/org1/peer1/ledger
+CORE_PEER_LISTENADDRESS: 192.168.1.15:7051
+CORE_PEER_ADDRESS: 192.168.1.15:7051
+CORE_PEER_CHAINCODELISTENADDRESS: 192.168.1.15:7052
+CORE_PEER_EVENTS_ADDRESS: 192.168.1.15:7053
+CORE_PEER_GOSSIP_BOOTSTRAP: 192.168.1.15:7051
+PEER_LOGS: /home/ubuntu/hyperledger_ws/fabric/org1/peer1
+##########################################################################
+====>PLEASE Check Peer Log under /home/ubuntu/hyperledger_ws/fabric/org1/peer1/peer.log
+###################################################
+2019-10-18 14:56:20.358 UTC [nodeCmd] serve -> INFO 001 Starting peer:
+ Version: 1.4.0
+ Commit SHA: d700b43
+ Go version: go1.11.1
+ OS/Arch: linux/amd64
+ Chaincode:
+  Base Image Version: 0.4.14
+  Base Docker Namespace: hyperledger
+  Base Docker Label: org.hyperledger.fabric
+  Docker Namespace: hyperledger
+2019-10-18 14:56:20.359 UTC [ledgermgmt] initialize -> INFO 002 Initializing ledger mgmt
+2019-10-18 14:56:20.359 UTC [kvledger] NewProvider -> INFO 003 Initializing ledger provider
+2019-10-18 14:56:20.445 UTC [kvledger] NewProvider -> INFO 004 ledger provider Initialized
+2019-10-18 14:56:20.498 UTC [ledgermgmt] initialize -> INFO 005 ledger mgmt initialized
+2019-10-18 14:56:20.498 UTC [peer] func1 -> INFO 006 Auto-detected peer address: 192.168.1.15:7051
+2019-10-18 14:56:20.499 UTC [peer] func1 -> INFO 007 Auto-detect flag is set, returning 192.168.1.15:7051
+2019-10-18 14:56:20.499 UTC [peer] func1 -> INFO 008 Auto-detected peer address: 192.168.1.15:7051
+2019-10-18 14:56:20.499 UTC [peer] func1 -> INFO 009 Auto-detect flag is set, returning 192.168.1.15:7051
+2019-10-18 14:56:20.502 UTC [nodeCmd] computeChaincodeEndpoint -> INFO 00a Entering computeChaincodeEndpoint with peerHostname: 192.168.1.15
+2019-10-18 14:56:20.502 UTC [nodeCmd] computeChaincodeEndpoint -> INFO 00b Exit with ccEndpoint: 192.168.1.15:7052
+2019-10-18 14:56:20.504 UTC [sccapi] registerSysCC -> INFO 00c system chaincode lscc(github.com/hyperledger/fabric/core/scc/lscc) registered
+2019-10-18 14:56:20.505 UTC [sccapi] registerSysCC -> INFO 00d system chaincode cscc(github.com/hyperledger/fabric/core/scc/cscc) registered
+2019-10-18 14:56:20.505 UTC [sccapi] registerSysCC -> INFO 00e system chaincode qscc(github.com/hyperledger/fabric/core/scc/qscc) registered
+2019-10-18 14:56:20.505 UTC [sccapi] registerSysCC -> INFO 00f system chaincode (+lifecycle,github.com/hyperledger/fabric/core/chaincode/lifecycle,true) disabled
+2019-10-18 14:56:20.509 UTC [gossip.service] func1 -> INFO 010 Initialize gossip with endpoint 192.168.1.15:7051 and bootstrap set [192.168.1.15:7051]
+2019-10-18 14:56:20.515 UTC [gossip.gossip] NewGossipService -> INFO 011 Creating gossip service with self membership of Endpoint: , InternalEndpoint: 192.168.1.15:7051, PKI-ID: a25e2a27647deea5420a8a458cc0b7ba55da516ec060cf45a7a9611eb764b2a6, Metadata:
+2019-10-18 14:56:20.516 UTC [gossip.gossip] NewGossipService -> WARN 012 External endpoint is empty, peer will not be accessible outside of its organization
+2019-10-18 14:56:20.517 UTC [gossip.gossip] start -> INFO 013 Gossip instance 192.168.1.15:7051 started
+2019-10-18 14:56:20.518 UTC [sccapi] deploySysCC -> INFO 014 system chaincode lscc/(github.com/hyperledger/fabric/core/scc/lscc) deployed
+2019-10-18 14:56:20.519 UTC [cscc] Init -> INFO 015 Init CSCC
+2019-10-18 14:56:20.519 UTC [sccapi] deploySysCC -> INFO 016 system chaincode cscc/(github.com/hyperledger/fabric/core/scc/cscc) deployed
+2019-10-18 14:56:20.519 UTC [qscc] Init -> INFO 017 Init QSCC
+2019-10-18 14:56:20.519 UTC [sccapi] deploySysCC -> INFO 018 system chaincode qscc/(github.com/hyperledger/fabric/core/scc/qscc) deployed
+2019-10-18 14:56:20.519 UTC [sccapi] deploySysCC -> INFO 019 system chaincode (+lifecycle,github.com/hyperledger/fabric/core/chaincode/lifecycle) disabled
+2019-10-18 14:56:20.519 UTC [nodeCmd] serve -> INFO 01a Deployed system chaincodes
+2019-10-18 14:56:20.521 UTC [discovery] NewService -> INFO 01b Created with config TLS: false, authCacheMaxSize: 1000, authCachePurgeRatio: 0.750000
+2019-10-18 14:56:20.521 UTC [nodeCmd] registerDiscoveryService -> INFO 01c Discovery service activated
+2019-10-18 14:56:20.521 UTC [nodeCmd] serve -> INFO 01d Starting peer with ID=[name:"peer1" ], network ID=[dev], address=[192.168.1.15:7051]
+2019-10-18 14:56:20.522 UTC [nodeCmd] serve -> INFO 01e Started peer with ID=[name:"peer1" ], network ID=[dev], address=[192.168.1.15:7051]
+###################################################
+====>Make sure there are no errors at /home/ubuntu/hyperledger_ws/fabric/org1/peer1/peer.log !!!
+
+----
+
+
+.3.2. start peer2
+[source, bash]
+----
+./15_start_peer.sh  org1 peer2 192.168.1.17
+
+Current PEER_NAME:
+Switching PEER_NAME for Org = org1
+Setting PORT_NUMBER_BASE=7050
+Identity=peer2
+##################################
+PEER_NAME: peer2
+IDENTITY: peer2
+CORE_PEER_ID: peer2
+##################################
+########## LIST ENV VARS ################
+FABRIC_CA_SERVER_CONFIG_FILE=fabric-ca-server-config.yaml
+FABRIC_VERSION=1.4.0
+FABRIC_LOGGING_SPEC=INFO
+FABRIC_CA_CLIENT_CONFIG_FILE=fabric-ca-client-config.yaml
+FABRIC_USER=ubuntu
+FABRIC_CA_SERVER_HOME=/home/ubuntu/hyperledger_ws/ca-server
+BASE_FABRIC_CA_CLIENT_HOME=/home/ubuntu/hyperledger_ws/ca-client
+FABRIC_CFG_PATH=/home/ubuntu/hyperledger_ws/fabric/org1/peer2
+FABRIC_CA_SERVER_LOG=/home/ubuntu/hyperledger_ws/ca-server/ca-server.log
+#########################################
+#########################################
+CORE_PEER_CHAINCODELISTENADDRESS=192.168.1.17:7052
+CORE_PEER_LOCALMSPID=Org1MSP
+CORE_PEER_LISTENADDRESS=192.168.1.17:7051
+CORE_PEER_MSPCONFIGPATH=/home/ubuntu/hyperledger_ws/ca-client/org1/peer2/msp
+CORE_PEER_ID=peer2
+CORE_PEER_EVENTS_ADDRESS=192.168.1.17:7053
+CORE_PEER_FILESYSTEM_PATH=/var/ledgers/org1/peer2/ledger
+CORE_PEER_ADDRESS=192.168.1.17:7051
+CORE_PEER_GOSSIP_BOOTSTRAP=192.168.1.17:7051
+#########################################
+################################################################
+CRYPTO_CONFIG_ROOT_FOLDER: /home/ubuntu/hyperledger_ws/ca-client
+CORE_PEER_MSPCONFIGPATH: /home/ubuntu/hyperledger_ws/ca-client/org1/peer2/msp
+FABRIC_CFG_PATH: /home/ubuntu/hyperledger_ws/fabric/org1/peer2
+MSP_ID: Org1
+CORE_PEER_LOCALMSPID: Org1MSP
+NODECHAINCODE: /home/ubuntu/hyperledger_ws/fabric/org1/peer2/nodechaincode
+CORE_PEER_FILESYSTEM_PATH: /var/ledgers/org1/peer2/ledger
+CORE_PEER_LISTENADDRESS: 192.168.1.17:7051
+CORE_PEER_ADDRESS: 192.168.1.17:7051
+CORE_PEER_CHAINCODELISTENADDRESS: 192.168.1.17:7052
+CORE_PEER_EVENTS_ADDRESS: 192.168.1.17:7053
+CORE_PEER_GOSSIP_BOOTSTRAP: 192.168.1.17:7051
+PEER_LOGS: /home/ubuntu/hyperledger_ws/fabric/org1/peer2
+##########################################################################
+====>PLEASE Check Peer Log under /home/ubuntu/hyperledger_ws/fabric/org1/peer2/peer.log
+###################################################
+2019-10-18 14:56:24.273 UTC [nodeCmd] serve -> INFO 001 Starting peer:
+ Version: 1.4.0
+ Commit SHA: d700b43
+ Go version: go1.11.1
+ OS/Arch: linux/amd64
+ Chaincode:
+  Base Image Version: 0.4.14
+  Base Docker Namespace: hyperledger
+  Base Docker Label: org.hyperledger.fabric
+  Docker Namespace: hyperledger
+2019-10-18 14:56:24.274 UTC [ledgermgmt] initialize -> INFO 002 Initializing ledger mgmt
+2019-10-18 14:56:24.274 UTC [kvledger] NewProvider -> INFO 003 Initializing ledger provider
+2019-10-18 14:56:26.942 UTC [kvledger] NewProvider -> INFO 004 ledger provider Initialized
+###################################################
+====>Make sure there are no errors at /home/ubuntu/hyperledger_ws/fabric/org1/peer2/peer.log !!!
+
+----
+
+
+Finally, lets join the peers into the network.
+
+.3. Join peers on the Hyperledger Blockchain
+
+Go back to the `msp-admin-org1` host and run the following script for both peers.
+
+.3.1. Join peer1
+
+[source, bash]
+----
+$  ./16_join_channel.sh mychannelid   org1   peer1   192.168.1.15
+
+====>Using peer IP: 192.168.1.15
+====>Using orderer IP: 192.168.1.14
+====>Using Port Number 7050
+ORDERER_ADDRESS: 192.168.1.14:7050
+################## setting env vars ############################
+current folder: /home/ubuntu/hyperledger_ws/setup_scripts
+################################################################
+CRYPTO_CONFIG_ROOT_FOLDER: /home/ubuntu/hyperledger_ws/setup_scripts/../ca-client
+CORE_PEER_MSPCONFIGPATH: /home/ubuntu/hyperledger_ws/setup_scripts/../ca-client/org1/admin/msp
+FABRIC_CFG_PATH: /home/ubuntu/hyperledger_ws/fabric/org1/peer1
+MSP_ID: Org1
+CORE_PEER_LOCALMSPID: Org1MSP
+NODECHAINCODE: /home/ubuntu/hyperledger_ws/fabric/org1/peer1/nodechaincode
+CORE_PEER_FILESYSTEM_PATH: /var/ledgers/org1/peer1/ledger
+CORE_PEER_LISTENADDRESS: 192.168.1.15:7051
+CORE_PEER_ADDRESS: 192.168.1.15:7051
+CORE_PEER_CHAINCODELISTENADDRESS: 192.168.1.15:7052
+CORE_PEER_EVENTS_ADDRESS: 192.168.1.15:7053
+CORE_PEER_GOSSIP_BOOTSTRAP: 192.168.1.15:7051
+PEER_LOGS: /home/ubuntu/hyperledger_ws/fabric/org1/peer1
+##########################################################################
+################################################################
+2019-10-18 14:59:45.126 UTC [channelCmd] InitCmdFactory -> INFO 001 Endorser and orderer connections initialized
+2019-10-18 14:59:45.132 UTC [cli.common] readBlock -> INFO 002 Received block: 0
+################################################################
+2019-10-18 14:59:45.221 UTC [channelCmd] InitCmdFactory -> INFO 001 Endorser and orderer connections initialized
+2019-10-18 14:59:45.313 UTC [channelCmd] executeJoin -> INFO 002 Successfully submitted proposal to join channel
+################################################################
+Check orderer and peer logs!
+################################################################
+
+----
+
+If you follow the log at peer1-org1  you can see the following messages when the
+join command is executed.
+
+[source, bash]
+----
+$ tail -f /home/ubuntu/hyperledger_ws/fabric/org1/peer1/peer.log
+
+2019-10-18 14:59:45.255 UTC [endorser] callChaincode -> INFO 01f [][fd70b2a9] Entry chaincode: name:"cscc"
+2019-10-18 14:59:45.257 UTC [ledgermgmt] CreateLedger -> INFO 020 Creating ledger [mychannelid] with genesis block
+2019-10-18 14:59:45.261 UTC [fsblkstorage] newBlockfileMgr -> INFO 021 Getting block information from block storage
+2019-10-18 14:59:45.288 UTC [kvledger] CommitWithPvtData -> INFO 022 [mychannelid] Committed block [0] with 1 transaction(s) in 22ms (state_validation=1ms block_commit=6ms state_commit=12ms)
+2019-10-18 14:59:45.290 UTC [ledgermgmt] CreateLedger -> INFO 023 Created ledger [mychannelid] with genesis block
+2019-10-18 14:59:45.296 UTC [gossip.gossip] JoinChan -> INFO 024 Joining gossip network of channel mychannelid with 1 organizations
+2019-10-18 14:59:45.297 UTC [gossip.gossip] learnAnchorPeers -> INFO 025 No configured anchor peers of Org1MSP for channel mychannelid to learn about
+2019-10-18 14:59:45.308 UTC [gossip.state] NewGossipStateProvider -> INFO 026 Updating metadata information, current ledger sequence is at = 0, next expected block is = 1
+2019-10-18 14:59:45.313 UTC [sccapi] deploySysCC -> INFO 027 system chaincode lscc/mychannelid(github.com/hyperledger/fabric/core/scc/lscc) deployed
+2019-10-18 14:59:45.313 UTC [cscc] Init -> INFO 028 Init CSCC
+2019-10-18 14:59:45.313 UTC [sccapi] deploySysCC -> INFO 029 system chaincode cscc/mychannelid(github.com/hyperledger/fabric/core/scc/cscc) deployed
+2019-10-18 14:59:45.313 UTC [qscc] Init -> INFO 02a Init QSCC
+2019-10-18 14:59:45.313 UTC [sccapi] deploySysCC -> INFO 02b system chaincode qscc/mychannelid(github.com/hyperledger/fabric/core/scc/qscc) deployed
+2019-10-18 14:59:45.313 UTC [sccapi] deploySysCC -> INFO 02c system chaincode (+lifecycle,github.com/hyperledger/fabric/core/chaincode/lifecycle) disabled
+2019-10-18 14:59:45.314 UTC [endorser] callChaincode -> INFO 02d [][fd70b2a9] Exit chaincode: name:"cscc"  (58ms)
+2019-10-18 14:59:45.314 UTC [comm.grpc.server] 1 -> INFO 02e unary call completed {"grpc.start_time": "2019-10-18T14:59:45.25Z", "grpc.service": "protos.Endorser", "grpc.method": "ProcessProposal", "grpc.peer_address": "192.168.1.11:57558", "grpc.code": "OK", "grpc.call_duration": "64.061313ms"}
+2019-10-18 14:59:51.310 UTC [gossip.election] beLeader -> INFO 02f a25e2a27647deea5420a8a458cc0b7ba55da516ec060cf45a7a9611eb764b2a6 : Becoming a leader
+2019-10-18 14:59:51.310 UTC [gossip.service] func1 -> INFO 030 Elected as a leader, starting delivery service for channel mychannelid
+
+----
+
+
+.3.2. Join peer2
+
+Execute the join commmand for peer2-org1.
+
+[source, bash]
+----
+$  ./16_join_channel.sh mychannelid   org1   peer2   192.168.1.17
+
+====>Using peer IP: 192.168.1.17
+====>Using orderer IP: 192.168.1.14
+====>Using Port Number 7050
+ORDERER_ADDRESS: 192.168.1.14:7050
+################## setting env vars ############################
+current folder: /home/ubuntu/hyperledger_ws/setup_scripts
+################################################################
+CRYPTO_CONFIG_ROOT_FOLDER: /home/ubuntu/hyperledger_ws/setup_scripts/../ca-client
+CORE_PEER_MSPCONFIGPATH: /home/ubuntu/hyperledger_ws/setup_scripts/../ca-client/org1/admin/msp
+FABRIC_CFG_PATH: /home/ubuntu/hyperledger_ws/fabric/org1/peer2
+MSP_ID: Org1
+CORE_PEER_LOCALMSPID: Org1MSP
+NODECHAINCODE: /home/ubuntu/hyperledger_ws/fabric/org1/peer2/nodechaincode
+CORE_PEER_FILESYSTEM_PATH: /var/ledgers/org1/peer2/ledger
+CORE_PEER_LISTENADDRESS: 192.168.1.17:7051
+CORE_PEER_ADDRESS: 192.168.1.17:7051
+CORE_PEER_CHAINCODELISTENADDRESS: 192.168.1.17:7052
+CORE_PEER_EVENTS_ADDRESS: 192.168.1.17:7053
+CORE_PEER_GOSSIP_BOOTSTRAP: 192.168.1.17:7051
+PEER_LOGS: /home/ubuntu/hyperledger_ws/fabric/org1/peer2
+##########################################################################
+################################################################
+2019-10-18 15:03:37.691 UTC [channelCmd] InitCmdFactory -> INFO 001 Endorser and orderer connections initialized
+2019-10-18 15:03:37.697 UTC [cli.common] readBlock -> INFO 002 Received block: 0
+################################################################
+2019-10-18 15:03:37.766 UTC [channelCmd] InitCmdFactory -> INFO 001 Endorser and orderer connections initialized
+2019-10-18 15:03:38.778 UTC [channelCmd] executeJoin -> INFO 002 Successfully submitted proposal to join channel
+################################################################
+Check orderer and peer logs!
+################################################################
+
+----
+
+
+If you follow the log at peer2-org1 you see the following output.
+
+[source, bash]
+----
+$ tail -f /home/ubuntu/hyperledger_ws/fabric/org1/peer2/peer.log
+
+2019-10-18 15:03:37.845 UTC [endorser] callChaincode -> INFO 01f [][45151b0b] Entry chaincode: name:"cscc"
+2019-10-18 15:03:37.847 UTC [ledgermgmt] CreateLedger -> INFO 020 Creating ledger [mychannelid] with genesis block
+2019-10-18 15:03:38.079 UTC [fsblkstorage] newBlockfileMgr -> INFO 021 Getting block information from block storage
+2019-10-18 15:03:38.605 UTC [kvledger] CommitWithPvtData -> INFO 022 [mychannelid] Committed block [0] with 1 transaction(s) in 412ms (state_validation=3ms block_commit=325ms state_commit=50ms)
+2019-10-18 15:03:38.638 UTC [ledgermgmt] CreateLedger -> INFO 023 Created ledger [mychannelid] with genesis block
+2019-10-18 15:03:38.646 UTC [gossip.gossip] JoinChan -> INFO 024 Joining gossip network of channel mychannelid with 1 organizations
+2019-10-18 15:03:38.646 UTC [gossip.gossip] learnAnchorPeers -> INFO 025 No configured anchor peers of Org1MSP for channel mychannelid to learn about
+2019-10-18 15:03:38.753 UTC [gossip.state] NewGossipStateProvider -> INFO 026 Updating metadata information, current ledger sequence is at = 0, next expected block is = 1
+2019-10-18 15:03:38.778 UTC [sccapi] deploySysCC -> INFO 027 system chaincode lscc/mychannelid(github.com/hyperledger/fabric/core/scc/lscc) deployed
+2019-10-18 15:03:38.778 UTC [cscc] Init -> INFO 028 Init CSCC
+2019-10-18 15:03:38.779 UTC [sccapi] deploySysCC -> INFO 029 system chaincode cscc/mychannelid(github.com/hyperledger/fabric/core/scc/cscc) deployed
+2019-10-18 15:03:38.779 UTC [qscc] Init -> INFO 02a Init QSCC
+2019-10-18 15:03:38.779 UTC [sccapi] deploySysCC -> INFO 02b system chaincode qscc/mychannelid(github.com/hyperledger/fabric/core/scc/qscc) deployed
+2019-10-18 15:03:38.780 UTC [sccapi] deploySysCC -> INFO 02c system chaincode (+lifecycle,github.com/hyperledger/fabric/core/chaincode/lifecycle) disabled
+2019-10-18 15:03:38.780 UTC [endorser] callChaincode -> INFO 02d [][45151b0b] Exit chaincode: name:"cscc"  (934ms)
+2019-10-18 15:03:38.780 UTC [comm.grpc.server] 1 -> INFO 02e unary call completed {"grpc.start_time": "2019-10-18T15:03:37.817Z", "grpc.service": "protos.Endorser", "grpc.method": "ProcessProposal", "grpc.peer_address": "192.168.1.11:41396", "grpc.code": "OK", "grpc.call_duration": "962.899697ms"}
+2019-10-18 15:03:44.756 UTC [gossip.election] beLeader -> INFO 02f 5b3640757767dc7ad5bc4eb538f4406c85d4fc56407c530f7f19b24540eb53a7 : Becoming a leader
+2019-10-18 15:03:44.756 UTC [gossip.service] func1 -> INFO 030 Elected as a leader, starting delivery service for channel mychannelid
+----
+
+
+If all scripts run without errors, then your Hyperledger Blockchain is fully deployed now.
