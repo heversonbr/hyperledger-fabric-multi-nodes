@@ -46,7 +46,10 @@ Server Started ... Logs available at /home/ubuntu/hyperledger_ws/ca-server/ca-se
 ---------------------------- /home/ubuntu/hyperledger_ws/ca-server/ca-server.log -----------------------------------
 ----
 
-You can check all the crypto material created as shown above.
+During the start of the CA-root server a series of cryptographic material is create.
+For instance, a pair of keys (private and public keys) for certificate issuing, CA certificate,
+and revocation keys. These material is created and stored in the `$HYPERLEDGER_HOME/ca-server`
+directory. You can check all these crypto material as shown above.
 
 [source, bash]
 ----
@@ -64,13 +67,15 @@ $ tree ../ca-server/
         ├── f0c0cf0e53ddea32fa2cf6db05791ce5a88341f9c6c4b2952b65b325a5f4fd51_sk
         ├── IssuerRevocationPrivateKey
         └── IssuerSecretKey
-
 2 directories, 9 files
-
 ----
 
 
 .2. Enroll the bootstrap identity of our CA server
+
+The bootstrap identity is the identity through which the system administrator will
+use to manage the system. With this identity all the other entities will be created,
+including the local administrator for each organization, as will see later.
 
 [source, bash]
 ----
@@ -98,6 +103,32 @@ Name: admin, Type: client, Affiliation: , Max Enrollments: -1, Attributes: [{Nam
 ubuntu@msp-root-org1:~/hyperledger_ws/setup_scripts$
 
 ----
+
+After enrolling the bootstrap identity you can check the crypto material created
+to this identity in the directory `$HYPERLEDGER_HOME\ca-client` as shown below.
+
+[source, bash]
+----
+$ tree ../ca-client/
+../ca-client/
+└── caserver
+    └── admin
+        ├── fabric-ca-client-config.yaml
+        └── msp
+            ├── cacerts
+            │   └── 192-168-1-10-7054.pem
+            ├── IssuerPublicKey
+            ├── IssuerRevocationPublicKey
+            ├── keystore
+            │   └── 9ef883417656903380a4edc39d79eb91519196446bf8496efdc40ff050824fc8_sk
+            ├── signcerts
+            │   └── cert.pem
+            └── user
+7 directories, 6 files
+----
+
+
+
 
 
 .3. Register the organization's admin into our CA server
@@ -193,7 +224,9 @@ We deploy one host for each organization (i.e., msp-admin-org1 and msp-admin-ord
 Go to the `msp-admin-org1` host and run the following command from the
 `setup_scripts` directory.
 
-:NOTE: You might be required to confirm a ssh connection among nodes, because during the setup of a MSP some crypto material is copied from the CA-Root, such as the Root certificate.
+:NOTE: You might be required to confirm a ssh connection among nodes, because \
+during the setup of a MSP some crypto material is copied from the CA-Root, such \
+as the Root certificate.
 
 [source, bash]
 ----
@@ -243,6 +276,9 @@ Name: org1-admin, Type: client, Affiliation: org1, Max Enrollments: -1, Attribut
 ----
 
 .2. Check the MSP directory at msp-admin-org1
+
+The MSP directory is the directory where the crypto material (keys and certificates)
+are stored in the CA-client.
 
 [source, bash]
 ----

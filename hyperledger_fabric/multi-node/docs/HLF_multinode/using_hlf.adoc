@@ -1,6 +1,20 @@
 == Using Hyperledger Fabric to deploy smart-contracts
 
-Go to ~/hyperledger_ws/chaincode_examples/example1/scripts.
+Now lets deploy our smart-contracts (chaincode) in the Blockchain.
+Go to the directory ~/hyperledger_ws/chaincode_examples/example1/.
+In this directory you have two sub-directories: `scripts` and `src`.
+The `script` directory consists of a series of scripts we will use here to install,
+instantiate, invoke and query a chaincode on the Blockchain.
+The `src` directory contains the smart-contract used in this example.
+Note that, this section does not aim at teaching the reader how to develop a smart-contrat.
+Instead, by the end of this section we expect to show how to use (install, invoke, etc)
+a simple chaincode.
+
+[[using_chaincode]]
+The chaincode used in this first example can be found here in the <<appendix:chaincode, appendix D>>.
+
+
+
 
 .1. Install chaincode peer1-org1
 

@@ -1,7 +1,14 @@
-/*
-Copyright IBM Corp. 2016 All Rights Reserved.
-*/
+== Appendix E - Chaincode (smart-contrat)
 
+[[appendix:chaincode]]
+=== Chaincode used in the example1
+
+:TODO: add an explanation of the code. such as the interface to be implemented. \
+and the main methods. including the get and put methods used to write and read from\
+the Blockchain.
+
+[source, go]
+----
 package main
 
 import (
@@ -195,3 +202,7 @@ func main() {
 		fmt.Printf("Error starting Simple chaincode: %s", err)
 	}
 }
+----
+
+
+<<using_chaincode, [back]>>

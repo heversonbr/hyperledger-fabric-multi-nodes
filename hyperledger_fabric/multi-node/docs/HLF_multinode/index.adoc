@@ -11,11 +11,15 @@ include::config_hlf.adoc[]
 
 include::using_hlf.adoc[]
 
+include::appendixA.adoc[]
 
-//include::appendixA.adoc[]
+include::appendixB.adoc[]
 
-//include::appendixB.adoc[]
+include::appendixC.adoc[]
 
-//include::appendixC.adoc[]
 
-//include::appendixD.adoc[]
+
+include::appendixD.adoc[]
+
+
+//include::appendixE.adoc[]

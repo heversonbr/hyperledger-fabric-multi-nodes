@@ -9,29 +9,29 @@
 |=========================================================
 |script/host-path  | ca-admin/ca-server | ca-admin/ca-client | org-msp/ca-client
 
-| start-ca-server.sh | /home/ubuntu/hyperledger_ws/ca-server/fabric-ca-server-config.yaml   | |
+| 01_start_ca_server.sh | /home/ubuntu/hyperledger_ws/ca-server/fabric-ca-server-config.yaml   | |
 | | ca-server/ca-cert.pem (*CA certificate*)| |
 | | ca-server/IssuerPublicKey (*Issuer pub key*)| |
 | | ca-server/msp/keystore/IssuerSecretKey (*Issuer priv key*)| |
 | | ca-server/IssuerRevocationPublicKey  | |
 | | ca-server/msp/keystore/IssuerRevocationPrivateKey | |
 
-| enroll_bootstrap_identity.sh |  |  |
+| 02_enroll_bootstrap_identity.sh |  |  |
 | | | ca-client/caserver/admin/msp/signcerts/cert.pem
 (*client certificate*)  |
 | | | ca-client/caserver/admin/msp/cacerts/192-168-1-10-7054.pem (*ca-root certificate*)   |
 | | | ca-client/caserver/admin/msp/IssuerPublicKey (*Issuer public key*) |
 | | | ca-client/caserver/admin/msp/IssuerRevocationPublicKey (*Issuer revocation public key*) |
 
-| register_admin.sh | n/a | n/a | n/a
+| 03_register_admin.sh | n/a | n/a | n/a
 
-| enroll_admin.sh 'acme' | | | /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/signcerts/cert.pem (*client certificate*)
-| | | |  /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/cacerts/192-168-1-10-7054.pem (*root CA certificate*)
-| | | | /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/IssuerPublicKey (*Issuer public key*)
-| | | | /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/IssuerRevocationPublicKey  (*Issuer revocation public key*)
+| 04_enroll_admin_and_setup_msp.sh | | | /home/ubuntu/hyperledger_ws/ca-client/org1/admin/msp/signcerts/cert.pem (*client certificate*)
+| | | |  /home/ubuntu/hyperledger_ws/ca-client/org1/admin/msp/cacerts/192-168-1-10-7054.pem (*root CA certificate*)
+| | | | /home/ubuntu/hyperledger_ws/ca-client/org1/admin/msp/IssuerPublicKey (*Issuer public key*)
+| | | | /home/ubuntu/hyperledger_ws/ca-client/org1/admin/msp/IssuerRevocationPublicKey  (*Issuer revocation public key*)
 
-| ./setup_admin_certs.sh acme ca-admin | | | creates /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/admincerts
-| | | |  scp ca-admin:/home/ubuntu/hyperledger_ws/ca-client/caserver/admin/msp/signcerts/* /home/ubuntu/hyperledger_ws/ca-client/acme/admin/msp/admincerts
-| | | | scp ca-admin:/home/ubuntu/hyperledger_ws/ca-server/ca-cert.pem /home/ubuntu/hyperledger_ws/ca-client/acme/admin/../msp/cacerts
+| | | |  /home/ubuntu/hyperledger_ws/ca-client/org1/admin/msp/admincerts
+| | | |  scp ca-admin:/home/ubuntu/hyperledger_ws/ca-client/caserver/admin/msp/signcerts/* /home/ubuntu/hyperledger_ws/ca-client/org1/admin/msp/admincerts
+| | | | scp ca-admin:/home/ubuntu/hyperledger_ws/ca-server/ca-cert.pem /home/ubuntu/hyperledger_ws/ca-client/org1/admin/../msp/cacerts
 
 |=========================================================
