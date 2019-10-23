@@ -1,7 +1,3 @@
-/*
-Copyright IBM Corp. 2016 All Rights Reserved.
-*/
-
 package main
 
 import (
@@ -9,7 +5,6 @@ import (
 	"strconv"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-
 	pb "github.com/hyperledger/fabric/protos/peer"
 )
 

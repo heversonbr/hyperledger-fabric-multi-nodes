@@ -1,0 +1,25 @@
+= Deploy and use Hyperledger Fabric on multiple nodes - a simple path.
+
+
+include::intro.adoc[]
+
+include::host_deploy.adoc[]
+
+include::install_fabric.adoc[]
+
+include::config_hlf.adoc[]
+
+include::using_hlf.adoc[]
+
+include::appendixA.adoc[]
+
+include::appendixB.adoc[]
+
+include::appendixC.adoc[]
+
+
+
+include::appendixD.adoc[]
+
+
+//include::appendixE.adoc[]

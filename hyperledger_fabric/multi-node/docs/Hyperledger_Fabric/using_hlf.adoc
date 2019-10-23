@@ -1,0 +1,193 @@
+== Using Hyperledger Fabric to deploy smart-contracts
+
+Now lets deploy our smart-contracts (chaincode) in the Blockchain.
+Go to the directory ~/hyperledger_ws/chaincode_examples/example1/.
+In this directory you have two sub-directories: `scripts` and `src`.
+The `script` directory consists of a series of scripts we will use here to install,
+instantiate, invoke and query a chaincode on the Blockchain.
+The `src` directory contains the smart-contract used in this example.
+Note that, this section does not aim at teaching the reader how to develop a smart-contrat.
+Instead, by the end of this section we expect to show how to use (install, invoke, etc)
+a simple chaincode.
+
+[[using_chaincode]]
+The chaincode used in this first example can be found here in the <<appendix:chaincode, appendix D>>.
+
+
+
+
+.1. Install chaincode peer1-org1
+
+[source, bash]
+----
+$ ./17_validate_1_install_cc_peer1.sh org1 peer1
+
+====> 1 Installing chaincode (may fail if CC/version already there) on peer1
+ORG_NAME: org1, PEER_NAME: peer1, PEER_IP_ADDRESS: 192.168.1.15 , PEER_BASE_PORT: 7050, IDENTITY: admin
+##########################################################################
+CRYPTO_CONFIG_ROOT_FOLDER: /home/ubuntu/hyperledger_ws/ca-client
+CORE_PEER_MSPCONFIGPATH: /home/ubuntu/hyperledger_ws/ca-client/org1/admin/msp
+FABRIC_CFG_PATH: /home/ubuntu/hyperledger_ws/fabric/org1/peer1
+MSP_ID: Org1
+CORE_PEER_LOCALMSPID: Org1MSP
+NODECHAINCODE: /home/ubuntu/hyperledger_ws/fabric/org1/peer1/chaincode_example/nodechaincode
+CORE_PEER_FILESYSTEM_PATH: /var/ledgers/org1/peer1/ledger
+CORE_PEER_LISTENADDRESS: 192.168.1.15:7051
+CORE_PEER_ADDRESS: 192.168.1.15:7051
+CORE_PEER_CHAINCODELISTENADDRESS: 192.168.1.15:7052
+CORE_PEER_EVENTS_ADDRESS: 192.168.1.15:7053
+CORE_PEER_GOSSIP_BOOTSTRAP: 192.168.1.15:7051
+PEER_LOGS: /home/ubuntu/hyperledger_ws/fabric/org1/peer1
+##########################################################################
+peer chaincode install  -n gocc -p example1/ -v 1.0
+2019-10-10 09:19:26.965 UTC [chaincodeCmd] checkChaincodeCmdParams -> INFO 001 Using default escc
+2019-10-10 09:19:26.965 UTC [chaincodeCmd] checkChaincodeCmdParams -> INFO 002 Using default vscc
+2019-10-10 09:19:27.333 UTC [chaincodeCmd] install -> INFO 003 Installed remotely response:<status:200 payload:OK >
+
+----
+
+.2. Install chaincode peer2-org1
+
+[source, bash]
+----
+$ ./17_validate_2_install_cc_peer2.sh org1 peer2
+
+====> 1 Installing chaincode (may fail if CC/version already there) on peer2
+ORG_NAME: org1, PEER_NAME: peer2, PEER_IP_ADDRESS: 192.168.1.17 , PEER_BASE_PORT: 7050, IDENTITY: admin
+##########################################################################
+CRYPTO_CONFIG_ROOT_FOLDER: /home/ubuntu/hyperledger_ws/ca-client
+CORE_PEER_MSPCONFIGPATH: /home/ubuntu/hyperledger_ws/ca-client/org1/admin/msp
+FABRIC_CFG_PATH: /home/ubuntu/hyperledger_ws/fabric/org1/peer2
+MSP_ID: Org1
+CORE_PEER_LOCALMSPID: Org1MSP
+NODECHAINCODE: /home/ubuntu/hyperledger_ws/fabric/org1/peer2/chaincode_example/nodechaincode
+CORE_PEER_FILESYSTEM_PATH: /var/ledgers/org1/peer2/ledger
+CORE_PEER_LISTENADDRESS: 192.168.1.17:7051
+CORE_PEER_ADDRESS: 192.168.1.17:7051
+CORE_PEER_CHAINCODELISTENADDRESS: 192.168.1.17:7052
+CORE_PEER_EVENTS_ADDRESS: 192.168.1.17:7053
+CORE_PEER_GOSSIP_BOOTSTRAP: 192.168.1.17:7051
+PEER_LOGS: /home/ubuntu/hyperledger_ws/fabric/org1/peer2
+##########################################################################
+peer chaincode install  -n gocc -p example1/ -v 1.0
+2019-10-10 09:24:17.709 UTC [chaincodeCmd] checkChaincodeCmdParams -> INFO 001 Using default escc
+2019-10-10 09:24:17.709 UTC [chaincodeCmd] checkChaincodeCmdParams -> INFO 002 Using default vscc
+2019-10-10 09:24:18.045 UTC [chaincodeCmd] install -> INFO 003 Installed remotely response:<status:200 payload:"OK" >
+
+----
+
+.3. Instantiate chaincode
+
+[source, bash]
+----
+$ ./17_validate_3_instantiate_cc_peer1.sh org1 peer1
+
+====> 2   Instantiating chaincode (may fail if CC/version already instantiated) on peer1
+ORG_NAME: org1, PEER_NAME: peer1, PEER_IP_ADDRESS: 192.168.1.15 , PEER_BASE_PORT: 7050, IDENTITY: admin
+##########################################################################
+CRYPTO_CONFIG_ROOT_FOLDER: /home/ubuntu/hyperledger_ws/ca-client
+CORE_PEER_MSPCONFIGPATH: /home/ubuntu/hyperledger_ws/ca-client/org1/admin/msp
+FABRIC_CFG_PATH: /home/ubuntu/hyperledger_ws/fabric/org1/peer1
+MSP_ID: Org1
+CORE_PEER_LOCALMSPID: Org1MSP
+NODECHAINCODE: /home/ubuntu/hyperledger_ws/fabric/org1/peer1/chaincode_example/nodechaincode
+CORE_PEER_FILESYSTEM_PATH: /var/ledgers/org1/peer1/ledger
+CORE_PEER_LISTENADDRESS: 192.168.1.15:7051
+CORE_PEER_ADDRESS: 192.168.1.15:7051
+CORE_PEER_CHAINCODELISTENADDRESS: 192.168.1.15:7052
+CORE_PEER_EVENTS_ADDRESS: 192.168.1.15:7053
+CORE_PEER_GOSSIP_BOOTSTRAP: 192.168.1.15:7051
+PEER_LOGS: /home/ubuntu/hyperledger_ws/fabric/org1/peer1
+##########################################################################
+peer chaincode instantiate -C mychannelid -n gocc  -v 1.0 -c {"Args":["init","a","100","b","200"]}
+2019-10-10 09:25:44.415 UTC [chaincodeCmd] InitCmdFactory -> INFO 001 Retrieved channel (mychannelid) orderer endpoint: 192.168.1.14:7050
+2019-10-10 09:25:44.417 UTC [chaincodeCmd] checkChaincodeCmdParams -> INFO 002 Using default escc
+2019-10-10 09:25:44.417 UTC [chaincodeCmd] checkChaincodeCmdParams -> INFO 003 Using default vscc
+
+----
+
+
+.4. Query the Blockchain to check the value of assets
+
+[source, bash]
+----
+ubuntu@msp-admin-org1:~/hyperledger_ws/chaincode_examples/example1/deployment$ ./17_validate_4_exec_query_peer2.sh org1 peer2
+====> 4. Querying for value of A on peer2
+ORG_NAME: org1, PEER_NAME: peer2, PEER_IP_ADDRESS: 192.168.1.17 , PEER_BASE_PORT: 7050, IDENTITY: admin
+##########################################################################
+CRYPTO_CONFIG_ROOT_FOLDER: /home/ubuntu/hyperledger_ws/ca-client
+CORE_PEER_MSPCONFIGPATH: /home/ubuntu/hyperledger_ws/ca-client/org1/admin/msp
+FABRIC_CFG_PATH: /home/ubuntu/hyperledger_ws/fabric/org1/peer2
+MSP_ID: Org1
+CORE_PEER_LOCALMSPID: Org1MSP
+NODECHAINCODE: /home/ubuntu/hyperledger_ws/fabric/org1/peer2/chaincode_example/nodechaincode
+CORE_PEER_FILESYSTEM_PATH: /var/ledgers/org1/peer2/ledger
+CORE_PEER_LISTENADDRESS: 192.168.1.17:7051
+CORE_PEER_ADDRESS: 192.168.1.17:7051
+CORE_PEER_CHAINCODELISTENADDRESS: 192.168.1.17:7052
+CORE_PEER_EVENTS_ADDRESS: 192.168.1.17:7053
+CORE_PEER_GOSSIP_BOOTSTRAP: 192.168.1.17:7051
+PEER_LOGS: /home/ubuntu/hyperledger_ws/fabric/org1/peer2
+
+##########################################################################
+peer chaincode query -C mychannelid -n gocc  -c '{'Args':['query','a']}'
+100
+
+----
+
+.5. Make a transaction to invoke a smart-contrat and transfer some assets
+
+[source, bash]
+----
+
+ubuntu@msp-admin-org1:~/hyperledger_ws/chaincode_examples/example1/deployment$ ./17_validate_5_invoke_cc_peer1.sh org1 peer1
+====> 5. Execute invoke on peer1 - Transfer 10 from A=>B
+ORG_NAME: org1, PEER_NAME: peer1, PEER_IP_ADDRESS: 192.168.1.15 , PEER_BASE_PORT: 7050, IDENTITY: admin
+##########################################################################
+CRYPTO_CONFIG_ROOT_FOLDER: /home/ubuntu/hyperledger_ws/ca-client
+CORE_PEER_MSPCONFIGPATH: /home/ubuntu/hyperledger_ws/ca-client/org1/admin/msp
+FABRIC_CFG_PATH: /home/ubuntu/hyperledger_ws/fabric/org1/peer1
+MSP_ID: Org1
+CORE_PEER_LOCALMSPID: Org1MSP
+NODECHAINCODE: /home/ubuntu/hyperledger_ws/fabric/org1/peer1/chaincode_example/nodechaincode
+CORE_PEER_FILESYSTEM_PATH: /var/ledgers/org1/peer1/ledger
+CORE_PEER_LISTENADDRESS: 192.168.1.15:7051
+CORE_PEER_ADDRESS: 192.168.1.15:7051
+CORE_PEER_CHAINCODELISTENADDRESS: 192.168.1.15:7052
+CORE_PEER_EVENTS_ADDRESS: 192.168.1.15:7053
+CORE_PEER_GOSSIP_BOOTSTRAP: 192.168.1.15:7051
+PEER_LOGS: /home/ubuntu/hyperledger_ws/fabric/org1/peer1
+##########################################################################
+peer chaincode invoke -C mychannelid -n gocc  -c '{'Args':['invoke','a','b','10']}'
+2019-10-10 09:30:53.858 UTC [chaincodeCmd] InitCmdFactory -> INFO 001 Retrieved channel (mychannelid) orderer endpoint: 192.168.1.14:7050
+2019-10-10 09:30:53.873 UTC [chaincodeCmd] chaincodeInvokeOrQuery -> INFO 002 Chaincode invoke successful. result: status:200
+----
+
+.6. Query the Blockchain again to check the new value of assets
+
+[source, bash]
+----
+
+$ ./17_validate_6_exec_query_peer2.sh org1 peer2
+
+====> 6.  Querying for value of A in peer2
+ORG_NAME: org1, PEER_NAME: peer2, PEER_IP_ADDRESS: 192.168.1.17 , PEER_BASE_PORT: 7050, IDENTITY: admin
+##########################################################################
+CRYPTO_CONFIG_ROOT_FOLDER: /home/ubuntu/hyperledger_ws/ca-client
+CORE_PEER_MSPCONFIGPATH: /home/ubuntu/hyperledger_ws/ca-client/org1/admin/msp
+FABRIC_CFG_PATH: /home/ubuntu/hyperledger_ws/fabric/org1/peer2
+MSP_ID: Org1
+CORE_PEER_LOCALMSPID: Org1MSP
+NODECHAINCODE: /home/ubuntu/hyperledger_ws/fabric/org1/peer2/chaincode_example/nodechaincode
+CORE_PEER_FILESYSTEM_PATH: /var/ledgers/org1/peer2/ledger
+CORE_PEER_LISTENADDRESS: 192.168.1.17:7051
+CORE_PEER_ADDRESS: 192.168.1.17:7051
+CORE_PEER_CHAINCODELISTENADDRESS: 192.168.1.17:7052
+CORE_PEER_EVENTS_ADDRESS: 192.168.1.17:7053
+CORE_PEER_GOSSIP_BOOTSTRAP: 192.168.1.17:7051
+PEER_LOGS: /home/ubuntu/hyperledger_ws/fabric/org1/peer2
+##########################################################################
+peer chaincode query -C mychannelid -n gocc  -c '{'Args':['query','a']}'
+90
+
+----
