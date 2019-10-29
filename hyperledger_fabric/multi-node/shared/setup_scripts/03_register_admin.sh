@@ -26,22 +26,31 @@ PASS=$3
 ORG=$4
 AFFILIATION=$5
 
-ATTRIBUTES='"hf.Registrar.Roles=peer,user,client","hf.AffiliationMgr=true","hf.Revoker=true"'
-ATTRIBUTES_ORDERER='"hf.Registrar.Roles=orderer"'
-
+################################################################################################
 # Set ca-client variable
 SUBDIR=caserver/admin
-echo "current FABRIC_CA_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME"
-export FABRIC_CA_CLIENT_HOME=$BASE_FABRIC_CA_CLIENT_HOME/$SUBDIR
-echo "now FABRIC_CA_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME"
 
+. ./set-ca-client.sh  caserver admin
+echo "checking FABRIC_CA_CLIENT_HOME = $FABRIC_CA_CLIENT_HOME"
+
+# previous without set-ca-client.sh: 
+#echo "current FABRIC_CA_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME"
+#export FABRIC_CA_CLIENT_HOME=$BASE_FABRIC_CA_CLIENT_HOME/$SUBDIR
+#echo "now FABRIC_CA_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME"
+
+################################################################################################
+# set attributes 
+
+ATTRIBUTES='"hf.Registrar.Roles=peer,user,client","hf.AffiliationMgr=true","hf.Revoker=true"'
+ATTRIBUTES_ORDERER='"hf.Registrar.Roles=orderer"'
 
 if [ "$NAME" == "orderer-admin" ]; then
     echo "registering an orderer , setting attributes"
     ATTRIBUTES=$ATTRIBUTES_ORDERER
 fi
-
+################################################################################################
 echo "Registering: $NAME"
 fabric-ca-client register --id.type $TYPE --id.name $NAME --id.secret $PASS --id.affiliation $AFFILIATION --id.attrs $ATTRIBUTES
 
 echo "NOTE:  inform the user <$NAME> and password <$PASS> to the admin of the organization <$ORG> (this information is also required to enroll organization's clients)"
+################################################################################################

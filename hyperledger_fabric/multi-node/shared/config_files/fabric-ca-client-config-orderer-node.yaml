@@ -3,7 +3,7 @@
 #   Orderer Client YAML file 
 #   Changes to the CSR
 #############################################################################
-# File originally at: 
+# original at: 
 # ../setup/config/multi-org-ca/yaml.0/identities/orderer/fabric-ca-client-config.yaml
 #
 #############################################################################
@@ -39,7 +39,7 @@ csr:
       O:  orderer
       OU: 
   hosts:
-    - ordering-0
+    - orderer-node
     - localhost
 
 #############################################################################
@@ -49,7 +49,7 @@ id:
   name:
   type: user
   affiliation: orderer
-  maxenrollments: 2
+  maxenrollments: 5
   attributes:
 
 #############################################################################

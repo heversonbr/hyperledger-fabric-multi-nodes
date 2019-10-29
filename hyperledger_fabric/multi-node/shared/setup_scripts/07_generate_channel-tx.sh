@@ -13,12 +13,15 @@
 
 # this is important for all orderer related scripts (the base FABRIC_CFG_PATH=$HYPERLEDGER_HOME/fabric)
 # export FABRIC_CFG_PATH=$FABRIC_CFG_PATH/orderer
-
+################################################################################################
 PROFILE=MyChannelProfile 
 OUTPUT_CHANNEL=$FABRIC_CFG_PATH/my-channel.tx 
 CHANNELID=mychannelid
 
-echo    '================ Writing $CHANNELID ================'
+################################################################################################
+echo "Writing channel transaction : $CHANNELID" 
+echo "configtxgen -profile $PROFILE -outputCreateChannelTx $OUTPUT_CHANNEL -channelID $CHANNELID"
 configtxgen -profile $PROFILE -outputCreateChannelTx $OUTPUT_CHANNEL -channelID $CHANNELID
-echo "you can use ' configtxgen -inspectChannelCreateTx  $OUTPUT_CHANNEL ' to verifiy the generated channel "
-echo    '======= Done. Launch by executing orderer ======'
+echo "you can use ' configtxgen -inspectChannelCreateTx  $OUTPUT_CHANNEL ' to verifiy the generated channel."
+echo  "Done."
+################################################################################################

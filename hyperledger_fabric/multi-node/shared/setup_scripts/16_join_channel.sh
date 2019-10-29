@@ -40,12 +40,12 @@ fi
 if [ -z $4 ]
 then
     usage
-    echo 'Provide PEER_IP!!!'
+    echo 'Provide PEER_IP_ADD!!!'
     exit 1
 else 
-    PEER_IP=$4
+    PEER_IP_ADD=$4
 fi
-echo "====>Using peer IP: $PEER_IP"
+echo "====>Using peer IP: $PEER_IP_ADD"
 
 
 if [ -z $5 ]
@@ -68,76 +68,39 @@ echo "====>Using Port Number $PORT_NUMBER"
 
 ORDERER_ADDRESS=$ORDERER_IP:$PORT_NUMBER
 echo "ORDERER_ADDRESS: $ORDERER_ADDRESS"
+
+##########################################################################################################
 # Set the environment vars
 # source set-env.sh $ORG_NAME  $PEER_NAME  $PORT_NUMBER
 echo "################## setting env vars ############################"
+
+. ./set-peer-env.sh $ORG_NAME $PEER_NAME $PEER_IP_ADD $PORT_NUMBER admin
+
 # Create the path to the crypto config folder
 echo "current folder: $PWD"
-# current folder: /home/ubuntu/hyperledger_ws/setup_scripts
 
-CRYPTO_CONFIG_ROOT_FOLDER="$PWD/../ca-client"
-# export CORE_PEER_MSPCONFIGPATH=$CRYPTO_CONFIG_ROOT_FOLDER/$ORG_NAME/$IDENTITY/msp
-# CORE_PEER_MSPCONFIGPATH is initialized below 
-export FABRIC_CFG_PATH="$FABRIC_CFG_PATH/$ORG_NAME/$PEER_NAME"
 if [ ! -d $FABRIC_CFG_PATH ];then
     mkdir -p $FABRIC_CFG_PATH
 fi
 cp $BASE_CONFIG_FILES/core-$ORG_NAME-$PEER_NAME.yaml $FABRIC_CFG_PATH/core.yaml
 
-
-# Capitalize the first letter of Org name e.g., acme => Acme  budget => Budget
-MSP_ID="$(tr '[:lower:]' '[:upper:]' <<< ${ORG_NAME:0:1})${ORG_NAME:1}"
-export CORE_PEER_LOCALMSPID=$MSP_ID"MSP"
-export NODECHAINCODE="$FABRIC_CFG_PATH/nodechaincode"
-export CORE_PEER_FILESYSTEM_PATH="/var/ledgers/$ORG_NAME/$PEER_NAME/ledger" 
 sudo mkdir -p $CORE_PEER_FILESYSTEM_PATH
 
-# This is to avoid Port Number contention
-VAR=$((PORT_NUMBER+1))
-export CORE_PEER_LISTENADDRESS=$PEER_IP:$VAR
-export CORE_PEER_ADDRESS=$PEER_IP:$VAR
-VAR=$((PORT_NUMBER+2))
-export CORE_PEER_CHAINCODELISTENADDRESS=$PEER_IP:$VAR
-VAR=$((PORT_NUMBER+3))
-export CORE_PEER_EVENTS_ADDRESS=$PEER_IP:$VAR
-# All Peers will connect to this - peer 
-export CORE_PEER_GOSSIP_BOOTSTRAP=$PEER_IP:7051
-#  export PEER_LOGS=$FABRIC_CFG_PATH/$ORG_NAME/$PEER_NAME
-export PEER_LOGS=$FABRIC_CFG_PATH
-# Only admin is allowed to execute join command
-export CORE_PEER_MSPCONFIGPATH=$CRYPTO_CONFIG_ROOT_FOLDER/$ORG_NAME/admin/msp
-
-
-echo "################################################################"
-echo "CRYPTO_CONFIG_ROOT_FOLDER: $CRYPTO_CONFIG_ROOT_FOLDER"
-echo "CORE_PEER_MSPCONFIGPATH: $CORE_PEER_MSPCONFIGPATH"
-echo "FABRIC_CFG_PATH: $FABRIC_CFG_PATH" 
-echo "MSP_ID: $MSP_ID" 
-echo "CORE_PEER_LOCALMSPID: $CORE_PEER_LOCALMSPID" 
-echo "NODECHAINCODE: $NODECHAINCODE" 
-echo "CORE_PEER_FILESYSTEM_PATH: $CORE_PEER_FILESYSTEM_PATH"  
-echo "CORE_PEER_LISTENADDRESS: $CORE_PEER_LISTENADDRESS" 
-echo "CORE_PEER_ADDRESS: $CORE_PEER_ADDRESS" 
-echo "CORE_PEER_CHAINCODELISTENADDRESS: $CORE_PEER_CHAINCODELISTENADDRESS" 
-echo "CORE_PEER_EVENTS_ADDRESS: $CORE_PEER_EVENTS_ADDRESS" 
-echo "CORE_PEER_GOSSIP_BOOTSTRAP: $CORE_PEER_GOSSIP_BOOTSTRAP"
-echo "PEER_LOGS: $PEER_LOGS" 
-echo "##########################################################################"
+./list_env_vars.sh
 
 
 
 CHANNEL_BLOCK=$FABRIC_CFG_PATH/mychannel.block
-
 echo "################################################################"
 # Fetch channel configuration
 # Fetch a specified block, writing it to a file.
 peer channel fetch 0 $CHANNEL_BLOCK -o $ORDERER_ADDRESS -c $CHANNELID
+
 echo "################################################################"
-# Join the channel
+# Join the channel: Only admin is allowed to execute join command
 peer channel join -o $ORDERER_ADDRESS -b $CHANNEL_BLOCK
-# Execute the anchor peer update
-echo "################################################################"
-echo "Check orderer and peer logs! "
-echo "################################################################"
-#peer channel fetch 0 -c airlinechannel -o localhost:7050
-#peer channel join -o localhost:7050 -b airlinechannel_0.block
+
+echo "################################################################################"
+echo "NOTE: Check orderer and peer logs! "
+echo "      use ' peer channel list ' at the peers to check if they joined the channel"
+echo "################################################################################"

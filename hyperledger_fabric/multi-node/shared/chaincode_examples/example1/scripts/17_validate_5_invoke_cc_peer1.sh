@@ -62,32 +62,32 @@ IDENTITY="admin"
 
 # 5.  Execute invoke on peer1
 echo "##########################################################################"
-echo "====> 5. Execute invoke on $PEER_NAME - Transfer 10 from A=>B"
 echo "ORG_NAME: $ORG_NAME, PEER_NAME: $PEER_NAME, PEER_IP_ADDRESS: $PEER_IP_ADDRESS , PEER_BASE_PORT: $PEER_BASE_PORT, IDENTITY: $IDENTITY"
 ##############################################################
 # source  set-env.sh  $ORG_NAME $PEER_NAME $PEER_BASE_PORT $IDENTITY
 # source  set-env.sh  org1 peer1 7050 admin
+. $HYPERLEDGER_HOME/setup_scripts/set-peer-env.sh $ORG_NAME $PEER_NAME $PEER_IP_ADDRESS $PEER_BASE_PORT admin
 ##############################################################
-CRYPTO_CONFIG_ROOT_FOLDER=$BASE_FABRIC_CA_CLIENT_HOME
-export CORE_PEER_MSPCONFIGPATH=$CRYPTO_CONFIG_ROOT_FOLDER/$ORG_NAME/$IDENTITY/msp
-export FABRIC_CFG_PATH="$FABRIC_CFG_PATH/$ORG_NAME/$PEER_NAME"
-MSP_ID="$(tr '[:lower:]' '[:upper:]' <<< ${ORG_NAME:0:1})${ORG_NAME:1}"
-export CORE_PEER_LOCALMSPID=$MSP_ID"MSP"
-export NODECHAINCODE="$FABRIC_CFG_PATH/chaincode_example/nodechaincode"
-export CORE_PEER_FILESYSTEM_PATH="/var/ledgers/$ORG_NAME/$PEER_NAME/ledger" 
-
-VAR=$((PEER_BASE_PORT+1))
-export CORE_PEER_LISTENADDRESS=$PEER_IP_ADDRESS:$VAR
-export CORE_PEER_ADDRESS=$PEER_IP_ADDRESS:$VAR
-VAR=$((PEER_BASE_PORT+2))
-export CORE_PEER_CHAINCODELISTENADDRESS=$PEER_IP_ADDRESS:$VAR
-VAR=$((PEER_BASE_PORT+3))
-export CORE_PEER_EVENTS_ADDRESS=$PEER_IP_ADDRESS:$VAR
-
-export CORE_PEER_GOSSIP_BOOTSTRAP=$PEER_IP_ADDRESS:7051
-export PEER_LOGS=$FABRIC_CFG_PATH
+#CRYPTO_CONFIG_ROOT_FOLDER=$BASE_FABRIC_CA_CLIENT_HOME
+#export CORE_PEER_MSPCONFIGPATH=$CRYPTO_CONFIG_ROOT_FOLDER/$ORG_NAME/$IDENTITY/msp
+#export FABRIC_CFG_PATH="$FABRIC_CFG_PATH/$ORG_NAME/$PEER_NAME"
+#MSP_ID="$(tr '[:lower:]' '[:upper:]' <<< ${ORG_NAME:0:1})${ORG_NAME:1}"
+#export CORE_PEER_LOCALMSPID=$MSP_ID"MSP"
+#export NODECHAINCODE="$FABRIC_CFG_PATH/chaincode_example/nodechaincode"
+#export CORE_PEER_FILESYSTEM_PATH="/var/ledgers/$ORG_NAME/$PEER_NAME/ledger" 
+#
+#VAR=$((PEER_BASE_PORT+1))
+#export CORE_PEER_LISTENADDRESS=$PEER_IP_ADDRESS:$VAR
+#export CORE_PEER_ADDRESS=$PEER_IP_ADDRESS:$VAR
+#VAR=$((PEER_BASE_PORT+2))
+#export CORE_PEER_CHAINCODELISTENADDRESS=$PEER_IP_ADDRESS:$VAR
+#VAR=$((PEER_BASE_PORT+3))
+#export CORE_PEER_EVENTS_ADDRESS=$PEER_IP_ADDRESS:$VAR
+#
+#export CORE_PEER_GOSSIP_BOOTSTRAP=$PEER_IP_ADDRESS:7051
+#export PEER_LOGS=$FABRIC_CFG_PATH
 ##############################################################
-echo "########################## ENV VARS #######################################"
+echo "########################## VALIDATION #####################################"
 echo "CRYPTO_CONFIG_ROOT_FOLDER: $CRYPTO_CONFIG_ROOT_FOLDER"
 echo "CORE_PEER_MSPCONFIGPATH: $CORE_PEER_MSPCONFIGPATH"
 echo "FABRIC_CFG_PATH: $FABRIC_CFG_PATH" 
@@ -95,17 +95,15 @@ echo "MSP_ID: $MSP_ID"
 echo "CORE_PEER_LOCALMSPID: $CORE_PEER_LOCALMSPID" 
 echo "NODECHAINCODE: $NODECHAINCODE" 
 echo "CORE_PEER_FILESYSTEM_PATH: $CORE_PEER_FILESYSTEM_PATH" 
-
-
 echo "CORE_PEER_LISTENADDRESS: $CORE_PEER_LISTENADDRESS" 
 echo "CORE_PEER_ADDRESS: $CORE_PEER_ADDRESS" 
 echo "CORE_PEER_CHAINCODELISTENADDRESS: $CORE_PEER_CHAINCODELISTENADDRESS" 
 echo "CORE_PEER_EVENTS_ADDRESS: $CORE_PEER_EVENTS_ADDRESS" 
-
 echo "CORE_PEER_GOSSIP_BOOTSTRAP: $CORE_PEER_GOSSIP_BOOTSTRAP"
 echo "PEER_LOGS: $PEER_LOGS" 
 echo "##########################################################################"
 ##############################################################
+echo "====> 5. Execute invoke on $PEER_NAME - Transfer 10 from A=>B"
 echo "peer chaincode invoke -C $CC_CHANNEL_ID -n gocc  -c '{'Args':['invoke','a','b','10']}'"
 peer chaincode invoke -C $CC_CHANNEL_ID -n gocc  -c '{"Args":["invoke","a","b","10"]}'
 

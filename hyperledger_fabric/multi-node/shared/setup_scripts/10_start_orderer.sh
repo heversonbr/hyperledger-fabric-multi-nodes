@@ -1,4 +1,5 @@
 #!/bin/bash
+#TODO: remove scp hard-coded for a flexible option. 
 
 echo "FABRIC_CFG_PATH: $FABRIC_CFG_PATH"
 export ORDERER_FILELEDGER_LOCATION="$FABRIC_CFG_PATH/ledgers/ledger" 
@@ -32,23 +33,23 @@ if [ ! -f $FABRIC_CFG_PATH/core.yaml ]; then
     cp $BASE_CONFIG_FILES/core-orderer-node.yaml $FABRIC_CFG_PATH/core.yaml
     ls -al $FABRIC_CFG_PATH/core.yaml
 fi 
-
-# check for genesis block
+################################################################################################
+# copy genesis block from admin
 GENESIS_BLK_NAME=my_genesis.block
 echo "#######################################################################"
 echo "getting GENESIS_BLK_NAME from orderer admin using scp"
 echo "scp ubuntu@msp-admin-orderer:$FABRIC_CFG_PATH/$GENESIS_BLK_NAME $FABRIC_CFG_PATH"
 scp ubuntu@msp-admin-orderer:$FABRIC_CFG_PATH/$GENESIS_BLK_NAME $FABRIC_CFG_PATH
+
 ls $GENESIS_BLK_NAME
 if [ ! -f $FABRIC_CFG_PATH/$GENESIS_BLK_NAME ]; then
     echo "$GENESIS_BLK_NAME not found."
 else 
     echo "file $GENESIS_BLK_NAME found at $FABRIC_CFG_PATH "
 fi
-
+################################################################################################
 ORDERER_LOG=$FABRIC_CFG_PATH/orderer.log
-
 #sudo -E orderer 2> $ORDERER_LOG &
 orderer 2> $ORDERER_LOG &
-
-echo "===> Done. Please check logs under $ORDERER_LOG"
+echo " Done. Please check logs: tail -f $ORDERER_LOG"
+################################################################################################
