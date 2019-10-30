@@ -57,7 +57,7 @@ echo "##############################################################"
 # Set the FABRIC_CA_CLIENT_HOME for orderer
 IDENTITY=$ORDERER_NAME
 
-. ./set-ca-client.sh  $ORG_NAME admin
+. ./set-ca-client.sh  $ORG_NAME $IDENTITY
 echo "checking FABRIC_CA_CLIENT_HOME = $FABRIC_CA_CLIENT_HOME"
 
 # previous without set-ca-client.sh:  

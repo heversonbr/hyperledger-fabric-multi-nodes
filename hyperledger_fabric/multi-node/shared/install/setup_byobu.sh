@@ -1,6 +1,7 @@
 #!/bin/bash
 mkdir -p /home/ubuntu/.byobu/
 cp /home/ubuntu/hyperledger_ws/install/windows.tmux.hlf  /home/ubuntu/.byobu/windows.tmux.hlf
+sudo chown ubuntu:ubuntu /home/ubuntu/.byobu/windows.tmux.hlf
 echo "run: BYOBU_WINDOWS=hlf byobu"
 
 #TODO: to be ameliorated 

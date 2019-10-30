@@ -6,10 +6,10 @@ usage(){
     echo "Description: Copy the msp dir (org-admin certif. and ca-root certif.)" 
     echo "             from the admin of the organization passed as an argument"
     echo "--------------------------------------------------------------------------------------"
-    echo "USAGE: ./05_get_org-pub-certs <org_name> [admin_HOSTNAME , default=msp-admin-ORG_NAME]"
-    echo "   EX: ./05_get_org-pub-certs    org1    [msp-admin-org1] "
-    echo "   EX: ./05_get_org-pub-certs    org2    [msp-admin-org2] "
-    echo "   EX: ./05_get_org-pub-certs orderer [msp-admin-orderer] "
+    echo "USAGE: ./05_get_org-pub-certs.sh <org_name> [admin_HOSTNAME , default=msp-admin-ORG_NAME]"
+    echo "   EX: ./05_get_org-pub-certs.sh    org1    [msp-admin-org1] "
+    echo "   EX: ./05_get_org-pub-certs.sh    org2    [msp-admin-org2] "
+    echo "   EX: ./05_get_org-pub-certs.sh orderer [msp-admin-orderer] "
     echo "--------------------------------------------------------------------------------------"
     exit
 }
