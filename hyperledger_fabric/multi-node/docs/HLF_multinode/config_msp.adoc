@@ -1,14 +1,20 @@
 === Configure the MSP and Certification authority
+:page-navtitle: HLF Multi-node deployment and use
+:page-root: ../../../../
+:page-category: Blockchain
+:toc:
+:data-uri: true
+:allow-uri-read: true
 
 The first step is to set up the certification authority infrastructure.
 
 Nodes of type *msp* are the hosts in charge of the cerfification authority (CA).
-Among them, there is a host named `msp-root-org1` which is the CA administrator.
+Among them, there is a host named `msp-root-org1` which is the CA root administrator.
 The other nodes are named according to the organization they belong to.
 For instance, the host `msp-admin-org1` is the host which runs the MSP service for
 organization *Org1*.
 
-==== Setting CA-root and root-administrator
+==== Setting CA-Root and root-administrator
 
 
 Go to the CA administration host msp-root-org1 and perform the following.
@@ -73,8 +79,8 @@ $ tree ../ca-server/
 
 .2. Enroll the bootstrap identity of our CA server
 
-The bootstrap identity is the identity through which the system administrator will
-use to manage the system. With this identity all the other entities will be created,
+The bootstrap identity is the identity through which the system administrator
+manages the system. With this identity all the other entities will be created,
 including the local administrator for each organization, as will see later.
 
 [source, bash]
@@ -393,4 +399,4 @@ $ tree ../ca-client/
 
 ----
 
-If everything went well, now all the crypto material required by the MSP service is installed.
+If no errors were shown, now all the crypto material required by the MSP service is installed.

@@ -1,4 +1,11 @@
 === Configure the Hyperledger Blockchain
+:page-navtitle: HLF Multi-node deployment and use
+:page-root: ../../../../
+:page-category: Blockchain
+:toc:
+:data-uri: true
+:allow-uri-read: true
+
 
 ==== Generate the genesis block and channel transaction
 
@@ -183,8 +190,8 @@ You can check  the full log of the orderer node starting at section
 
 ==== Create the channel
 
-In order to create submit the channel for its instantiation we have previously
-<<channel-tx_create, generated the transaction>>  to create our channel.
+In order to submit a transaction to create the channel for its instantiation we have previously
+<<channel-tx_create, generated a transaction>>  to create our channel.
 The next step, in order to really create the channel in Hyperledger is to sign
 and submit this transaction to be executed.
 
@@ -286,7 +293,7 @@ Password: pw
 
 .2. Enroll peers
 
-To to each peer and run the following.
+Next, we have to enroll each peer by running the following.
 
 .2.1. peer1 org1:
 [source, bash]

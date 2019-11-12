@@ -1,4 +1,10 @@
 == Installing Hyperledger Fabric software
+:page-navtitle: HLF Multi-node deployment and use
+:page-root: ../../../../
+:page-category: Blockchain
+:toc:
+:data-uri: true
+:allow-uri-read: true
 
 In order to ease the installation process we provide two different terminal
 layouts that will be used during the installation and configuration processes.
@@ -54,7 +60,7 @@ Hyperledger hosts deployed by vagrant, as shown below.
 image::img/terminator.png[]
 
 NOTE: Please, be sure that any command (e.g., ls) executed in the first tab (msp-root-org1)
-is broadcast to all the other hosts.
+is broadcasted to all the other hosts.
 If not, check if the option `Broadcast default` is set to `Group` in `terminator`
 preferences. If everything goes well with the broadcast, go to the next section.
 
@@ -90,15 +96,15 @@ $ ls
 Note that, the scripts are named according to the order of execution (from 01_*.sh
 to 05_*.sh) and their function in the installation process (e.g., install_docker, install_ca_sever).
 
-Please, run the scripts one-by-one from the 'install' directory at each node as
+Please, run the scripts one-by-one from the `install` directory at each node as
 follows.
 
-
+[[docker_install]]
 ==== Install docker
 
 In order to install docker run the script as follows.
 
-[[docker_install]]
+
 [source, bash]
 ----
 $ ./01_install_docker.sh
@@ -190,7 +196,7 @@ When finished, logout from all hosts.
 Finally the last step of the installation is to install the certification authority
 root server at the host which is in charge of this service.
 In our case, the host `msp-root-org1`.
-Thus, connect through ssh on this host using the command `*vagrant ssh msp-root-org1*` from
+Thus, connect through ssh on this host using the command `vagrant ssh msp-root-org1` from
 your local machine and run the following script.
 After connected, run the script shown below from the `install` directory.
 

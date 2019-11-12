@@ -1,4 +1,10 @@
 == Appendix A - Configuration files
+:page-navtitle: HLF Multi-node deployment and use
+:page-root: ../../../../
+:page-category: Blockchain
+:toc:
+:data-uri: true
+:allow-uri-read: true
 
 [[appendix:vagrantfile]]
 === Vagrantfile

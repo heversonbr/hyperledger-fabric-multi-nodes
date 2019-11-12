@@ -1,9 +1,18 @@
 == Configuring Hyperledger Blockchain
+:page-navtitle: HLF Multi-node deployment and use
+:page-root: ../../../../
+:page-category: Blockchain
+:toc:
+:data-uri: true
+:allow-uri-read: true
 
 
-Before continuing make sure that the terminator broadcast is set to off.
+Before continuing make sure that the terminator broadcast is set to off, as shown below.
+image::img/terminator_off.png[align="center", title="setting broadcast of on Terminator"]
+
 From now one, you will run the commands at each individual node.
-
+If some of the concepts mention below are not clear, please refer to the documentation
+"Hyperledger Fabric architecture" which describes the elements of Hyperledger Fabric.
 
 include::config_msp.adoc[]
 include::config_blockchain.adoc[]

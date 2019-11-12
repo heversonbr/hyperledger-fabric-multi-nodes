@@ -1,4 +1,11 @@
 == Appendix C: Output logs from Blockchain setup
+:page-navtitle: HLF Multi-node deployment and use
+:page-root: ../../../../
+:page-category: Blockchain
+:toc:
+:data-uri: true
+:allow-uri-read: true
+
 
 [[appendix:orderer-node-start]]
 [source, bash]

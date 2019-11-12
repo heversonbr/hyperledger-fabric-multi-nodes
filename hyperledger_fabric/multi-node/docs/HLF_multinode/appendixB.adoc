@@ -1,9 +1,14 @@
 == Appendix B: Installation logs
-
-
-=== Docker install output log
+:page-navtitle: HLF Multi-node deployment and use
+:page-root: ../../../../
+:page-category: Blockchain
+:toc:
+:data-uri: true
+:allow-uri-read: true
 
 [[appendix:installdocker]]
+=== Docker install output log
+
 [source, bash]
 ----
 $ ./01_install_docker.sh

@@ -1,5 +1,10 @@
 == Host deployment
-
+:page-navtitle: HLF Multi-node deployment and use
+:page-root: ../../../../
+:page-category: Blockchain
+:toc:
+:data-uri: true
+:allow-uri-read: true
 
 [[conf-overview]]
 === Overview
@@ -35,7 +40,7 @@ of all the hosts, check the  <<appendix:vagrantfile, Appendix>>.
 
 ==== Deploy all nodes (VMs)
 
-Use the e *vagrant up* command in order to deploy our machines.
+Use the *vagrant up* command in order to deploy your machines.
 Note that, this operation takes few minutes, depending on the number of hosts to
 deploy. Thus, execute the command as show below and go for a coffee.
 

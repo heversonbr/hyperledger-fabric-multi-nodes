@@ -1,4 +1,10 @@
 == Appendix E - Chaincode (smart-contrat)
+:page-navtitle: HLF Multi-node deployment and use
+:page-root: ../../../../
+:page-category: Blockchain
+:toc:
+:data-uri: true
+:allow-uri-read: true
 
 [[appendix:chaincode]]
 === Chaincode used in the example1
