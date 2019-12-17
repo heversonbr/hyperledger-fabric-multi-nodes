@@ -43,7 +43,9 @@ the Hyperledger Blockchain easier. Our goal is not only facilitate the process o
 deploying Hyperledger but also to make it easier to understand every step of the
 full process.
 
-To download the scripts follow the *_link_* [[link]].
+To download the scripts use the following link:
+
+  ssh://gitolite@forge.b-com.com/falcon/blockchain/fabric-multi-node-deploy.git
 
 :TODO: make a link or something to download the scripts.
 

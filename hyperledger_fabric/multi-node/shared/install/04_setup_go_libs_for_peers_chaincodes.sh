@@ -15,21 +15,28 @@ if [ $HOME = "/root" ]; then
     echo $HOME
     export HOME="/home/$FABRIC_USER"
     echo "USER: $USER whoami: `whoami` id -un: `id -un` FABRIC_USER: $FABRIC_USER  HOME: $HOME  LOGNAME: $LOGNAME"
-    go get github.com/hyperledger/fabric/core/chaincode/shim
-    go get github.com/hyperledger/fabric/protos/peer
+    #go get github.com/hyperledger/fabric/core/chaincode/shim
+    #go get github.com/hyperledger/fabric/protos/peer
+    # path changed dec/2019
+    go get github.com/hyperledger/fabric-chaincode-go/shim
+    go get github.com/hyperledger/fabric-protos-go
     #sudo cp $GOPATH/bin/*  /usr/local/bin
     #sudo cp $GOPATH/bin/*  $HYPERLEDGER_HOME/bin
     export HOME="/root"
 else
     echo $HOME
     echo "USER: $USER whoami: `whoami` id -un: `id -un` FABRIC_USER: $FABRIC_USER  HOME: $HOME  LOGNAME: $LOGNAME"
-    go get github.com/hyperledger/fabric/core/chaincode/shim
-    go get github.com/hyperledger/fabric/protos/peer
+    #go get github.com/hyperledger/fabric/core/chaincode/shim
+    #go get github.com/hyperledger/fabric/protos/peer
+    # path changed dec/2019
+    go get github.com/hyperledger/fabric-chaincode-go/shim
+    go get github.com/hyperledger/fabric-protos-go
     #sudo cp $GOPATH/bin/*  /usr/local/bin
     #sudo cp $GOPATH/bin/*  $HYPERLEDGER_HOME/bin
 fi
 
 sudo chown -R ubuntu:ubuntu $HYPERLEDGER_HOME/go
+sudo chown -R ubuntu:ubuntu /home/ubuntu/.cache/go-build/
 
 ## Document process leads to errors as it leads to pulling of master branch
 # go get -u github.com/hyperledger/fabric-ca/cmd/...
