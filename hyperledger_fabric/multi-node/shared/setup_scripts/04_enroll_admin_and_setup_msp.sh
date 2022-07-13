@@ -22,20 +22,23 @@ fi
 ORG_NAME=$1
 CA_ADMIN_HOSTNAME=$2
 CA_SERVER_HOST_IP=$3
-
 ADMIN_USER=$ORG_NAME-admin
 ADMIN_USER_PW=pw
-
-# path to the client certificate at the ca-server admin: 
+# path to the client certificate at the ca-server admin
 ADMIN_CERTS_DIR="$BASE_FABRIC_CA_CLIENT_HOME/caserver/admin/msp/signcerts"
-
 SOURCE_CA_CLIENT_CONFIG_FILE="fabric-ca-client-config-$ORG_NAME-admin.yaml"
 
+################################################################################################
 # set ca client to org-admin
-echo "current FABRIC_CA_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME"
-export FABRIC_CA_CLIENT_HOME=$BASE_FABRIC_CA_CLIENT_HOME/$ORG_NAME/admin
-echo "now FABRIC_CA_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME"
+. ./set-ca-client.sh  $ORG_NAME admin
+echo "checking FABRIC_CA_CLIENT_HOME = $FABRIC_CA_CLIENT_HOME"
 
+# previous without set-ca-client.sh: 
+#echo "current FABRIC_CA_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME"
+#export FABRIC_CA_CLIENT_HOME=$BASE_FABRIC_CA_CLIENT_HOME/$ORG_NAME/admin
+#echo "now FABRIC_CA_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME"
+
+################################################################################################
 # Copy yaml
 # If client YAML not found then copy the client YAML before enrolling
 if [ -f "$FABRIC_CA_CLIENT_HOME/$FABRIC_CA_CLIENT_CONFIG_FILE" ]; then 
@@ -58,6 +61,7 @@ else
     fi
 fi
 
+################################################################################################
 # enroll admin
 echo "###################################"
 echo "# Enrolling: $ORG_NAME-admin:"
@@ -65,7 +69,7 @@ echo "###################################"
 echo "fabric-ca-client enroll -u http://$ADMIN_USER:$ADMIN_USER_PW@$CA_SERVER_HOST_IP:7054"
 fabric-ca-client enroll -u http://$ADMIN_USER:$ADMIN_USER_PW@$CA_SERVER_HOST_IP:7054
 
-
+################################################################################################
 # Setup creates the admincerts folder and copies the admin's cert to 
 # admincerts folder
 # run this script from the msp hosts at the organizations
@@ -73,6 +77,7 @@ echo "###################################"
 echo "# Setting up admincerts folder"
 echo "###################################"
 
+################################################################################################
 ### setupMSP ### 
 if [ ! -d  $FABRIC_CA_CLIENT_HOME/msp/admincerts ]; then 
     echo "Creating $FABRIC_CA_CLIENT_HOME/msp/admincerts"
@@ -89,7 +94,7 @@ echo "scp $CA_ADMIN_HOSTNAME:$ADMIN_CERTS_DIR/* $FABRIC_CA_CLIENT_HOME/msp/admin
 scp $CA_ADMIN_HOSTNAME:$ADMIN_CERTS_DIR/* $FABRIC_CA_CLIENT_HOME/msp/admincerts
 echo "checking with: ls $FABRIC_CA_CLIENT_HOME/msp/admincerts/"
 ls $FABRIC_CA_CLIENT_HOME/msp/admincerts/
-
+################################################################################################
 ### Setup org msp (copy admin certs)
 ### Creates the admincerts folder and copies the admin's cert to admincerts folder"
 # Set the destination as ORG folder
@@ -97,31 +102,24 @@ ls $FABRIC_CA_CLIENT_HOME/msp/admincerts/
 # not doing the set again because it is already done. 
 # the original setup is made in a different script, 
 # that's why there is a setclient here. we dont need it.
-
+################################################################################################
 # Path to the CA certificate
 ROOT_CA_CERTIFICATE=$FABRIC_CA_SERVER_HOME/ca-cert.pem
 # Parent folder for the MSP folder
 DESTINATION_CLIENT_HOME="$FABRIC_CA_CLIENT_HOME/.."
-
+################################################################################################
 # Create the MSP subfolders
 echo "create $DESTINATION_CLIENT_HOME/msp subfolders"
 mkdir -p $DESTINATION_CLIENT_HOME/msp/admincerts 
 mkdir -p $DESTINATION_CLIENT_HOME/msp/cacerts 
 mkdir -p $DESTINATION_CLIENT_HOME/msp/keystore
-
-## Copy the Root CA Cert
-#cp $ROOT_CA_CERTIFICATE $DESTINATION_CLIENT_HOME/msp/cacerts
-## Copy the admin certs - ORG admin is the admin for the specified Org
-#cp $FABRIC_CA_CLIENT_HOME/msp/signcerts/* $DESTINATION_CLIENT_HOME/msp/admincerts 
-
+################################################################################################
+## Copy the Root CA Cert from CA-Root
 echo "scp $CA_ADMIN_HOSTNAME:$ROOT_CA_CERTIFICATE $DESTINATION_CLIENT_HOME/msp/cacerts"
 scp $CA_ADMIN_HOSTNAME:$ROOT_CA_CERTIFICATE $DESTINATION_CLIENT_HOME/msp/cacerts
 # Copy the admin certs - ORG admin is the admin for the specified Org
 echo "cp $FABRIC_CA_CLIENT_HOME/msp/signcerts/* $DESTINATION_CLIENT_HOME/msp/admincerts"
 cp $FABRIC_CA_CLIENT_HOME/msp/signcerts/* $DESTINATION_CLIENT_HOME/msp/admincerts 
-
+################################################################################################
 echo "--------------------------------------------------------"
 echo "Created MSP for org: $ORG_NAME at: $DESTINATION_CLIENT_HOME"
-echo "-------------- Listing Identities ----------------------"
-fabric-ca-client identity list
-echo "--------------------------------------------------------"

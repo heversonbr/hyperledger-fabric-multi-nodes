@@ -1,9 +1,23 @@
 #!/bin/bash
 
-echo "########## LIST ENV VARS ################"
+
+echo "#####################  LIST FABRIC VARS   ############################"
 env | grep FABRIC
-echo "#########################################"
+echo  "####################  LIST ORDERER VARS  ############################"
 env | grep ORDERER
-echo "#########################################"
-env | grep CORE_PEER
-echo "#########################################"
+echo "#####################  LIST PEER ENV VARS ############################"
+echo "CRYPTO_CONFIG_ROOT_FOLDER: $CRYPTO_CONFIG_ROOT_FOLDER"
+echo "CORE_PEER_MSPCONFIGPATH: $CORE_PEER_MSPCONFIGPATH"
+echo "FABRIC_CFG_PATH: $FABRIC_CFG_PATH"
+echo "CORE_PEER_LOCALMSPID: $CORE_PEER_LOCALMSPID"
+echo "MSP_ID: $MSP_ID" 
+echo "CORE_PEER_LOCALMSPID: $CORE_PEER_LOCALMSPID" 
+echo "NODECHAINCODE: $NODECHAINCODE" 
+echo "CORE_PEER_FILESYSTEM_PATH: $CORE_PEER_FILESYSTEM_PATH"  
+echo "CORE_PEER_LISTENADDRESS: $CORE_PEER_LISTENADDRESS" 
+echo "CORE_PEER_ADDRESS: $CORE_PEER_ADDRESS" 
+echo "CORE_PEER_CHAINCODELISTENADDRESS: $CORE_PEER_CHAINCODELISTENADDRESS" 
+echo "CORE_PEER_EVENTS_ADDRESS: $CORE_PEER_EVENTS_ADDRESS" 
+echo "CORE_PEER_GOSSIP_BOOTSTRAP: $CORE_PEER_GOSSIP_BOOTSTRAP"
+echo "PEER_LOGS: $PEER_LOGS" 
+echo "######################################################################"

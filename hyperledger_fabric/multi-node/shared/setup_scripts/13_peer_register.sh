@@ -17,7 +17,7 @@ usage(){
 if [ $# -ne 3 ]; then
     usage
 fi
-
+################################################################################################
 PEER_NAME=$1
 PEER_PW=$2
 ORG_NAME=$3
@@ -25,18 +25,23 @@ NEW_USER_AFFILIATION=$4  #acme.logistics
 
 TYPE=peer
 CA_SERVER_HOST_IP=192.168.1.10
+################################################################################################
 
-# Identity of the peer must be created by the admin from the organization
+# Identity of the peer must be created by the admin from the organization, then:
 IDENTITY="admin"
 
-# sets the FABRIC_CA_CLIENT_HOME 
-echo "current FABRIC_CA_CLIENT_HOME= $FABRIC_CA_CLIENT_HOME"
-export FABRIC_CA_CLIENT_HOME="$BASE_FABRIC_CA_CLIENT_HOME/$ORG_NAME/$IDENTITY"
-echo "now FABRIC_CA_CLIENT_HOME= $CA_CLIENT_FOLDER"
 
+. ./set-ca-client.sh $ORG_NAME  $IDENTITY
+echo "checking FABRIC_CA_CLIENT_HOME = $FABRIC_CA_CLIENT_HOME"
 
+# previous without set-ca-client.sh: 
+# # sets the FABRIC_CA_CLIENT_HOME 
+# echo "current FABRIC_CA_CLIENT_HOME= $FABRIC_CA_CLIENT_HOME"
+# export FABRIC_CA_CLIENT_HOME="$BASE_FABRIC_CA_CLIENT_HOME/$ORG_NAME/$IDENTITY"
+# echo "now FABRIC_CA_CLIENT_HOME= $CA_CLIENT_FOLDER"
 
-# Step-1  Org admin registers the identity
+################################################################################################
+# Org admin registers the identity
 echo "#####################################################"
 echo "# Registering peer $PEER_NAME with $ORG_NAME-admin"
 echo "#####################################################"
@@ -44,4 +49,4 @@ echo "using FABRIC_CA_CLIENT_HOME=$FABRIC_CA_CLIENT_HOME to register: "
 echo "fabric-ca-client register --id.type $TYPE --id.name $PEER_NAME --id.secret $PEER_PW --id.affiliation $ORG_NAME "
 fabric-ca-client register --id.type $TYPE --id.name $PEER_NAME --id.secret $PEER_PW --id.affiliation $ORG_NAME 
 # NOTE: shouldn't we use the attributes here? :  --id.attrs $ATTRIBUTES   with ATTRIBUTES='"hf.Registrar.Roles=peer"'
-echo "======Completed: Step 1 : Registered peer (can be done only once)===="
+echo "Done Registering peer!"

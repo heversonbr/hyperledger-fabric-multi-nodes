@@ -34,7 +34,6 @@ else
     ADD=$3
 fi
 
-
 # ORDERER PORT check
 if [ -z $4 ]
 then
@@ -42,7 +41,7 @@ then
 else 
     PORT=$4
 fi
-
+################################################################################################
 echo "#######################################################################"
 echo "Using identity: $IDENTITY and org-name: $ORG_NAME"
 
@@ -53,7 +52,7 @@ echo "====> Using orderer: $ORDERER_ADDRESS_PORT"
 CHANNELID=mychannelid
 CHANNEL_TX_FILE=my-channel.tx 
 
-
+################################################################################################
 # Channel transaction file location
 # The transaction should have been signed by one or more admins based on policy
 # As we are doing the submit creation from a peer in a org and the channel was created
@@ -73,7 +72,7 @@ if [ ! -d $FABRIC_CFG_PATH ]; then
     echo "creating $FABRIC_CFG_PATH"
     mkdir -p $FABRIC_CFG_PATH
 fi
-
+################################################################################################
 echo "Getting CHANNEL_TX_FILE and core.yaml from orderer using scp"
 echo "scp ubuntu@$ORDERER_ADMIN_HOSTNAME:$ORDERER_FABRIC_CFG_PATH/my-channel.tx $FABRIC_CFG_PATH/"
 scp ubuntu@$ORDERER_ADMIN_HOSTNAME:$ORDERER_FABRIC_CFG_PATH/my-channel.tx $FABRIC_CFG_PATH/
@@ -82,11 +81,12 @@ scp ubuntu@$ORDERER_ADMIN_HOSTNAME:$ORDERER_FABRIC_CFG_PATH/my-channel.tx $FABRI
 #echo "scp ubuntu@$ORDERER_ADMIN_HOSTNAME:$ORDERER_FABRIC_CFG_PATH/core.yaml $FABRIC_CFG_PATH/"
 #scp ubuntu@$ORDERER_ADMIN_HOSTNAME:$ORDERER_FABRIC_CFG_PATH/core.yaml $FABRIC_CFG_PATH/
 cp $BASE_CONFIG_FILES/core-orderer-node.yaml $FABRIC_CFG_PATH/core.yaml
+################################################################################################
 
-echo "#######################################################################"
 echo "#######################################################################"
 # Sets the environment variables for the given identity
 # source set-identity.sh
+. ./set-identity.sh $ORG_NAME $IDENTITY
 
 # Create the path to the crypto config folder
 #CRYPTO_CONFIG_ROOT_FOLDER="$HYPERLEDGER_HOME/ca-client"
@@ -101,7 +101,7 @@ MSP_ID="$(tr '[:lower:]' '[:upper:]' <<< ${ORG_NAME:0:1})${ORG_NAME:1}"
 export CORE_PEER_LOCALMSPID=$MSP_ID"MSP"
 echo "Switched Identity to: $ORG_NAME   $IDENTITY"
 
-
+################################################################################################
 # Submit the channel create transation
 # Channel transaction file location: CHANNEL_TX_FILE=my-channel.tx 
 # The transaction should have been signed by one or more admins based on policy

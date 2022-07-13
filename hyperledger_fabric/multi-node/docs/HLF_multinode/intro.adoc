@@ -1,4 +1,10 @@
 == Introdution
+:page-navtitle: HLF Multi-node deployment and use
+:page-root: ../../../../
+:page-category: Blockchain
+:toc:
+:data-uri: true
+:allow-uri-read: true
 
 In this document we show how to proceed to deploy a simple Blockchain
 infrastructure composed of multiple nodes.
@@ -14,12 +20,12 @@ to deploy and use Hyperledger Fabric
 === Target environment
 
 In this document we target a simple environment composed of 2 different
-organizations. One organization in charge of orderer nodes and another organization
+organizations, one organization in charge of orderer nodes and another organization
 hosting peers and the MSP root service (e.i., the CA-Root).
 The former is composed of 4 (four) hosts (ca-server root, ca-administrator,
 peer1 and peer2) and the latter composed of 2 hosts (ca-administrator and orderer node).
 The figure below depicts this multi-node environment.
-The host msp-root-org1 is the ca-server root. msp-admin-org1 and msp-admin-orderer
+The host `msp-root-org1` is the ca-server root. msp-admin-org1 and msp-admin-orderer
 are the ca-administrator for each organization, peer1-org1 and peer2-org1 are the
 two peers present in the system and the orderer-node is where transactions are
 validated. Note that, we use in this example a single node as ordering service in order to
@@ -37,7 +43,9 @@ the Hyperledger Blockchain easier. Our goal is not only facilitate the process o
 deploying Hyperledger but also to make it easier to understand every step of the
 full process.
 
-To download the scripts follow the *_link_* [[link]].
+To download the scripts use the following link:
+
+  ssh://gitolite@forge.b-com.com/falcon/blockchain/fabric-multi-node-deploy.git
 
 :TODO: make a link or something to download the scripts.
 

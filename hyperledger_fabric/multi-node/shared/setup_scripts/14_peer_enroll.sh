@@ -17,7 +17,7 @@ usage(){
 if [ $# -ne 4 ]; then
     usage
 fi
-
+################################################################################################
 PEER_NAME=$1
 PEER_PW=$2
 ORG_NAME=$3
@@ -27,8 +27,8 @@ TYPE=peer
 CA_SERVER_HOST_IP=192.168.1.10
 
 SOURCE_CONFIG_CLIENT_YAML="$BASE_CONFIG_FILES/fabric-ca-client-config-$PEER_NAME-$ORG_NAME.yaml"
+################################################################################################
 
-# ---------------------------------------
 echo  "###############################################"
 export ADMIN_CLIENT_HOME="$BASE_FABRIC_CA_CLIENT_HOME/$ORG_NAME/admin"
 echo "ADMIN_CLIENT_HOME= $ADMIN_CLIENT_HOME"
@@ -36,14 +36,18 @@ echo  "###############################################"
 
 # Set the FABRIC_CA_CLIENT_HOME for peer
 IDENTITY=$PEER_NAME
-echo "setting identity to $IDENTITY"
 
-# set Fabric Ca Client Home
-echo "current FABRIC_CA_CLIENT_HOME= $FABRIC_CA_CLIENT_HOME"
-export FABRIC_CA_CLIENT_HOME="$BASE_FABRIC_CA_CLIENT_HOME/$ORG_NAME/$IDENTITY"
-echo "now FABRIC_CA_CLIENT_HOME= $FABRIC_CA_CLIENT_HOME"
-## CA_CLIENT_HOME ==  FABRIC_CA_CLIENT_HOME
+. ./set-ca-client.sh  $ORG_NAME $IDENTITY
+echo "checking FABRIC_CA_CLIENT_HOME = $FABRIC_CA_CLIENT_HOME"
 
+# previous without set-ca-client.sh:
+# echo "setting identity to $IDENTITY"
+# # set Fabric Ca Client Home
+# echo "current FABRIC_CA_CLIENT_HOME= $FABRIC_CA_CLIENT_HOME"
+# export FABRIC_CA_CLIENT_HOME="$BASE_FABRIC_CA_CLIENT_HOME/$ORG_NAME/$IDENTITY"
+# echo "now FABRIC_CA_CLIENT_HOME= $FABRIC_CA_CLIENT_HOME"
+
+################################################################################################
 # Step-2 Copies the YAML file for CSR setup
 if [ -f "$FABRIC_CA_CLIENT_HOME/$FABRIC_CA_CLIENT_CONFIG_FILE" ]; then 
     echo "Using $FABRIC_CA_CLIENT_HOME/$FABRIC_CA_CLIENT_CONFIG_FILE for $ORG_NAME / $IDENTITY"
@@ -60,7 +64,7 @@ else
     ls $FABRIC_CA_CLIENT_HOME/$FABRIC_CA_CLIENT_CONFIG_FILE
 fi
 echo "======Completed: Step 2 : Copy Check Orderer Client YAML=========="
-
+################################################################################################
 # Step-3 Peer identity is enrolled
 # Admin will  enroll the peer identity. The MSP will be written in the 
 # FABRIC_CA_CLIENT_HOME
@@ -71,13 +75,11 @@ echo "enrolling with: fabric-ca-client enroll -u http://$PEER_NAME:$PEER_PW@$CA_
 fabric-ca-client enroll -u http://$PEER_NAME:$PEER_PW@$CA_SERVER_HOST_IP:7054
 echo "======Completed: Step 3 : Enrolled $PEER_NAME ========"
 echo " "
-
+################################################################################################
 # Step-4 Copy the admincerts to the appropriate folder
 echo "#####################################################"
 echo "# Setting up admincerts"
 echo "#####################################################"
-
-
 if [ ! -d  $FABRIC_CA_CLIENT_HOME/msp/admincerts ]; then 
     echo "Creating $FABRIC_CA_CLIENT_HOME/msp/admincerts"
     mkdir -p $FABRIC_CA_CLIENT_HOME/msp/admincerts
@@ -85,8 +87,7 @@ else
     echo "$FABRIC_CA_CLIENT_HOME/msp/admincerts already exists!!!"
 fi
 echo "====> $FABRIC_CA_CLIENT_HOME/msp/admincerts"
-
-
+################################################################################################
 #echo "Copying admincerts for user $IDENTITY from $ADMIN_CLIENT_HOME/msp/signcerts/ to  $FABRIC_CA_CLIENT_HOME/msp/admincerts"
 #cp $ADMIN_CLIENT_HOME/msp/signcerts/*    $FABRIC_CA_CLIENT_HOME/msp/admincerts
 #echo "======Completed: Step 4 : MSP setup for the peer========"
@@ -105,5 +106,5 @@ if [ `echo $?` = 0 ]; then
 else 
     echo "File(s) NOT found at $FABRIC_CA_CLIENT_HOME/msp/admincerts/ !";
 fi
-
-echo "======Completed Step: Setting up admincerts =========="
+################################################################################################
+echo "Done."

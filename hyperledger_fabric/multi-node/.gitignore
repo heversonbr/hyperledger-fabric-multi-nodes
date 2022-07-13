@@ -1,9 +1,13 @@
 .vagrant
 .git
-docs/falcon_model
-docs/HLF2
 shared/config_files/ssh_config_template
 vsc_hyperledger_multinode.code-workspace
 shared/install/bkp*.*
+<<<<<<< HEAD
 HLF-Vagrant-Dev-Setup/
 docs/docs.txt
+=======
+docs/bkp  
+docs/falcon_model  
+docs/HLF2
+>>>>>>> f6c473a9f406c3b2d62fc8d80426d064a78a17f0

@@ -1,4 +1,10 @@
 = Deploy and use Hyperledger Fabric on multiple nodes - a simple path.
+:page-navtitle: HLF Multi-node deployment and use
+:page-root: ../../../../
+:page-category: Blockchain
+:toc:
+:data-uri: true
+:allow-uri-read: true
 
 
 include::intro.adoc[]
@@ -17,9 +23,6 @@ include::appendixB.adoc[]
 
 include::appendixC.adoc[]
 
-
-
 include::appendixD.adoc[]
-
 
 //include::appendixE.adoc[]

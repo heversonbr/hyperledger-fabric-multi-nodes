@@ -1,9 +1,8 @@
 
 #############################################################################
-#   ACME Admin Client YAML file 
 #   Changes to the CSR
 #############################################################################
-# File originally at: 
+# original at: 
 # ../setup/config/multi-org-ca/yaml.0/acme/fabric-ca-client-config.yaml
 #
 #############################################################################

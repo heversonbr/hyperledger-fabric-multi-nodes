@@ -1,7 +1,7 @@
 #!/bin/bash
+
 # Sets the FABRIC_CA_CLIENT_HOME based on (a) org (b) enrollment ID
-# Sets the home folder for the client
-# fabric-ca-client looks for this environment vars 
+# Sets the home folder for the msp client
 
 function usage {
     echo    "-------------------------------------------------------------------"
@@ -26,6 +26,6 @@ then
 fi
 
 echo "current FABRIC_CA_CLIENT_HOME = $FABRIC_CA_CLIENT_HOME"
-echo "received : [$1] and [$2]"
+echo "received [org]: $1  and [identity]: $2"
 export FABRIC_CA_CLIENT_HOME=$BASE_FABRIC_CA_CLIENT_HOME/$1/$2
 echo "now FABRIC_CA_CLIENT_HOME = $FABRIC_CA_CLIENT_HOME"
